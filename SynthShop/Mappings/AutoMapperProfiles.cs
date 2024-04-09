@@ -12,6 +12,8 @@ namespace SynthShop.Mappings
             CreateMap<CategoryDTO, Category>().ReverseMap();
             CreateMap<UpdateCategoryDTO, Category>().ReverseMap();
             CreateMap<AddCustomerDTO, Customer>().ReverseMap();
+            CreateMap<CustomerDTO, Customer>().ReverseMap();
+            CreateMap<UpdateCustomerDTO, Customer>().ReverseMap();
         }
 
     }

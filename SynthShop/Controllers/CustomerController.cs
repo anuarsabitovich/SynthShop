@@ -33,8 +33,53 @@ namespace SynthShop.Controllers
         public async Task<IActionResult> GetAll()
         {
             var customers = await _customerRepository.GetAllAsync();
-            return Ok(_mapper)
+            return Ok(_mapper.Map<List<CustomerDTO>>(customers));
         }
 
+        [HttpGet]
+        [Route("{id:Guid}")]
+        public async Task<IActionResult> GetById([FromRoute] Guid id)
+        {
+            var customer = await _customerRepository.GetByIdAsync(id);
+
+            if (customer == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(_mapper.Map<CustomerDTO>(customer));
+
+        }
+
+        [HttpPut]
+        [Route("{id:Guid}")]
+        public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateCustomerDTO updateCustomerDTO)
+        {
+            var customer = _mapper.Map<Customer>(updateCustomerDTO);
+
+            customer = await _customerRepository.UpdateAsync(id, customer);
+            
+            if (customer == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(_mapper.Map<UpdateCustomerDTO>(customer));
+        }
+
+
+        [HttpDelete]
+        [Route("{id:Guid}")]
+        public async Task<IActionResult> Delete([FromRoute] Guid id)
+        {
+            var deletedCustomer = await _customerRepository.DeleteAsync(id);
+
+            if (deletedCustomer == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(_mapper.Map<CustomerDTO>(deletedCustomer));
+        }
     }
 }

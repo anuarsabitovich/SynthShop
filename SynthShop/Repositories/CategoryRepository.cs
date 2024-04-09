@@ -21,7 +21,8 @@ namespace SynthShop.Repositories
         }
         public Task<List<Category>> GetAllAsync()
         {
-            var categories = _dbContext.Categories.ToListAsync();
+
+            var categories = _dbContext.Categories.AsNoTracking().ToListAsync();
 
             return categories;
         }
@@ -34,7 +35,7 @@ namespace SynthShop.Repositories
                 return null;
             }
 
-            existingCategory.IsDeleted = existingCategory.IsDeleted ? true : true;
+            existingCategory.IsDeleted = true;
             await _dbContext.SaveChangesAsync();
             return existingCategory;
         }

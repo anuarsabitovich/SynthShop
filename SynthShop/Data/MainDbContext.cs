@@ -15,22 +15,7 @@ namespace SynthShop.Data
         public DbSet<Category> Categories { get; set; }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
-        public override int SaveChanges()
-        {
-            foreach (var entry in ChangeTracker.Entries())
-            {
-                var isDeletedProperty = entry.Metadata.FindProperty("IsDeleted");
-                if (isDeletedProperty != null)
-                {
-                    if (entry.State == EntityState.Deleted)
-                    {
-                        entry.State = EntityState.Modified;
-                        entry.CurrentValues["IsDeleted"] = true;
-                    }
-                }
-            }
-            return base.SaveChanges();
-        }
+        
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -30,14 +30,14 @@ namespace SynthShop.Repositories
                 return null;
             }
 
-            existingCustomer.IsDeleted = true;
+            existingCustomer.IsDeleted = existingCustomer.IsDeleted ? true : true;
+            await _DbContext.SaveChangesAsync();
             return existingCustomer;
-
         }
 
         public Task<List<Customer>> GetAllAsync()
         {
-            var customers = _DbContext.Customers.ToListAsync();
+            var customers = _DbContext.Customers.AsNoTracking().ToListAsync();
 
             return customers;
         }
