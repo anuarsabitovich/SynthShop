@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using SynthShop.Data;
-using SynthShop.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,8 +15,6 @@ builder.Services.AddDbContext<MainDbContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("MainDbConnectionString")));
 
 // Dependency injection for Repository
-builder.Services.AddScoped<IOrderRepository, OrderRepository>();
-builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
 var app = builder.Build();
 
