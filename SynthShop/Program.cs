@@ -19,6 +19,8 @@ options.UseSqlServer(builder.Configuration.GetConnectionString("MainDbConnection
 // Dependency injection for Repository
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
 // Adding Auto Mapper
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));

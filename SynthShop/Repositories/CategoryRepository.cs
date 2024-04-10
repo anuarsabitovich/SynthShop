@@ -19,12 +19,12 @@ namespace SynthShop.Repositories
             await _dbContext.SaveChangesAsync();
             return category;
         }
-        public Task<List<Category>> GetAllAsync()
+        public async Task<List<Category>> GetAllAsync()
         {
 
-            var categories = _dbContext.Categories.AsNoTracking().ToListAsync();
+            var categories = await _dbContext.Categories.AsNoTracking().ToListAsync();
 
-            return categories;
+            return  categories;
         }
 
         public async Task<Category?> DeleteAsync(Guid id)
