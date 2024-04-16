@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SynthShop.Data.DTO;
-using SynthShop.Data.Entities;
-using SynthShop.Repositories;
+using SynthShop.Core.Services.Impl;
+using SynthShop.Domain.Entities;
+using SynthShop.Infrastructure.Domain.Intefaces;
+using SynthShop.DTO;
 
 namespace SynthShop.Controllers
 {
@@ -11,13 +12,12 @@ namespace SynthShop.Controllers
     [ApiController]
     public class CustomerController : ControllerBase
     {
-
-        private readonly ICustomerRepository _customerRepository;
+        private readonly CustomerService _customerService;
         private readonly IMapper _mapper;
 
-        public CustomerController(ICustomerRepository customerRepository, IMapper mapper)
+        public CustomerController(CustomerService customerService, IMapper mapper)
         {
-            _customerRepository = customerRepository;
+            _customerService = customerService;
             _mapper = mapper;
         }
 
@@ -25,14 +25,14 @@ namespace SynthShop.Controllers
         public async Task<IActionResult> Create([FromBody] AddCustomerDTO addCustomerDTO)
         {
             var customer = _mapper.Map<Customer>(addCustomerDTO);
-            await _customerRepository.CreateAsync(customer);
+            await _customerService.CreateAsync(customer);
             return Ok(_mapper.Map<AddCustomerDTO>(customer));
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var customers = await _customerRepository.GetAllAsync();
+            var customers = await _customerService.GetAllAsync();
             return Ok(_mapper.Map<List<CustomerDTO>>(customers));
         }
 
@@ -40,7 +40,7 @@ namespace SynthShop.Controllers
         [Route("{id:Guid}")]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
-            var customer = await _customerRepository.GetByIdAsync(id);
+            var customer = await _customerService.GetByIdAsync(id);
 
             if (customer == null)
             {
@@ -57,7 +57,7 @@ namespace SynthShop.Controllers
         {
             var customer = _mapper.Map<Customer>(updateCustomerDTO);
 
-            customer = await _customerRepository.UpdateAsync(id, customer);
+            customer = await _customerService.UpdateAsync(id, customer);
             
             if (customer == null)
             {
@@ -72,7 +72,7 @@ namespace SynthShop.Controllers
         [Route("{id:Guid}")]
         public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
-            var deletedCustomer = await _customerRepository.DeleteAsync(id);
+            var deletedCustomer = await _customerService.DeleteAsync(id);
 
             if (deletedCustomer == null)
             {

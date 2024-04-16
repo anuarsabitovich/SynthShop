@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SynthShop.Data.DTO;
-using SynthShop.Data.Entities;
-using SynthShop.Repositories;
+using SynthShop.Core.Services.Impl;
+using SynthShop.Domain.Entities;
+using SynthShop.Infrastructure.Domain.Intefaces;
+using SynthShop.DTO;
 
 namespace SynthShop.Controllers
 {
@@ -11,12 +12,12 @@ namespace SynthShop.Controllers
     [ApiController]
     public class ProductController : ControllerBase
     {
-        private readonly IProductRepository _productRepository;
+        private readonly ProductService _productService;
         private readonly IMapper _mapper;
 
-        public ProductController(IProductRepository productRepository, IMapper mapper)
+        public ProductController(ProductService productService , IMapper mapper)
         {
-            _productRepository = productRepository;
+            _productService = productService;
             _mapper = mapper;
         }
 
@@ -24,14 +25,14 @@ namespace SynthShop.Controllers
         public async Task<IActionResult> Create([FromBody] AddProductDTO addProductDTO)
         {
             var product = _mapper.Map<Product>(addProductDTO);
-            await _productRepository.CreateAsync(product);
+            await _productService.CreateAsync(product);
             return Ok(_mapper.Map<AddProductDTO>(product));
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var products = await _productRepository.GetAllAsync();
+            var products = await _productService.GetAllAsync();
             return Ok(_mapper.Map<List<ProductDTO>>(products));
         }
 
@@ -39,7 +40,7 @@ namespace SynthShop.Controllers
         [Route("{id:Guid}")]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
-            var product = await _productRepository.GetByIdAsync(id);
+            var product = await _productService.GetByIdAsync(id);
 
             if (product == null)
             {
@@ -55,7 +56,7 @@ namespace SynthShop.Controllers
         {
             var product = _mapper.Map<Product>(updateProductDTO);
 
-            product = await _productRepository.UpdateAsync(id, product);
+            product = await _productService.UpdateAsync(id, product);
 
             if (product == null)
             {
@@ -69,7 +70,7 @@ namespace SynthShop.Controllers
         [Route("{id:Guid}")]
         public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
-            var deletedProduct = await _productRepository.DeleteAsync(id);
+            var deletedProduct = await _productService.DeleteAsync(id);
 
             if (deletedProduct == null)
             {
