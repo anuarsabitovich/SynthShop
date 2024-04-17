@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SynthShop.Data.DTO;
-using SynthShop.Data.Entities;
-using SynthShop.Repositories;
+using SynthShop.Core.Services.Impl;
+using SynthShop.Domain.Entities;
+using SynthShop.Infrastructure.Domain.Intefaces;
+using SynthShop.DTO;
 
 namespace SynthShop.Controllers
 {
@@ -11,12 +12,12 @@ namespace SynthShop.Controllers
     [ApiController]
     public class OrderItemController : ControllerBase
     {
-        private readonly IOrderItemRepository _orderItemRepository;
+        private readonly OrderItemService _orderItemService;
         private readonly IMapper _mapper;
 
-        public OrderItemController(IOrderItemRepository orderItemRepository, IMapper mapper)
+        public OrderItemController(OrderItemService orderItemService, IMapper mapper)
         {
-            _orderItemRepository = orderItemRepository;
+            _orderItemService = orderItemService;
             _mapper = mapper;
         }
 
@@ -24,14 +25,14 @@ namespace SynthShop.Controllers
         public async Task<IActionResult> Create([FromBody] AddOrderItemDTO addOrderItemDTO)
         {
             var orderItem = _mapper.Map<OrderItem>(addOrderItemDTO);
-            await _orderItemRepository.CreateAsync(orderItem);
+            await _orderItemService.CreateAsync(orderItem);
             return Ok(_mapper.Map<AddOrderItemDTO>(orderItem));
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var orderItems = await _orderItemRepository.GetAllAsync();
+            var orderItems = await _orderItemService.GetAllAsync();
             return Ok(_mapper.Map<List<OrderItemDTO>>(orderItems));
         }
 
@@ -39,7 +40,7 @@ namespace SynthShop.Controllers
         [Route("{id:Guid}")]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
-            var orderItem = await _orderItemRepository.GetByIdASync(id);
+            var orderItem = await _orderItemService.GetByIdAsync(id);
 
             if (orderItem == null)
             {
@@ -55,7 +56,7 @@ namespace SynthShop.Controllers
         {
             var orderItem = _mapper.Map<OrderItem>(updateOrderItemDTO);
 
-            orderItem = await _orderItemRepository.UpdateAsync(id, orderItem);
+            orderItem = await _orderItemService.UpdateAsync(id, orderItem);
 
             if (orderItem == null)
             {
@@ -69,7 +70,7 @@ namespace SynthShop.Controllers
         [Route("{id:Guid}")]
         public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
-            var deletedOrderItem = await _orderItemRepository.DeleteAsync(id);
+            var deletedOrderItem = await _orderItemService.DeleteAsync(id);
 
             if (deletedOrderItem == null)
             {

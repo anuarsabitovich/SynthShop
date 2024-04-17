@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SynthShop.Data.DTO;
-using SynthShop.Data.Entities;
-using SynthShop.Repositories;
+
+
+using SynthShop.Core.Services.Interfaces;
+using SynthShop.Domain.Entities;
+using SynthShop.DTO;
 
 namespace SynthShop.Controllers
 {
@@ -12,12 +14,12 @@ namespace SynthShop.Controllers
 
     public class CategoryController : ControllerBase
     {
-        private readonly ICategoryRepository _categoryRepository;
+        private readonly ICategoryService _categoryService;
         private readonly IMapper _mapper;
 
-        public CategoryController(ICategoryRepository categoryRepository, IMapper mapper)
+        public CategoryController(ICategoryService categoryService, IMapper mapper)
         {
-            _categoryRepository = categoryRepository;
+            _categoryService = categoryService;
             _mapper = mapper;
         }
 
@@ -25,7 +27,7 @@ namespace SynthShop.Controllers
         public async Task<IActionResult> Create([FromBody] AddCategoryDTO addCategoryDTO)
         {
             var categoryDomainModel = _mapper.Map<Category>(addCategoryDTO);
-            await _categoryRepository.CreateAsync(categoryDomainModel);
+            await _categoryService.CreateAsync(categoryDomainModel);
             return Ok(_mapper.Map<AddCategoryDTO>(categoryDomainModel));
         }
 
@@ -33,7 +35,7 @@ namespace SynthShop.Controllers
         [Route("{id:Guid}")]
         public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
-            var deletedCategory = await _categoryRepository.DeleteAsync(id);
+            var deletedCategory = await _categoryService.DeleteAsync(id);
 
             if (deletedCategory == null)
             {
@@ -46,7 +48,7 @@ namespace SynthShop.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var categories = await _categoryRepository.GetAllAsync();
+            var categories = await _categoryService.GetAllAsync();
             return Ok(_mapper.Map<List<CategoryDTO>>(categories));
         }
 
@@ -54,7 +56,7 @@ namespace SynthShop.Controllers
         [Route("{id:Guid}")]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
-            var category = await _categoryRepository.GetByIdAsync(id);
+            var category = await _categoryService.GetByIdAsync(id);
 
             if (category == null)
             {
@@ -70,7 +72,7 @@ namespace SynthShop.Controllers
         {
             var categoryDomainModel = _mapper.Map<Category>(updateCategoryDTO);
 
-            categoryDomainModel = await _categoryRepository.UpdateAsync(id, categoryDomainModel);
+            categoryDomainModel = await _categoryService.UpdateAsync(id, categoryDomainModel);
 
             if (categoryDomainModel == null)
             {

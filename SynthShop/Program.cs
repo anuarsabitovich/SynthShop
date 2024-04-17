@@ -1,7 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using SynthShop.Data;
-using SynthShop.Mappings;
-using SynthShop.Repositories;
+using SynthShop.Infrastructure.Data;
+using AutoMapper;
+using SynthShop.Mapper.Profiles;
+using SynthShop.Core.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,18 +13,10 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Dependency injection for Db Context
-builder.Services.AddDbContext<MainDbContext>(options =>
-options.UseSqlServer(builder.Configuration.GetConnectionString("MainDbConnectionString")));
-
-// Dependency injection for Repository
-builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
-builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
-builder.Services.AddScoped<IOrderRepository, OrderRepository>();
-builder.Services.AddScoped<IProductRepository, ProductRepository>();
-builder.Services.AddScoped<IOrderItemRepository, OrderItemRepository>();
-// Adding Auto Mapper
+builder.Services.AddInfrastructureServices(builder.Configuration);
+builder.Services.AddCoreServices(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
+
 
 
 var app = builder.Build();
@@ -34,6 +27,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+
 
 
 
