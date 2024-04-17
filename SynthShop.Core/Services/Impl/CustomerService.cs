@@ -1,4 +1,5 @@
-﻿using SynthShop.Domain.Entities;
+﻿using SynthShop.Core.Services.Interfaces;
+using SynthShop.Domain.Entities;
 using SynthShop.Infrastructure.Domain.Intefaces;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SynthShop.Core.Services.Impl
 {
-    public class CustomerService
+    public class CustomerService : ICustomerService
     {
         private readonly ICustomerRepository _customerRepository;
 

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SynthShop.Core.Services.Impl;
+using SynthShop.Core.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,11 +14,11 @@ namespace SynthShop.Core.Services
     {
         public static IServiceCollection AddCoreServices(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddScoped<CategoryService>();
-            services.AddScoped<CustomerService>();
-            services.AddScoped<OrderItemService>();
-            services.AddScoped<OrderService>();
-            services.AddScoped<ProductService>();
+            services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<ICustomerService, CustomerService>();
+            services.AddScoped<IOrderItemService, OrderItemService>();
+            services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<IProductService, ProductService>();
 
 
             return services;

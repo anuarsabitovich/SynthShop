@@ -5,6 +5,7 @@ using SynthShop.Core.Services.Impl;
 using SynthShop.Domain.Entities;
 using SynthShop.Infrastructure.Domain.Intefaces;
 using SynthShop.DTO;
+using SynthShop.Core.Services.Interfaces;
 
 namespace SynthShop.Controllers
 {
@@ -12,10 +13,10 @@ namespace SynthShop.Controllers
     [ApiController]
     public class CustomerController : ControllerBase
     {
-        private readonly CustomerService _customerService;
+        private readonly ICustomerService _customerService;
         private readonly IMapper _mapper;
 
-        public CustomerController(CustomerService customerService, IMapper mapper)
+        public CustomerController(ICustomerService customerService, IMapper mapper)
         {
             _customerService = customerService;
             _mapper = mapper;
