@@ -28,6 +28,9 @@ namespace SynthShop.Mapper.Profiles
             CreateMap<AddOrderDTO, Order>().ReverseMap();
             CreateMap<UpdateOrderDTO, Order>().ReverseMap();
             CreateMap<OrderDTO, Order>().ReverseMap();
+
+            CreateMap<BasketDTO, Basket>().ReverseMap();
+            CreateMap<AddBasketItemDTO, BasketItem>().ReverseMap();
         }
 
     }

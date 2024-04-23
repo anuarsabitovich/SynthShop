@@ -1,9 +1,9 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SynthShop.Core.Services.Impl;
+using SynthShop.Core.Services.Interfaces;
 using SynthShop.Domain.Entities;
-using SynthShop.Infrastructure.Domain.Intefaces;
 using SynthShop.DTO;
 using SynthShop.Validations;
 
@@ -13,7 +13,7 @@ namespace SynthShop.Controllers
     [ApiController]
     public class ProductController : ControllerBase
     {
-        private readonly ProductService _productService;
+        private readonly IProductService _productService;
         private readonly IMapper _mapper;
         private readonly ProductValidator _productValidator;
 

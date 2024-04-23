@@ -13,9 +13,7 @@ namespace SynthShop.Infrastructure.Data.EntitiesConfiguration
             builder.Property(oi => oi.Quantity)
                 .IsRequired();
 
-            builder.Property(oi => oi.Price)
-                .IsRequired()
-                .HasColumnType("decimal(18, 2)");
+          
 
             builder.HasOne(oi => oi.Order)
                 .WithMany(o => o.OrderItems)

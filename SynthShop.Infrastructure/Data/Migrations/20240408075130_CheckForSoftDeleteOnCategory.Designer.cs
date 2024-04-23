@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SynthShop.Infrastructure.Data;
-using SynthShop.Infrastructure.Domain;
 
 #nullable disable
 

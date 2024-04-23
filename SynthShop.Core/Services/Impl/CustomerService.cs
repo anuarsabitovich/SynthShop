@@ -1,12 +1,12 @@
 ﻿using SynthShop.Core.Services.Interfaces;
 using SynthShop.Domain.Entities;
-using SynthShop.Infrastructure.Domain.Intefaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using SynthShop.Infrastructure.Data.Interfaces;
 
 namespace SynthShop.Core.Services.Impl
 {
