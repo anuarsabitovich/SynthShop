@@ -49,7 +49,7 @@ namespace SynthShop.Infrastructure.Data.Repositories
                         }
                         else
                         {
-                            item.Product.StockQuantity -= item.Quantity; // Lock the product by reducing stock
+                            item.Product.StockQuantity -= item.Quantity;
                         }
                     }
 
@@ -79,16 +79,16 @@ namespace SynthShop.Infrastructure.Data.Repositories
                     _dbContext.Orders.Add(order);
                     await _dbContext.SaveChangesAsync();
 
-                    return order; // If successful, exit the loop
+                    return order; 
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    // If a concurrency conflict occurs, retry the operation
+                    
                     if (retryCount == maxRetries - 1)
                     {
-                        throw; // If we've exhausted retries, re-throw the exception
+                        throw; 
                     }
-                    retryCount++; // Increment retry count
+                    retryCount++; 
                 }
             }
 
@@ -159,7 +159,7 @@ namespace SynthShop.Infrastructure.Data.Repositories
 
             order.Status = OrderStatus.Completed;
 
-            await _dbContext.SaveChangesAsync(); // Save the changes
+            await _dbContext.SaveChangesAsync(); 
         }
     }
 }
