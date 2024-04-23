@@ -5,6 +5,7 @@ using SynthShop.Core.Services.Impl;
 using SynthShop.Domain.Entities;
 using SynthShop.Infrastructure.Domain.Intefaces;
 using SynthShop.DTO;
+using SynthShop.Validations;
 
 namespace SynthShop.Controllers
 {
@@ -14,17 +15,25 @@ namespace SynthShop.Controllers
     {
         private readonly ProductService _productService;
         private readonly IMapper _mapper;
+        private readonly ProductValidator _productValidator;
 
-        public ProductController(ProductService productService , IMapper mapper)
+        public ProductController(ProductService productService , IMapper mapper, ProductValidator productValidator)
         {
             _productService = productService;
             _mapper = mapper;
+            _productValidator = productValidator;
         }
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] AddProductDTO addProductDTO)
         {
             var product = _mapper.Map<Product>(addProductDTO);
+            var validationResult = _productValidator.Validate(product);
+
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.Errors); 
+            }
             await _productService.CreateAsync(product);
             return Ok(_mapper.Map<AddProductDTO>(product));
         }
@@ -55,6 +64,13 @@ namespace SynthShop.Controllers
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateProductDTO updateProductDTO)
         {
             var product = _mapper.Map<Product>(updateProductDTO);
+
+            var validationResult = _productValidator.Validate(product);
+
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.Errors); 
+            }
 
             product = await _productService.UpdateAsync(id, product);
 

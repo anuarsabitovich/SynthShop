@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using SynthShop.Core.Services.Interfaces;
 using SynthShop.Domain.Entities;
 using SynthShop.DTO;
+using SynthShop.Validations;
 
 namespace SynthShop.Controllers
 {
@@ -16,17 +17,24 @@ namespace SynthShop.Controllers
     {
         private readonly ICategoryService _categoryService;
         private readonly IMapper _mapper;
+        private readonly CategoryValidator _categoryValidator;
 
-        public CategoryController(ICategoryService categoryService, IMapper mapper)
+        public CategoryController(ICategoryService categoryService, IMapper mapper, CategoryValidator categoryValidator)
         {
             _categoryService = categoryService;
             _mapper = mapper;
+            _categoryValidator = categoryValidator;
         }
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] AddCategoryDTO addCategoryDTO)
         {
             var categoryDomainModel = _mapper.Map<Category>(addCategoryDTO);
+            var validationResult = _categoryValidator.Validate(categoryDomainModel);
+            if (validationResult.IsValid == false)
+            {
+                return BadRequest(validationResult.Errors);
+            }
             await _categoryService.CreateAsync(categoryDomainModel);
             return Ok(_mapper.Map<AddCategoryDTO>(categoryDomainModel));
         }
@@ -71,6 +79,12 @@ namespace SynthShop.Controllers
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateCategoryDTO updateCategoryDTO)
         {
             var categoryDomainModel = _mapper.Map<Category>(updateCategoryDTO);
+
+            var validationResult = _categoryValidator.Validate(categoryDomainModel);
+            if (validationResult.IsValid == false)
+            {
+                return BadRequest(validationResult.Errors);
+            }
 
             categoryDomainModel = await _categoryService.UpdateAsync(id, categoryDomainModel);
 
