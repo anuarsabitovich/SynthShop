@@ -5,15 +5,17 @@ VisualStudioVersion = 17.9.34701.34
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SynthShop", "SynthShop\SynthShop.csproj", "{5E7137E8-AEBA-4792-8DBA-636AE9C02959}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SynthShop.Domain", "SynthShop.Domain\SynthShop.Domain.csproj", "{2F9D9D1E-0972-4D57-A416-92C2F25D638E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SynthShop.Domain", "SynthShop.Domain\SynthShop.Domain.csproj", "{2F9D9D1E-0972-4D57-A416-92C2F25D638E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SynthShop.Infrastructure", "SynthShop.Infrastructure\SynthShop.Infrastructure.csproj", "{0DF036AD-E3D3-47E6-96C2-F9C252D087AC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SynthShop.Infrastructure", "SynthShop.Infrastructure\SynthShop.Infrastructure.csproj", "{0DF036AD-E3D3-47E6-96C2-F9C252D087AC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SynthShop.Core", "SynthShop.Core\SynthShop.Core.csproj", "{41CC87A8-8EA9-4092-B768-C19935DFEB7F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SynthShop.Core", "SynthShop.Core\SynthShop.Core.csproj", "{41CC87A8-8EA9-4092-B768-C19935DFEB7F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C5185613-0F77-4C6C-8CE1-2917D4914BB6}"
 	ProjectSection(SolutionItems) = preProject
+		Ask.txt = Ask.txt
 		hints.txt = hints.txt
+		TODO.txt = TODO.txt
 	EndProjectSection
 EndProject
 Global

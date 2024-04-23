@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SynthShop.Core.Services.Impl;
 using SynthShop.Domain.Entities;
-using SynthShop.Infrastructure.Domain.Intefaces;
 using SynthShop.DTO;
 
 namespace SynthShop.Controllers

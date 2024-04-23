@@ -9,10 +9,10 @@ namespace SynthShop.Core.Services.Interfaces
 {
     public interface IOrderService
     {
-        Task CreateAsync(Order order);
-        Task<List<Order>> GetAllAsync();
-        Task<Order?> GetByIdAsync(Guid id);
-        Task<Order?> UpdateAsync(Guid id, Order order);
-        Task<Order?> DeleteAsync(Guid id);
+        Task<Order> CreateOrder(Guid basketId, Guid customerId);
+        
+        Task CancelOrder(Guid orderID);
+
+        Task CompleteOrder(Guid basketId);
     }
 }

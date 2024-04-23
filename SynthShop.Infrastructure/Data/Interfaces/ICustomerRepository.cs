@@ -1,7 +1,7 @@
 ﻿
 using SynthShop.Domain.Entities;
 
-namespace SynthShop.Infrastructure.Domain.Intefaces
+namespace SynthShop.Infrastructure.Data.Interfaces
 
 {
     public interface ICustomerRepository

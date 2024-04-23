@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SynthShop.Core.Services.Impl;
+using SynthShop.Core.Services.Interfaces;
 using SynthShop.Domain.Entities;
-using SynthShop.Infrastructure.Domain.Intefaces;
 using SynthShop.DTO;
 
 namespace SynthShop.Controllers
@@ -12,10 +12,10 @@ namespace SynthShop.Controllers
     [ApiController]
     public class ProductController : ControllerBase
     {
-        private readonly ProductService _productService;
+        private readonly IProductService _productService;
         private readonly IMapper _mapper;
 
-        public ProductController(ProductService productService , IMapper mapper)
+        public ProductController(IProductService productService , IMapper mapper)
         {
             _productService = productService;
             _mapper = mapper;

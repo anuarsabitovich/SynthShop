@@ -22,6 +22,44 @@ namespace SynthShop.Infrastructure.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("SynthShop.Domain.Entities.Basket", b =>
+                {
+                    b.Property<Guid>("BasketId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("CustomerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("BasketId");
+
+                    b.ToTable("Baskets", (string)null);
+                });
+
+            modelBuilder.Entity("SynthShop.Domain.Entities.BasketItem", b =>
+                {
+                    b.Property<Guid>("BasketItemId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("BasketId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("BasketItemId");
+
+                    b.HasIndex("BasketId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("BasketItems", (string)null);
+                });
+
             modelBuilder.Entity("SynthShop.Domain.Entities.Category", b =>
                 {
                     b.Property<Guid>("CategoryID")
@@ -53,7 +91,7 @@ namespace SynthShop.Infrastructure.Data.Migrations
 
                     b.HasKey("CategoryID");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("SynthShop.Domain.Entities.Customer", b =>
@@ -97,7 +135,7 @@ namespace SynthShop.Infrastructure.Data.Migrations
 
                     b.HasKey("CustomerID");
 
-                    b.ToTable("Customers");
+                    b.ToTable("Customers", (string)null);
                 });
 
             modelBuilder.Entity("SynthShop.Domain.Entities.Order", b =>
@@ -122,8 +160,11 @@ namespace SynthShop.Infrastructure.Data.Migrations
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
                     b.Property<decimal>("TotalAmount")
-                        .HasColumnType("decimal(18, 2)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime?>("UpdateAt")
                         .HasColumnType("datetime2");
@@ -132,7 +173,7 @@ namespace SynthShop.Infrastructure.Data.Migrations
 
                     b.HasIndex("CustomerID");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("SynthShop.Domain.Entities.OrderItem", b =>
@@ -155,7 +196,7 @@ namespace SynthShop.Infrastructure.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18, 2)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<Guid>("ProductID")
                         .HasColumnType("uniqueidentifier");
@@ -172,7 +213,7 @@ namespace SynthShop.Infrastructure.Data.Migrations
 
                     b.HasIndex("ProductID");
 
-                    b.ToTable("OrderItems");
+                    b.ToTable("OrderItems", (string)null);
                 });
 
             modelBuilder.Entity("SynthShop.Domain.Entities.Product", b =>
@@ -213,11 +254,34 @@ namespace SynthShop.Infrastructure.Data.Migrations
                     b.Property<DateTime?>("UpdateAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<long>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("bigint");
+
                     b.HasKey("ProductID");
 
                     b.HasIndex("CategoryID");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", (string)null);
+                });
+
+            modelBuilder.Entity("SynthShop.Domain.Entities.BasketItem", b =>
+                {
+                    b.HasOne("SynthShop.Domain.Entities.Basket", "Basket")
+                        .WithMany("Items")
+                        .HasForeignKey("BasketId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("SynthShop.Domain.Entities.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Basket");
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("SynthShop.Domain.Entities.Order", b =>
@@ -259,6 +323,11 @@ namespace SynthShop.Infrastructure.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("SynthShop.Domain.Entities.Basket", b =>
+                {
+                    b.Navigation("Items");
                 });
 
             modelBuilder.Entity("SynthShop.Domain.Entities.Category", b =>

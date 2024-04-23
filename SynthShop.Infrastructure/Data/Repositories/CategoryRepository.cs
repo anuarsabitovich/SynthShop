@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SynthShop.Domain.Entities;
 using SynthShop.Infrastructure.Data;
-using SynthShop.Infrastructure.Domain.Intefaces;
+using SynthShop.Infrastructure.Data.Interfaces;
 
 namespace SynthShop.Infrastructure.Data.Repositories
 {

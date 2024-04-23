@@ -1,7 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SynthShop.Domain.Entities;
+using SynthShop.Domain.Enums;
 using SynthShop.Infrastructure.Data;
-using SynthShop.Infrastructure.Domain.Intefaces;
+using SynthShop.Infrastructure.Data.Interfaces;
 
 namespace SynthShop.Infrastructure.Data.Repositories
 {
@@ -15,60 +16,150 @@ namespace SynthShop.Infrastructure.Data.Repositories
         }
 
 
-        public async Task<Order> CreateAsync(Order order)
-        {
-            await _dbContext.AddAsync(order);
-            await _dbContext.SaveChangesAsync();
-            return order;
-        }
-        public async Task<List<Order>> GetAllAsync()
-        {
-            var orders = _dbContext.Orders.AsNoTracking().ToListAsync();
 
-            return await orders;  
-        }
-        public async Task<Order?> DeleteAsync(Guid id)
+
+        public async Task<Order> CreateOrder(Guid basketId, Guid customerId)
         {
-            var existingOrder = await _dbContext.Orders.FirstOrDefaultAsync(x => x.OrderID == id);
-            if (existingOrder == null)
+            int retryCount = 0;
+            const int maxRetries = 3;
+
+            while (retryCount < maxRetries)
             {
-                return null;
+                try
+                {
+                    var basket = await _dbContext.Baskets
+                        .Include(b => b.Items)
+                        .ThenInclude(i => i.Product)
+                        .FirstOrDefaultAsync(b => b.BasketId == basketId);
+
+                    if (basket == null)
+                        throw new InvalidOperationException("Basket not found.");
+
+                    if (!basket.CustomerId.HasValue)
+                    {
+                        basket.CustomerId = customerId;
+                    }
+
+                    var availabilityIssues = new List<string>();
+                    foreach (var item in basket.Items)
+                    {
+                        if (item.Product.StockQuantity < item.Quantity)
+                        {
+                            availabilityIssues.Add($"Not enough stock for {item.Product.Name}. Requested: {item.Quantity}, Available: {item.Product.StockQuantity}");
+                        }
+                        else
+                        {
+                            item.Product.StockQuantity -= item.Quantity; // Lock the product by reducing stock
+                        }
+                    }
+
+                    if (availabilityIssues.Any())
+                    {
+                        throw new InvalidOperationException("There are issues with product availability: " + string.Join(", ", availabilityIssues));
+                    }
+
+                    var order = new Order
+                    {
+                        OrderID = Guid.NewGuid(),
+                        OrderDate = DateTime.UtcNow,
+                        CustomerID = basket.CustomerId.Value,
+                        Status = OrderStatus.Pending,
+                        OrderItems = basket.Items.Select(bi => new OrderItem
+                        {
+                            OrderItemID = Guid.NewGuid(),
+                            ProductID = bi.ProductId,
+                            Quantity = bi.Quantity,
+                            Price = bi.Product.Price,
+                            CreatedAt = DateTime.UtcNow
+                        }).ToList(),
+                        TotalAmount = basket.Items.Sum(i => i.Product.Price * i.Quantity),
+                        CreatedAt = DateTime.UtcNow
+                    };
+
+                    _dbContext.Orders.Add(order);
+                    await _dbContext.SaveChangesAsync();
+
+                    return order; // If successful, exit the loop
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    // If a concurrency conflict occurs, retry the operation
+                    if (retryCount == maxRetries - 1)
+                    {
+                        throw; // If we've exhausted retries, re-throw the exception
+                    }
+                    retryCount++; // Increment retry count
+                }
+            }
+
+            throw new InvalidOperationException("Failed to create order due to concurrency conflicts.");
+        }
+
+
+
+
+
+
+
+
+        public async Task CancelOrder(Guid orderId)
+        {
+            var order = await _dbContext.Orders
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product)
+                .SingleOrDefaultAsync(o => o.OrderID == orderId);
+
+            if (order == null)
+            {
+                throw new InvalidOperationException("Order not found.");
+            }
+
+            if (order.Status == OrderStatus.Completed)
+            {
+                throw new InvalidOperationException("Completed orders cannot be cancelled.");
+            }
+
+
+            if (order.Status == OrderStatus.Pending)
+            {
+                foreach (var item in order.OrderItems)
+                {
+                    var product = item.Product;  
+                    product.StockQuantity += item.Quantity;
+                }
             }
             
-            existingOrder.IsDeleted = true;
-            await _dbContext.SaveChangesAsync();
-            return existingOrder;
+            order.Status = OrderStatus.Cancelled;
 
+
+            await _dbContext.SaveChangesAsync();
         }
 
-        public async Task<Order?> GetByIdAsync(Guid id)
+
+        public async Task CompleteOrder(Guid orderId)
         {
-            var existingOrder = _dbContext.Orders.FirstOrDefaultAsync(x => x.OrderID == id);
-            if (existingOrder == null)
+            var order = await _dbContext.Orders
+                .Include(o => o.OrderItems)
+                .FirstOrDefaultAsync(o => o.OrderID == orderId);
+
+            if (order == null)
             {
-                return null;
+                throw new InvalidOperationException("Order not found.");
             }
-            return await existingOrder;
 
-        }
-
-   
-
-        public async Task<Order?> UpdateAsync(Guid id, Order order)
-        {
-            var existingOrder = await _dbContext.Orders.FirstOrDefaultAsync(x => x.OrderID == id);
-            if (existingOrder == null)
+            if (order.Status == OrderStatus.Completed)
             {
-                return null;
+                throw new InvalidOperationException("Order is already completed.");
             }
-            existingOrder.OrderDate = order.OrderDate;
-            existingOrder.CustomerID = order.CustomerID;
-            existingOrder.TotalAmount = order.TotalAmount;
-            existingOrder.Customer = order.Customer;
-            existingOrder.OrderItems = order.OrderItems;
-            existingOrder.UpdateAt = DateTime.UtcNow;
-            await _dbContext.SaveChangesAsync();
-            return order;
+
+            if (order.Status == OrderStatus.Cancelled)
+            {
+                throw new InvalidOperationException("Cannot complete a cancelled order.");
+            }
+
+            order.Status = OrderStatus.Completed;
+
+            await _dbContext.SaveChangesAsync(); // Save the changes
         }
     }
 }

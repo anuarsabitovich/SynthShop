@@ -17,9 +17,7 @@ namespace SynthShop.Infrastructure.Data.EntitiesConfiguration
             builder.Property(o => o.CustomerID)
                 .IsRequired();
 
-            builder.Property(o => o.TotalAmount)
-                .IsRequired()
-                .HasColumnType("decimal(18, 2)");
+    
 
             builder.HasOne(o => o.Customer)
                 .WithMany(c => c.Orders)
