@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using SynthShop.Infrastructure.Data.Interfaces;
 using SynthShop.Infrastructure.Data.Repositories;
-using SynthShop.Infrastructure.Domain.Intefaces;
 
 namespace SynthShop.Infrastructure.Data
 {
@@ -21,7 +21,7 @@ namespace SynthShop.Infrastructure.Data
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IOrderItemRepository, OrderItemRepository>();
-            // Adding Auto Mapper
+            services.AddScoped<IBasketRepository, BasketRepository>();
 
             return services;
         }

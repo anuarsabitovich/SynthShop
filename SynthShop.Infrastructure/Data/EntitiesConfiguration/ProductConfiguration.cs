@@ -38,6 +38,8 @@ namespace SynthShop.Infrastructure.Data.EntitiesConfiguration
                 .HasDefaultValueSql("getdate()");
 
             builder.HasQueryFilter(p => !p.IsDeleted);
+
+            builder.Property(x=> x.Version).IsRowVersion().ValueGeneratedOnAddOrUpdate();
         }
     }
 }
