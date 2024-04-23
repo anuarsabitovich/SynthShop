@@ -1,19 +1,21 @@
 ﻿using FluentValidation;
 using SynthShop.Domain.Entities;
+using SynthShop.DTO;
 
 namespace SynthShop.Validations
 {
-    public class OrderValidator : AbstractValidator<Order>
+    public class OrderValidator : AbstractValidator<CreateOrderDTO>
     {
-        public OrderValidator()
+        public OrderValidator() 
         {
-            RuleFor(o => o.CustomerID)
+            RuleFor(dto => dto.CustomerId)
                 .NotEmpty()
-                .WithMessage("Customer ID is required.");
-            
-            RuleFor(o => o.OrderItems)
+                .WithMessage("CustomerId is required.");
+
+            RuleFor(dto => dto.BasketId)
                 .NotEmpty()
-                .WithMessage("An order must contain at least one item.");
+                .WithMessage("BasketId is required.");
+
         }
     }
 }

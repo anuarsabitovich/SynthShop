@@ -27,14 +27,14 @@ namespace SynthShop.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] AddCustomerDTO addCustomerDTO)
         {
-            var customer = _mapper.Map<Customer>(addCustomerDTO);
-
-            var validationResult = _customerValidator.Validate(customer);
+            var validationResult = _customerValidator.Validate(addCustomerDTO);
 
             if (!validationResult.IsValid)
             {
-                return BadRequest(validationResult.Errors); 
+                return BadRequest(validationResult.Errors);
             }
+
+            var customer = _mapper.Map<Customer>(addCustomerDTO);
 
             await _customerService.CreateAsync(customer);
             return Ok(_mapper.Map<AddCustomerDTO>(customer));
@@ -64,16 +64,16 @@ namespace SynthShop.Controllers
 
         [HttpPut]
         [Route("{id:Guid}")]
-        public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateCustomerDTO updateCustomerDTO)
+        public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] AddCustomerDTO updateCustomerDTO)
         {
-            var customer = _mapper.Map<Customer>(updateCustomerDTO);
-
-            var validationResult = _customerValidator.Validate(customer);
+            var validationResult = _customerValidator.Validate(updateCustomerDTO);
 
             if (!validationResult.IsValid)
             {
                 return BadRequest(validationResult.Errors);
             }
+            
+            var customer = _mapper.Map<Customer>(updateCustomerDTO);
 
             customer = await _customerService.UpdateAsync(id, customer);
             

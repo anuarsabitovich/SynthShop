@@ -1,9 +1,10 @@
 ﻿using FluentValidation;
 using SynthShop.Domain.Entities;
+using SynthShop.DTO;
 
 namespace SynthShop.Validations
 {
-    public class ProductValidator : AbstractValidator<Product>
+    public class ProductValidator : AbstractValidator<AddProductDTO>
     {
         public ProductValidator()
         {

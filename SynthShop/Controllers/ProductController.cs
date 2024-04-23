@@ -17,7 +17,7 @@ namespace SynthShop.Controllers
         private readonly IMapper _mapper;
         private readonly ProductValidator _productValidator;
 
-        public ProductController(ProductService productService , IMapper mapper, ProductValidator productValidator)
+        public ProductController(IProductService productService , IMapper mapper, ProductValidator productValidator)
         {
             _productService = productService;
             _mapper = mapper;
@@ -27,13 +27,14 @@ namespace SynthShop.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] AddProductDTO addProductDTO)
         {
-            var product = _mapper.Map<Product>(addProductDTO);
-            var validationResult = _productValidator.Validate(product);
+            var validationResult = _productValidator.Validate(addProductDTO);
 
             if (!validationResult.IsValid)
             {
-                return BadRequest(validationResult.Errors); 
+                return BadRequest(validationResult.Errors);
             }
+            var product = _mapper.Map<Product>(addProductDTO);
+            
             await _productService.CreateAsync(product);
             return Ok(_mapper.Map<AddProductDTO>(product));
         }
@@ -61,16 +62,16 @@ namespace SynthShop.Controllers
 
         [HttpPut]
         [Route("{id:Guid}")]
-        public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateProductDTO updateProductDTO)
+        public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] AddProductDTO updateProductDTO)
         {
-            var product = _mapper.Map<Product>(updateProductDTO);
-
-            var validationResult = _productValidator.Validate(product);
+            var validationResult = _productValidator.Validate(updateProductDTO);
 
             if (!validationResult.IsValid)
             {
-                return BadRequest(validationResult.Errors); 
+                return BadRequest(validationResult.Errors);
             }
+            
+            var product = _mapper.Map<Product>(updateProductDTO);
 
             product = await _productService.UpdateAsync(id, product);
 

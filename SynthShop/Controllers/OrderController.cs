@@ -5,6 +5,7 @@ using SynthShop.Core.Services.Impl;
 using SynthShop.Core.Services.Interfaces;
 using SynthShop.Domain.Entities;
 using SynthShop.DTO;
+using SynthShop.Validations;
 
 namespace SynthShop.Controllers
 {
@@ -14,18 +15,26 @@ namespace SynthShop.Controllers
     {
         private readonly IOrderService _orderService;
         private readonly IMapper _mapper;
+        private readonly OrderValidator _orderValidator;
 
-        public OrderController(IOrderService orderService, IMapper mapper)
+        public OrderController(IOrderService orderService, IMapper mapper, OrderValidator orderValidator)
         {
             _orderService = orderService;
             _mapper = mapper;
+            _orderValidator = orderValidator;
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateOrder([FromBody] CreateOrderDTO createOrderDto)
         {
-           var order =  await _orderService.CreateOrder(createOrderDto.BasketId, createOrderDto.CustomerId);
-           return Ok(_mapper.Map<OrderDTO>(order));
+            var validationResult = _orderValidator.Validate(createOrderDto);
+
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.Errors);
+            }
+            var order = await _orderService.CreateOrder(createOrderDto.BasketId, createOrderDto.CustomerId);
+            return Ok(_mapper.Map<OrderDTO>(order));
         }
 
         [HttpDelete]
@@ -43,7 +52,7 @@ namespace SynthShop.Controllers
             await _orderService.CompleteOrder(id);
             return Ok("Order completed");
         }
-       
+
 
     }
 }

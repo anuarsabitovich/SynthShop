@@ -20,11 +20,8 @@ builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddCoreServices(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
 
-builder.Services.AddControllers()
-    .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<CategoryValidator>());
-builder.Services.AddControllers()
-    .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<CustomerValidator>());
-builder.Services.AddControllers().AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<ProductValidator>());
+builder.Services.AddControllers().AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<CategoryValidator>());
+
 
 var app = builder.Build();
 

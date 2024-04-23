@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -29,12 +30,13 @@ namespace SynthShop.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] AddCategoryDTO addCategoryDTO)
         {
-            var categoryDomainModel = _mapper.Map<Category>(addCategoryDTO);
-            var validationResult = _categoryValidator.Validate(categoryDomainModel);
+            var validationResult = _categoryValidator.Validate(addCategoryDTO);
             if (validationResult.IsValid == false)
             {
                 return BadRequest(validationResult.Errors);
             }
+            var categoryDomainModel = _mapper.Map<Category>(addCategoryDTO);
+           
             await _categoryService.CreateAsync(categoryDomainModel);
             return Ok(_mapper.Map<AddCategoryDTO>(categoryDomainModel));
         }
@@ -76,15 +78,16 @@ namespace SynthShop.Controllers
 
         [HttpPut]
         [Route("{id:Guid}")]
-        public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateCategoryDTO updateCategoryDTO)
+        public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] AddCategoryDTO updateCategoryDTO)
         {
-            var categoryDomainModel = _mapper.Map<Category>(updateCategoryDTO);
-
-            var validationResult = _categoryValidator.Validate(categoryDomainModel);
+            var validationResult = _categoryValidator.Validate(updateCategoryDTO);
             if (validationResult.IsValid == false)
             {
                 return BadRequest(validationResult.Errors);
             }
+            var categoryDomainModel = _mapper.Map<Category>(updateCategoryDTO);
+
+          
 
             categoryDomainModel = await _categoryService.UpdateAsync(id, categoryDomainModel);
 
