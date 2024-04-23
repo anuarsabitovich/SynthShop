@@ -5,10 +5,12 @@ namespace SynthShop.Infrastructure.Data.Interfaces
 {
     public interface IOrderRepository 
     {
-        Task<Order> CreateOrder(Guid basketId, Guid customerId);
+        Task<Order?> GetOrderAsync(Guid orderId);
+        
+        Task<Order> CreateOrderAsync(Order order);
 
-        Task CancelOrder(Guid orderID);
+        Task DeleteOrderAsync(Guid orderId);
 
-        Task CompleteOrder(Guid orderId);
+        Task<Order?> UpdateOrderAsync(Guid id, Order order);
     }
 }

@@ -38,6 +38,7 @@ namespace SynthShop.Infrastructure.Data.EntitiesConfiguration
 
             builder.HasQueryFilter(c => !c.IsDeleted);
 
+
         }
 
     }

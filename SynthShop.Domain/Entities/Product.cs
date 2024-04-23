@@ -12,8 +12,8 @@
         public Category Category { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdateAt { get; set; }
-        public uint Version { get; set; }
 
+        public byte[]? Version {get; set; }
 
         public ICollection<OrderItem> OrderItems { get; set; }
     }

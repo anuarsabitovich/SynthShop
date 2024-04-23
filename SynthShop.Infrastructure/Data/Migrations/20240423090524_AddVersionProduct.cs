@@ -5,18 +5,17 @@
 namespace SynthShop.Infrastructure.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class AddVersionToProduct : Migration
+    public partial class AddVersionProduct : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<long>(
+            migrationBuilder.AddColumn<byte[]>(
                 name: "Version",
                 table: "Products",
-                type: "bigint",
+                type: "rowversion",
                 rowVersion: true,
-                nullable: false,
-                defaultValue: 0L);
+                nullable: true);
         }
 
         /// <inheritdoc />

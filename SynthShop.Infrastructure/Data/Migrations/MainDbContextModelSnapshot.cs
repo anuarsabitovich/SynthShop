@@ -33,7 +33,7 @@ namespace SynthShop.Infrastructure.Data.Migrations
 
                     b.HasKey("BasketId");
 
-                    b.ToTable("Baskets", (string)null);
+                    b.ToTable("Baskets");
                 });
 
             modelBuilder.Entity("SynthShop.Domain.Entities.BasketItem", b =>
@@ -57,7 +57,7 @@ namespace SynthShop.Infrastructure.Data.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("BasketItems", (string)null);
+                    b.ToTable("BasketItems");
                 });
 
             modelBuilder.Entity("SynthShop.Domain.Entities.Category", b =>
@@ -91,7 +91,7 @@ namespace SynthShop.Infrastructure.Data.Migrations
 
                     b.HasKey("CategoryID");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("SynthShop.Domain.Entities.Customer", b =>
@@ -135,7 +135,7 @@ namespace SynthShop.Infrastructure.Data.Migrations
 
                     b.HasKey("CustomerID");
 
-                    b.ToTable("Customers", (string)null);
+                    b.ToTable("Customers");
                 });
 
             modelBuilder.Entity("SynthShop.Domain.Entities.Order", b =>
@@ -173,7 +173,7 @@ namespace SynthShop.Infrastructure.Data.Migrations
 
                     b.HasIndex("CustomerID");
 
-                    b.ToTable("Orders", (string)null);
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("SynthShop.Domain.Entities.OrderItem", b =>
@@ -213,7 +213,7 @@ namespace SynthShop.Infrastructure.Data.Migrations
 
                     b.HasIndex("ProductID");
 
-                    b.ToTable("OrderItems", (string)null);
+                    b.ToTable("OrderItems");
                 });
 
             modelBuilder.Entity("SynthShop.Domain.Entities.Product", b =>
@@ -254,16 +254,16 @@ namespace SynthShop.Infrastructure.Data.Migrations
                     b.Property<DateTime?>("UpdateAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<long>("Version")
+                    b.Property<byte[]>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("bigint");
+                        .HasColumnType("rowversion");
 
                     b.HasKey("ProductID");
 
                     b.HasIndex("CategoryID");
 
-                    b.ToTable("Products", (string)null);
+                    b.ToTable("Products");
                 });
 
             modelBuilder.Entity("SynthShop.Domain.Entities.BasketItem", b =>

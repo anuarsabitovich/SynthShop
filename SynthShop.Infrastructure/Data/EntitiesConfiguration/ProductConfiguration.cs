@@ -39,7 +39,7 @@ namespace SynthShop.Infrastructure.Data.EntitiesConfiguration
 
             builder.HasQueryFilter(p => !p.IsDeleted);
 
-            builder.Property(p => p.Version).IsRowVersion();
+            builder.Property(x=> x.Version).IsRowVersion().ValueGeneratedOnAddOrUpdate();
         }
     }
 }

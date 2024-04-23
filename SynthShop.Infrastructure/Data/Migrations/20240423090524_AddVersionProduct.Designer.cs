@@ -12,8 +12,8 @@ using SynthShop.Infrastructure.Data;
 namespace SynthShop.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(MainDbContext))]
-    [Migration("20240422061659_AddVersionToProduct")]
-    partial class AddVersionToProduct
+    [Migration("20240423090524_AddVersionProduct")]
+    partial class AddVersionProduct
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -257,10 +257,10 @@ namespace SynthShop.Infrastructure.Data.Migrations
                     b.Property<DateTime?>("UpdateAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<long>("Version")
+                    b.Property<byte[]>("Version")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("bigint");
+                        .HasColumnType("rowversion");
 
                     b.HasKey("ProductID");
 

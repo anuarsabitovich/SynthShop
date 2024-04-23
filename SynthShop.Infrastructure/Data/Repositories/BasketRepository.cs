@@ -34,7 +34,7 @@ namespace SynthShop.Infrastructure.Data.Repositories
             {
                 throw new InvalidOperationException("Basket not found");
             }
-            basket.Items = await _dbContext.BasketItems.Where(item => item.BasketId == basketId).ToListAsync();
+            basket.Items = await _dbContext.BasketItems.Include(x => x.Product).Where(item => item.BasketId == basketId).ToListAsync();
             return basket;
         }
         public async Task AddItemToBasketAsync(Guid basketId, Guid productId, int quantity)
