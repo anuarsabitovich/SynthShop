@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using SynthShop.Core.Services.Interfaces;
 using SynthShop.Domain.Entities;
 using SynthShop.DTO;
+using SynthShop.Validations;
 
 namespace SynthShop.Controllers
 {
@@ -13,11 +14,13 @@ namespace SynthShop.Controllers
     {
         private readonly IBasketService _basketService;
         private readonly IMapper _mapper;
+        private readonly BasketItemValidator _basketItemValidator;
 
-        public BasketController(IBasketService basketService, IMapper mapper)
+        public BasketController(IBasketService basketService, IMapper mapper, BasketItemValidator basketItemValidator)
         {
             _basketService = basketService;
             _mapper = mapper;
+            _basketItemValidator = basketItemValidator;
         }
 
         [HttpPost]
@@ -51,6 +54,12 @@ namespace SynthShop.Controllers
         [Route("{id:Guid}")]
         public async Task<IActionResult> AddItemToBasket( [FromRoute] Guid id,[FromBody] AddBasketItemDTO addBasketItemDto)
         {
+            var validationResult = await _basketItemValidator.ValidateAsync(addBasketItemDto);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.Errors);
+            }
+            
             await _basketService.AddItemToBasketAsync(id, addBasketItemDto.ProductId, addBasketItemDto.Quantity);
             return Ok("Item added to basket");
         }
@@ -66,9 +75,14 @@ namespace SynthShop.Controllers
         
         [HttpPut]
         [Route("{id:Guid}")]
-        public async Task<IActionResult> UpdateItemInBasket([FromRoute] Guid id, [FromBody] UpdateBaskItemDTO updateBaskItemDto)
+        public async Task<IActionResult> UpdateItemInBasket([FromRoute] Guid id, [FromBody] AddBasketItemDTO updateBaskItemDto)
         {
-            await _basketService.UpdateItemInBasket(id, updateBaskItemDto.BasketItemId, updateBaskItemDto.Quantity);
+            var validationResult = await _basketItemValidator.ValidateAsync(updateBaskItemDto);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.Errors);
+            }
+            await _basketService.UpdateItemInBasket(id, updateBaskItemDto.ProductId, updateBaskItemDto.Quantity);
             return Ok("Item in the basket was updated");
         }
         

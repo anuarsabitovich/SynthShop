@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using SynthShop.Core.Services.Interfaces;
 using SynthShop.Domain.Entities;
 using SynthShop.DTO;
+using SynthShop.Validations;
 
 namespace SynthShop.Controllers
 {
@@ -16,17 +18,25 @@ namespace SynthShop.Controllers
     {
         private readonly ICategoryService _categoryService;
         private readonly IMapper _mapper;
+        private readonly CategoryValidator _categoryValidator;
 
-        public CategoryController(ICategoryService categoryService, IMapper mapper)
+        public CategoryController(ICategoryService categoryService, IMapper mapper, CategoryValidator categoryValidator)
         {
             _categoryService = categoryService;
             _mapper = mapper;
+            _categoryValidator = categoryValidator;
         }
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] AddCategoryDTO addCategoryDTO)
         {
+            var validationResult = _categoryValidator.Validate(addCategoryDTO);
+            if (validationResult.IsValid == false)
+            {
+                return BadRequest(validationResult.Errors);
+            }
             var categoryDomainModel = _mapper.Map<Category>(addCategoryDTO);
+           
             await _categoryService.CreateAsync(categoryDomainModel);
             return Ok(_mapper.Map<AddCategoryDTO>(categoryDomainModel));
         }
@@ -68,9 +78,16 @@ namespace SynthShop.Controllers
 
         [HttpPut]
         [Route("{id:Guid}")]
-        public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateCategoryDTO updateCategoryDTO)
+        public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] AddCategoryDTO updateCategoryDTO)
         {
+            var validationResult = _categoryValidator.Validate(updateCategoryDTO);
+            if (validationResult.IsValid == false)
+            {
+                return BadRequest(validationResult.Errors);
+            }
             var categoryDomainModel = _mapper.Map<Category>(updateCategoryDTO);
+
+          
 
             categoryDomainModel = await _categoryService.UpdateAsync(id, categoryDomainModel);
 

@@ -1,8 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using SynthShop.Infrastructure.Data;
 using AutoMapper;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using SynthShop.Mapper.Profiles;
 using SynthShop.Core.Services;
+using SynthShop.Validations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +20,7 @@ builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddCoreServices(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
 
+builder.Services.AddControllers().AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<CategoryValidator>());
 
 
 var app = builder.Build();
