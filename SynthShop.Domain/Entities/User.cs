@@ -1,8 +1,10 @@
-﻿namespace SynthShop.Domain.Entities
+﻿using Microsoft.AspNetCore.Identity;
+
+namespace SynthShop.Domain.Entities
 {
-    public class Customer
+    public class User : IdentityUser<Guid> 
     {
-        public Guid CustomerID { get; set; }
+        
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Email { get; set; }

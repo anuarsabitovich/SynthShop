@@ -59,7 +59,7 @@ namespace SynthShop.Infrastructure.Data.Repositories
             }
 
             existingOrder.OrderDate = order.OrderDate;
-            existingOrder.CustomerID = order.CustomerID;
+            existingOrder.UserId = order.UserId;
             existingOrder.Status = order.Status;
             existingOrder.TotalAmount = order.TotalAmount;
             existingOrder.OrderItems = order.OrderItems;

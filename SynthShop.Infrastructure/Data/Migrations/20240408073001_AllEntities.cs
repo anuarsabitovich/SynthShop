@@ -89,7 +89,7 @@ namespace SynthShop.Infrastructure.Data.Migrations
                 defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
 
             migrationBuilder.AddColumn<Guid>(
-                name: "CustomerID",
+                name: "UserId",
                 table: "Order",
                 type: "uniqueidentifier",
                 nullable: false,
@@ -168,7 +168,7 @@ namespace SynthShop.Infrastructure.Data.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Order_CustomerID",
                 table: "Order",
-                column: "CustomerID");
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_OrderItem_OrderID",
@@ -183,9 +183,9 @@ namespace SynthShop.Infrastructure.Data.Migrations
             migrationBuilder.AddForeignKey(
                 name: "FK_Order_Customer_CustomerID",
                 table: "Order",
-                column: "CustomerID",
+                column: "UserId",
                 principalTable: "Customer",
-                principalColumn: "CustomerID",
+                principalColumn: "UserId",
                 onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
@@ -246,7 +246,7 @@ namespace SynthShop.Infrastructure.Data.Migrations
                 table: "Order");
 
             migrationBuilder.DropColumn(
-                name: "CustomerID",
+                name: "UserId",
                 table: "Order");
 
             migrationBuilder.RenameTable(

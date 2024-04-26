@@ -11,13 +11,13 @@ namespace SynthShop.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CustomerController : ControllerBase
+    public class UserController : ControllerBase
     {
         private readonly ICustomerService _customerService;
         private readonly IMapper _mapper;
         private readonly CustomerValidator _customerValidator;
 
-        public CustomerController(ICustomerService customerService, IMapper mapper, CustomerValidator customerValidator)
+        public UserController(ICustomerService customerService, IMapper mapper, CustomerValidator customerValidator)
         {
             _customerService = customerService;
             _mapper = mapper;
@@ -34,7 +34,7 @@ namespace SynthShop.Controllers
                 return BadRequest(validationResult.Errors);
             }
 
-            var customer = _mapper.Map<Customer>(addCustomerDTO);
+            var customer = _mapper.Map<User>(addCustomerDTO);
 
             await _customerService.CreateAsync(customer);
             return Ok(_mapper.Map<AddCustomerDTO>(customer));
@@ -73,7 +73,7 @@ namespace SynthShop.Controllers
                 return BadRequest(validationResult.Errors);
             }
             
-            var customer = _mapper.Map<Customer>(updateCustomerDTO);
+            var customer = _mapper.Map<User>(updateCustomerDTO);
 
             customer = await _customerService.UpdateAsync(id, customer);
             

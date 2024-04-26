@@ -105,7 +105,7 @@ namespace SynthShop.Infrastructure.Data.Migrations
             migrationBuilder.AddPrimaryKey(
                 name: "PK_Customers",
                 table: "Customers",
-                column: "CustomerID");
+                column: "UserId");
 
             migrationBuilder.AddPrimaryKey(
                 name: "PK_Categories",
@@ -131,9 +131,9 @@ namespace SynthShop.Infrastructure.Data.Migrations
             migrationBuilder.AddForeignKey(
                 name: "FK_Orders_Customers_CustomerID",
                 table: "Orders",
-                column: "CustomerID",
+                column: "UserId",
                 principalTable: "Customers",
-                principalColumn: "CustomerID",
+                principalColumn: "UserId",
                 onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
@@ -242,7 +242,7 @@ namespace SynthShop.Infrastructure.Data.Migrations
             migrationBuilder.AddPrimaryKey(
                 name: "PK_Customer",
                 table: "Customer",
-                column: "CustomerID");
+                column: "UserId");
 
             migrationBuilder.AddPrimaryKey(
                 name: "PK_Category",
@@ -252,9 +252,9 @@ namespace SynthShop.Infrastructure.Data.Migrations
             migrationBuilder.AddForeignKey(
                 name: "FK_Order_Customer_CustomerID",
                 table: "Order",
-                column: "CustomerID",
+                column: "UserId",
                 principalTable: "Customer",
-                principalColumn: "CustomerID",
+                principalColumn: "UserId",
                 onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
