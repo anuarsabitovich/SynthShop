@@ -17,7 +17,7 @@ namespace SynthShop.Infrastructure.Data
             services.AddDbContext<MainDbContext>(options =>
             options.UseSqlServer(configuration.GetConnectionString("MainDbConnectionString")));
 
-            services.AddIdentityApiEndpoints<User>(options =>
+            services.AddIdentity<User,IdentityRole<Guid>>(options =>
             {
                 options.Password.RequiredLength = 12;
                 options.Password.RequireDigit = true;

@@ -95,7 +95,6 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
-app.MapCustomIdentityApi<User>();
 
 app.MapControllers();
 
