@@ -19,27 +19,27 @@ namespace SynthShop.Core.Services.Impl
             _customerRepository = customerRepository;
         }
 
-        public async Task CreateAsync(Customer customer)
+        public async Task CreateAsync(User user)
         {
-            await _customerRepository.CreateAsync(customer);
+            await _customerRepository.CreateAsync(user);
         }
 
-        public async Task<List<Customer>> GetAllAsync()
+        public async Task<List<User>> GetAllAsync()
         {
             return await _customerRepository.GetAllAsync();
         }
 
-        public async Task<Customer?> GetByIdAsync(Guid id)
+        public async Task<User?> GetByIdAsync(Guid id)
         {
             return await _customerRepository.GetByIdAsync(id);
         }
 
-        public async Task<Customer?> UpdateAsync(Guid id, Customer customer)
+        public async Task<User?> UpdateAsync(Guid id, User user)
         {
-            return await _customerRepository.UpdateAsync(id, customer);
+            return await _customerRepository.UpdateAsync(id, user);
         }
 
-        public async Task<Customer?> DeleteAsync(Guid id)
+        public async Task<User?> DeleteAsync(Guid id)
         {
             return await _customerRepository.DeleteAsync(id);
         }

@@ -14,14 +14,14 @@ namespace SynthShop.Infrastructure.Data.EntitiesConfiguration
                 .HasColumnType("datetime2")
                 .IsRequired();
 
-            builder.Property(o => o.CustomerID)
+            builder.Property(o => o.UserId)
                 .IsRequired();
 
-    
 
-            builder.HasOne(o => o.Customer)
+
+            builder.HasOne(o => o.User)
                 .WithMany(c => c.Orders)
-                .HasForeignKey(o => o.CustomerID)
+                .HasForeignKey(o => o.UserId)
                 .IsRequired();
 
             builder.HasMany(o => o.OrderItems)

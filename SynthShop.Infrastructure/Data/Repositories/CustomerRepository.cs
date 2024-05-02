@@ -15,17 +15,17 @@ namespace SynthShop.Infrastructure.Data.Repositories
             _DbContext = context;
         }
 
-        public async Task<Customer> CreateAsync(Customer customer)
+        public async Task<User> CreateAsync(User user)
         {
-            await _DbContext.AddAsync(customer);
+            await _DbContext.AddAsync(user);
             await _DbContext.SaveChangesAsync();
 
-            return customer;
+            return user;
         }
 
-        public async Task<Customer?> DeleteAsync(Guid id)
+        public async Task<User?> DeleteAsync(Guid id)
         {
-            var existingCustomer = await _DbContext.Customers.FirstOrDefaultAsync(x => x.CustomerID == id);
+            var existingCustomer = await _DbContext.Customers.FirstOrDefaultAsync(x => x.Id == id);
             if (existingCustomer == null)
             {
                 return null;
@@ -36,16 +36,16 @@ namespace SynthShop.Infrastructure.Data.Repositories
             return existingCustomer;
         }
 
-        public Task<List<Customer>> GetAllAsync()
+        public Task<List<User>> GetAllAsync()
         {
             var customers = _DbContext.Customers.AsNoTracking().ToListAsync();
 
             return customers;
         }
 
-        public async Task<Customer?> GetByIdAsync(Guid id)
+        public async Task<User?> GetByIdAsync(Guid id)
         {
-            var existingCustomer = await _DbContext.Customers.FirstOrDefaultAsync(x => x.CustomerID == id);
+            var existingCustomer = await _DbContext.Customers.FirstOrDefaultAsync(x => x.Id == id);
             if (existingCustomer == null)
             {
                 return null;
@@ -53,18 +53,18 @@ namespace SynthShop.Infrastructure.Data.Repositories
             return existingCustomer;
         }
 
-        public async Task<Customer?> UpdateAsync(Guid id, Customer customer)
+        public async Task<User?> UpdateAsync(Guid id, User user)
         {
-            var existingCustomer = await _DbContext.Customers.FirstOrDefaultAsync(x => x.CustomerID == id);
+            var existingCustomer = await _DbContext.Customers.FirstOrDefaultAsync(x => x.Id == id);
 
             if (existingCustomer == null)
             {
                 return null;
             }
-            existingCustomer.FirstName = customer.FirstName;
-            existingCustomer.LastName = customer.LastName;
-            existingCustomer.Email = customer.Email;
-            existingCustomer.Address = customer.Address;
+            existingCustomer.FirstName = user.FirstName;
+            existingCustomer.LastName = user.LastName;
+            existingCustomer.Email = user.Email;
+            existingCustomer.Address = user.Address;
             existingCustomer.UpdateAt = DateTime.UtcNow;
             await _DbContext.SaveChangesAsync();
             return existingCustomer;    

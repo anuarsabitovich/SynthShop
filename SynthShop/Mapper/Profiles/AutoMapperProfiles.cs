@@ -13,9 +13,9 @@ namespace SynthShop.Mapper.Profiles
             CreateMap<CategoryDTO, Category>().ReverseMap();
             CreateMap<UpdateCategoryDTO, Category>().ReverseMap();
 
-            CreateMap<AddCustomerDTO, Customer>().ReverseMap();
-            CreateMap<CustomerDTO, Customer>().ReverseMap();
-            CreateMap<UpdateCustomerDTO, Customer>().ReverseMap();
+            CreateMap<AddCustomerDTO, User>().ReverseMap();
+            CreateMap<CustomerDTO, User>().ReverseMap();
+            CreateMap<UpdateCustomerDTO, User>().ReverseMap();
 
             CreateMap<AddProductDTO, Product>().ReverseMap();
             CreateMap<ProductDTO, Product>().ReverseMap();
@@ -31,6 +31,9 @@ namespace SynthShop.Mapper.Profiles
 
             CreateMap<BasketDTO, Basket>().ReverseMap();
             CreateMap<AddBasketItemDTO, BasketItem>().ReverseMap();
+
+            CreateMap<RegistrationRequest, User>()
+                .ForMember(dest=> dest.UserName, src => src.MapFrom(x => x.Email));
         }
 
     }
