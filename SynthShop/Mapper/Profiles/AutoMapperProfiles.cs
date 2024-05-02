@@ -31,6 +31,9 @@ namespace SynthShop.Mapper.Profiles
 
             CreateMap<BasketDTO, Basket>().ReverseMap();
             CreateMap<AddBasketItemDTO, BasketItem>().ReverseMap();
+
+            CreateMap<RegistrationRequest, User>()
+                .ForMember(dest=> dest.UserName, src => src.MapFrom(x => x.Email));
         }
 
     }

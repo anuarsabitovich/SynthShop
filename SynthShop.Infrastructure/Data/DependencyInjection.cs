@@ -34,7 +34,8 @@ namespace SynthShop.Infrastructure.Data
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IOrderItemRepository, OrderItemRepository>();
             services.AddScoped<IBasketRepository, BasketRepository>();
-
+            services.AddScoped<IAuthRepository, AuthRepository>();
+            
             return services;
         }
     }

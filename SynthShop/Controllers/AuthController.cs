@@ -15,6 +15,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using AutoMapper;
+using SynthShop.Core.Services.Interfaces;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -22,42 +24,27 @@ public class AuthController : ControllerBase
 {
     private readonly UserManager<User> _userManager;
     private readonly IConfiguration _configuration;
+    private readonly IMapper _mapper;
+    private readonly IAuthService _authService;
 
-    public AuthController(UserManager<User> userManager, IConfiguration configuration)
+    public AuthController(UserManager<User> userManager, IConfiguration configuration, IMapper mapper, IAuthService authService)
     {
         _userManager = userManager;
         _configuration = configuration;
-
+        _mapper = mapper;
+        _authService = authService;
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult> Register([FromBody] RegistrationRequest registerRequest,
-        [FromServices] IServiceProvider sp)
+    public async Task<IActionResult> Register([FromBody] RegistrationRequest registerRequest
+        )
+    
     {
-        var userManager = sp.GetRequiredService<UserManager<User>>();
+        var user = _mapper.Map<User>(registerRequest);
 
-
-        var userStore = sp.GetRequiredService<IUserStore<User>>();
-        var emailStore = (IUserEmailStore<User>)userStore;
-        var email = registerRequest.Email;
-
-
-
-        var user = new User();
-        user.FirstName = registerRequest.FirstName;
-        user.LastName = registerRequest.LastName;
-        user.Address = registerRequest.Address;
-        user.Email = registerRequest.Email;
-        await userStore.SetUserNameAsync(user, email, CancellationToken.None);
-        await emailStore.SetEmailAsync(user, email, CancellationToken.None);
-        var result = await userManager.CreateAsync(user, registerRequest.Password);
-
-        if (!result.Succeeded)
-        {
-            return BadRequest(result);
-        }
-
-        return Ok();
+        var result = _authService.RegisterUserAsync(user, registerRequest.Password);
+        
+        return Ok(result.Result);
     }
 
 
@@ -67,51 +54,22 @@ public class AuthController : ControllerBase
     [HttpPost("sign-in")]
     public async Task<IActionResult> SignIn([FromBody] LoginRequest loginRequest)
     {
-        var user = await _userManager.FindByEmailAsync(loginRequest.Email);
 
-        if (user == null)
-        {
-            return Unauthorized(new { Message = "Invalid email or password." });
-        }
+        var result = await _authService.SignInUserAsync(loginRequest);
 
-        var result = await _userManager.CheckPasswordAsync(user, loginRequest.Password);
-
-        if (!result)
-        {
-            return Unauthorized(new { Message = "Invalid email or password." });
-        }
-
-        // User authenticated, generate JWT token
-        var token = GenerateJwtToken(user);
-
-        return Ok(new { Token = token });
+        
+        
+        return Ok( result);
     }
 
-
-    // will be removed from here 
-
-    private string GenerateJwtToken(User user)
+    [HttpPost("refresh")]
+    public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequest refreshRequest)
     {
-        var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.Name, user.UserName),
-            new Claim(ClaimTypes.Email, user.Email),
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-        };
+        var authResponse = await _authService.RefreshTokenAsync(refreshRequest.Token, refreshRequest.RefreshToken);
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:Key"]));
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-        var token = new JwtSecurityToken(
-            issuer: _configuration["JwtSettings:Issuer"],
-            audience: _configuration["JwtSettings:Audience"],
-            claims: claims,
-            expires: DateTime.Now.AddHours(1),
-            signingCredentials: creds
-        );
-
-        return new JwtSecurityTokenHandler().WriteToken(token);
+        return Ok(authResponse);
     }
+        
 }
 
 

@@ -20,7 +20,7 @@ namespace SynthShop.Core.Services
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IBasketService, BasketService>();
-
+            services.AddScoped<IAuthService, AuthService>();
 
             return services;
         }

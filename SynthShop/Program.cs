@@ -16,8 +16,18 @@ using static AuthController;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
+var tokenValidationParameters = new TokenValidationParameters()
+{
+    ValidIssuer = config["JwtSettings:Issuer"],
+    ValidAudience = config["JwtSettings:Audience"],
+    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["JwtSettings:Key"]!)),
+    ValidateIssuer = true,
+    ValidateAudience = true,
+    ValidateLifetime = true,
+    ValidateIssuerSigningKey = true
+};
 
-
+builder.Services.AddSingleton(tokenValidationParameters);
 builder.Services.AddAuthentication(x =>
 {
     x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -26,16 +36,7 @@ builder.Services.AddAuthentication(x =>
 }).AddJwtBearer(x =>
 {
 
-    x.TokenValidationParameters = new TokenValidationParameters()
-    {
-        ValidIssuer = config["JwtSettings:Issuer"],
-        ValidAudience = config["JwtSettings:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["JwtSettings:Key"]!)),
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true
-    };
+    x.TokenValidationParameters = tokenValidationParameters;
 });
 
 // Add services to the container.
@@ -94,7 +95,6 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 
 app.UseAuthorization();
-
 
 app.MapControllers();
 
