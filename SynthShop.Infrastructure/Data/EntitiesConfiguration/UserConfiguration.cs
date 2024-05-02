@@ -36,7 +36,6 @@ namespace SynthShop.Infrastructure.Data.EntitiesConfiguration
             builder.ToTable("User");
 
 
-            //  builder.HasQueryFilter(c => !c.IsDeleted);
 
         }
     }

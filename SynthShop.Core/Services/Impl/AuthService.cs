@@ -170,7 +170,6 @@ namespace SynthShop.Core.Services.Impl
             if (validatedToken == null)
             {
                 return false;
-                // return new AuthenticationResult() { Errors = new[] { "Invalid Token" } };
             }
             var expiryDateUnix =
                 long.Parse(validatedToken.Claims.Single(x => x.Type == JwtRegisteredClaimNames.Exp).Value);
@@ -181,7 +180,6 @@ namespace SynthShop.Core.Services.Impl
             if (expiryDateTimeUtc > DateTime.UtcNow)
             {
                 return false;   
-               // return new AuthenticationResult { Errors = new[] { "Invalid Token" } };
             }
 
             return true;
@@ -192,32 +190,27 @@ namespace SynthShop.Core.Services.Impl
             if (storedRefreshToken == null)
             {
                 return false;
-                //return new AuthenticationResult { Errors = new[] { "This refresh token doesn't exist" } };
             }
 
             if (DateTime.UtcNow > storedRefreshToken.ExpiryDate)
             {
                 return false;
 
-                //return new AuthenticationResult { Errors = new[] { "This refresh token has expired" } };
             }
 
             if (storedRefreshToken.Invalidated)
             {
                 return false;
-                // return new AuthenticationResult { Errors = new[] { "This refresh token has been invalidated" } };
             }
 
             if (storedRefreshToken.Used)
             {
                 return false;
-                //return new AuthenticationResult { Errors = new[] { "This refresh token has been used" } };
             }
 
             if (storedRefreshToken.JwtId != jti)
             {
                 return false;
-            //    return new AuthenticationResult { Errors = new[] { "This refresh token does not match this JWT" } };
             }
 
             return true;

@@ -127,17 +127,17 @@ namespace SynthShop.Infrastructure.Data.Repositories
         public async Task DeleteBasketAsync(Guid basketId)
         {
             var basket = await _dbContext.Baskets
-                .Include(b => b.Items) // Ensure you include the items when fetching the basket
+                .Include(b => b.Items) 
                 .FirstOrDefaultAsync(b => b.BasketId == basketId);
             if (basket == null)
             {
                 throw new InvalidOperationException("Basket doesn't exist");
             }
 
-            // Remove all items explicitly
+    
             _dbContext.BasketItems.RemoveRange(basket.Items);
 
-            // Now remove the basket
+          
             _dbContext.Baskets.Remove(basket);
             await _dbContext.SaveChangesAsync();
         }
