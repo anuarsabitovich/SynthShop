@@ -14,7 +14,7 @@ namespace SynthShop.Mapper.Profiles
             CreateMap<UpdateCategoryDTO, Category>().ReverseMap();
 
             CreateMap<AddCustomerDTO, User>().ReverseMap();
-            CreateMap<CustomerDTO, User>().ReverseMap();
+            CreateMap<CustomerDTO, User>().ForMember(dest => dest.Id, src=> src.MapFrom(x => x.CustomerID)).ReverseMap();
             CreateMap<UpdateCustomerDTO, User>().ReverseMap();
 
             CreateMap<AddProductDTO, Product>().ReverseMap();

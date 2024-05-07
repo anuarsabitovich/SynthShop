@@ -18,7 +18,7 @@ namespace SynthShop.Core.Services.Impl
             _basketRepository = basketRepository;
         }
 
-        public async Task<Order> CreateOrder(Guid basketId, Guid customerId)
+        public async Task<Order> CreateOrder(Guid basketId, Guid customerId) 
         {
             try
             {
@@ -74,6 +74,7 @@ namespace SynthShop.Core.Services.Impl
             }
             catch (DbUpdateConcurrencyException)
             {
+                // warning
                 throw new InvalidOperationException("Failed to create order due to concurrency conflicts.");
             }
         }

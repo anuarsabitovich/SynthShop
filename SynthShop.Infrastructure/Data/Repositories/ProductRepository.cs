@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Serilog;
 using SynthShop.Domain.Entities;
 using SynthShop.Infrastructure.Data;
 using SynthShop.Infrastructure.Data.Interfaces;
@@ -7,62 +8,43 @@ namespace SynthShop.Infrastructure.Data.Repositories
 {
     public class ProductRepository : IProductRepository
     {
+
         private readonly MainDbContext _dbContext;
 
         public ProductRepository(MainDbContext dbContext)
         {
             _dbContext = dbContext;
         }
+
         public async Task<Product> CreateAsync(Product product)
         {
-            await _dbContext.AddAsync(product);
+            await _dbContext.Products.AddAsync(product);
             await _dbContext.SaveChangesAsync();
             return product;
         }
 
         public async Task<List<Product>> GetAllAsync()
         {
-            var products = await _dbContext.Products.AsNoTracking().ToListAsync();
-            return products;
+            return await _dbContext.Products.AsNoTracking().ToListAsync();
         }
 
         public async Task<Product?> GetByIdAsync(Guid id)
         {
-            var existingProduct = await _dbContext.Products.FirstOrDefaultAsync(x => x.ProductID == id);
-            if (existingProduct == null)
-            {
-                return null;
-            }
-            return existingProduct;
+            return await _dbContext.Products.FirstOrDefaultAsync(x => x.ProductID == id);
         }
 
-        public async Task<Product?> UpdateAsync(Guid id, Product product)
+        public async Task<Product?> UpdateAsync(Product product)
         {
-            var existingProduct = await _dbContext.Products.FirstOrDefaultAsync(x => x.ProductID == id);
-            if (existingProduct == null)
-            {
-                return null;
-            }
-            existingProduct.Name = product.Name;
-            existingProduct.Description = product.Description;
-            existingProduct.Price = product.Price;
-            existingProduct.StockQuantity = product.StockQuantity;
-            existingProduct.CategoryID = product.CategoryID;
-            existingProduct.UpdateAt = DateTime.UtcNow;
-
-            return existingProduct;
-        }
-
-        public async Task<Product?> DeleteAsync(Guid id)
-        {
-            var existingProduct = await _dbContext.Products.FirstOrDefaultAsync(x => x.ProductID == id);
-            if (existingProduct == null)
-            {
-                return null;
-            }
-            existingProduct.IsDeleted = true;
+            _dbContext.Products.Update(product);
             await _dbContext.SaveChangesAsync();
-            return existingProduct;
+            return product;
         }
+
+        public async Task<Product?> DeleteAsync(Product product)
+        {
+            await _dbContext.SaveChangesAsync();
+            return product;
+        }
+        
     }
 }

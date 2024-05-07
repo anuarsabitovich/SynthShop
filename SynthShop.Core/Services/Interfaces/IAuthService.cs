@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Identity.Client;
 using SynthShop.Domain.Entities;
-using AuthenticationResult = SynthShop.Domain.Entities.AuthenticationResult;
+using AuthenticationResult = SynthShop.Domain.Results.AuthenticationResult;
 
 namespace SynthShop.Core.Services.Interfaces
 {

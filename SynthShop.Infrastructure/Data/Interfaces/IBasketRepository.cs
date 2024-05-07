@@ -12,12 +12,6 @@ namespace SynthShop.Infrastructure.Data.Interfaces
         Task<Guid> CreateBasketAsync();
         Task<Basket?> GetBasketByIdAsync(Guid basketId);
 
-        Task AddItemToBasketAsync(Guid basketId, Guid productId, int quantity);
-
-        Task DeleteItemFromBasketAsync(Guid basketId, Guid basketItemId);
-
-        Task UpdateItemInBasket(Guid basketId, Guid basketItemId, int quantity);
-
         Task DeleteBasketAsync(Guid basketId);
 
 
