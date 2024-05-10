@@ -100,7 +100,5 @@ namespace SynthShop.Controllers
             _logger.Information("Item in basket {BasketId} was updated", id);
             return Ok("Item in the basket was updated");
         }
-        
-
     }
 }

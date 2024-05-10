@@ -23,16 +23,13 @@ using ILogger = Serilog.ILogger;
 [ApiController]
 public class AuthController : ControllerBase
 {
-    private readonly UserManager<User> _userManager;
-    private readonly IConfiguration _configuration;
+    
     private readonly IMapper _mapper;
     private readonly IAuthService _authService;
     private readonly ILogger _logger;
     
-    public AuthController(UserManager<User> userManager, IConfiguration configuration, IMapper mapper, IAuthService authService, ILogger logger)
+    public AuthController( IMapper mapper, IAuthService authService, ILogger logger)
     {
-        _userManager = userManager;
-        _configuration = configuration;
         _mapper = mapper;
         _authService = authService;
         _logger = logger.ForContext<AuthController>();
