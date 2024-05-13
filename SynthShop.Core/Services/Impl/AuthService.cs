@@ -13,10 +13,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Identity.Client;
 using Microsoft.IdentityModel.Tokens;
+using Serilog;
 using SynthShop.Core.Services.Interfaces;
 using SynthShop.Domain.Entities;
 using SynthShop.Infrastructure.Data.Interfaces;
-using AuthenticationResult = SynthShop.Domain.Entities.AuthenticationResult;
+using AuthenticationResult = SynthShop.Domain.Results.AuthenticationResult;
 
 namespace SynthShop.Core.Services.Impl
 {
@@ -26,18 +27,30 @@ namespace SynthShop.Core.Services.Impl
         private readonly IConfiguration _configuration;
         private readonly TokenValidationParameters _tokenValidationParameters;
         private readonly IAuthRepository _authRepository;
-
-        public AuthService(UserManager<User> userManager, IConfiguration configuration, TokenValidationParameters tokenValidationParameters, IAuthRepository authRepository)
+        private readonly ILogger _logger;
+        
+        public AuthService(UserManager<User> userManager, IConfiguration configuration, TokenValidationParameters tokenValidationParameters, IAuthRepository authRepository, ILogger logger)
         {
             _userManager = userManager;
             _configuration = configuration;
             _tokenValidationParameters = tokenValidationParameters;
             _authRepository = authRepository;
+            _logger = logger;
         }
         public async Task<IdentityResult> RegisterUserAsync(User user, string password)
         {
 
+
+
             var result = await _userManager.CreateAsync(user, password);
+            if (result.Succeeded)
+            {
+                _logger.Information("User {Email} registered successfully", user.Email);
+            }
+            else
+            {
+                _logger.Warning("User registration failed for {Email}. Errors: {Errors}", user.Email, result.Errors);
+            }
 
             return result;
         }
@@ -50,18 +63,20 @@ namespace SynthShop.Core.Services.Impl
 
             if (user == null)
             {
-                throw new Exception("user not found");
+                _logger.Warning("Login failed for email {Email}: user not found", loginRequest.Email);
+                return new AuthenticationResult() { Errors = new[] { "Login Failed" } };
             }
 
             var result = await _userManager.CheckPasswordAsync(user, loginRequest.Password);
 
             if (!result)
             {
-                throw new Exception("password is incorrect");
+                _logger.Warning("Invalid password attempt for user {Email}", loginRequest.Email);
+                return new AuthenticationResult() { Errors = new[] { "Login Failed" } };
             }
 
             var tokenResult = GenerateAuthenticationResultForUser(user);
-
+            _logger.Information("User {Email} signed in successfully", loginRequest.Email);
             return await tokenResult;
         }
 
@@ -71,6 +86,7 @@ namespace SynthShop.Core.Services.Impl
 
             if (!ValidateAccessToken(validatedToken))
             {
+                _logger.Warning("Token validation failed for refresh token {RefreshToken}", refreshToken);
                 return new AuthenticationResult() { Errors = new[] { "Invalid token" } };
             }
           
@@ -83,6 +99,7 @@ namespace SynthShop.Core.Services.Impl
 
             if (!ValidateRefreshToken(storedRefreshToken, jti))
             {
+                _logger.Warning("Refresh token validation failed for {RefreshToken}", refreshToken);
                 return new AuthenticationResult { Errors = new[] { "Invalid refresh token" } };
             }
 
@@ -92,6 +109,7 @@ namespace SynthShop.Core.Services.Impl
             await _authRepository.UpdateRefreshToken(storedRefreshToken);
 
             var user = await _userManager.FindByIdAsync(validatedToken.Claims.Single(x => x.Type == "id").Value);
+            _logger.Information("Token refreshed successfully for user {UserId}", user.Id);
             return await GenerateAuthenticationResultForUser(user);
         }
 

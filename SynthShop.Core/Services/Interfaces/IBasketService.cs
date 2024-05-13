@@ -9,7 +9,7 @@ namespace SynthShop.Core.Services.Interfaces
 {
     public interface IBasketService
     {
-        Task CreateBasketAsync();
+        Task<Guid> CreateBasketAsync();
         Task<Basket?> GetBasketByIdAsync(Guid basketId);
 
         Task AddItemToBasketAsync(Guid basketId, Guid productId, int quantity);

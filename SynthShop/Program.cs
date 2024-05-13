@@ -12,10 +12,18 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using SynthShop.Domain.Entities;
 using Microsoft.OpenApi.Models;
+using Serilog;
 using static AuthController;
+using SynthShop.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
+
+builder.Host.UseSerilog((context, configuration) =>
+    configuration.ReadFrom.Configuration(context.Configuration));
+
+builder.Services.AddExceptionHandler<CustomExceptionHandler>();
+
 var tokenValidationParameters = new TokenValidationParameters()
 {
     ValidIssuer = config["JwtSettings:Issuer"],
@@ -90,6 +98,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+//app.UseSerilogRequestLogging();
+
+app.UseExceptionHandler("/Error");
+app.UseHsts();
 app.UseHttpsRedirection();
 
 app.UseAuthentication();

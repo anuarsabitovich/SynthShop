@@ -15,6 +15,7 @@ namespace SynthShop.Infrastructure.Data.Repositories
 
         public AuthRepository(MainDbContext dbContext)
         {
+            
             _dbContext = dbContext;
         }
 

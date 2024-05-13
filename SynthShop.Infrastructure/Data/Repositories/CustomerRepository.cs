@@ -7,68 +7,44 @@ namespace SynthShop.Infrastructure.Data.Repositories
 {
     public class CustomerRepository : ICustomerRepository
     {
+        private readonly MainDbContext _dbContext;
 
-        private readonly MainDbContext _DbContext;
-
-        public CustomerRepository(MainDbContext context)
+        public CustomerRepository(MainDbContext dbContext)
         {
-            _DbContext = context;
+            _dbContext = dbContext;
         }
 
         public async Task<User> CreateAsync(User user)
         {
-            await _DbContext.AddAsync(user);
-            await _DbContext.SaveChangesAsync();
-
+            await _dbContext.Customers.AddAsync(user);
+            await _dbContext.SaveChangesAsync();
             return user;
         }
 
-        public async Task<User?> DeleteAsync(Guid id)
+        public async Task<List<User>> GetAllAsync()
         {
-            var existingCustomer = await _DbContext.Customers.FirstOrDefaultAsync(x => x.Id == id);
-            if (existingCustomer == null)
-            {
-                return null;
-            }
-
-            existingCustomer.IsDeleted = existingCustomer.IsDeleted ? true : true;
-            await _DbContext.SaveChangesAsync();
-            return existingCustomer;
-        }
-
-        public Task<List<User>> GetAllAsync()
-        {
-            var customers = _DbContext.Customers.AsNoTracking().ToListAsync();
-
-            return customers;
+            return await _dbContext.Customers.AsNoTracking().ToListAsync();
         }
 
         public async Task<User?> GetByIdAsync(Guid id)
         {
-            var existingCustomer = await _DbContext.Customers.FirstOrDefaultAsync(x => x.Id == id);
-            if (existingCustomer == null)
-            {
-                return null;
-            }
-            return existingCustomer;
+            return await _dbContext.Customers.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<User?> UpdateAsync(Guid id, User user)
+        public async Task<User?> UpdateAsync(User user)
         {
-            var existingCustomer = await _DbContext.Customers.FirstOrDefaultAsync(x => x.Id == id);
+            _dbContext.Customers.Update(user);
+            await _dbContext.SaveChangesAsync();
+            return user;
+        }
 
-            if (existingCustomer == null)
-            {
-                return null;
-            }
-            existingCustomer.FirstName = user.FirstName;
-            existingCustomer.LastName = user.LastName;
-            existingCustomer.Email = user.Email;
-            existingCustomer.Address = user.Address;
-            existingCustomer.UpdateAt = DateTime.UtcNow;
-            await _DbContext.SaveChangesAsync();
-            return existingCustomer;    
-
+        public async Task<User?> DeleteAsync(User user)
+        {
+            user.IsDeleted = true;
+            await _dbContext.SaveChangesAsync();
+            return user;
         }
     }
+
+
 }

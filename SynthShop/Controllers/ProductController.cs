@@ -8,6 +8,7 @@ using SynthShop.Core.Services.Interfaces;
 using SynthShop.Domain.Entities;
 using SynthShop.DTO;
 using SynthShop.Validations;
+using ILogger = Serilog.ILogger;
 
 namespace SynthShop.Controllers
 {
@@ -19,12 +20,14 @@ namespace SynthShop.Controllers
         private readonly IProductService _productService;
         private readonly IMapper _mapper;
         private readonly ProductValidator _productValidator;
+        private readonly ILogger _logger;
 
-        public ProductController(IProductService productService, IMapper mapper, ProductValidator productValidator)
+        public ProductController(IProductService productService, IMapper mapper, ProductValidator productValidator, ILogger logger)
         {
             _productService = productService;
             _mapper = mapper;
             _productValidator = productValidator;
+            _logger = logger.ForContext<ProductController>();
         }
 
         [HttpPost]
@@ -34,11 +37,13 @@ namespace SynthShop.Controllers
 
             if (!validationResult.IsValid)
             {
+                _logger.Warning("Validation failed for creating product. Errors: {@ValidationErrors}", validationResult.Errors);
                 return BadRequest(validationResult.Errors);
             }
             var product = _mapper.Map<Product>(addProductDTO);
 
             await _productService.CreateAsync(product);
+            _logger.Information("Successfully created product {@Product}", product);
             return Ok(_mapper.Map<AddProductDTO>(product));
         }
 
@@ -59,9 +64,10 @@ namespace SynthShop.Controllers
 
             if (product == null)
             {
+                _logger.Warning("Product not found with ID {ProductId}", id);
                 return NotFound();
             }
-
+            _logger.Information("Retrieved product {@Product}", product);
             return Ok(_mapper.Map<ProductDTO>(product));
         }
 
@@ -73,6 +79,7 @@ namespace SynthShop.Controllers
 
             if (!validationResult.IsValid)
             {
+                _logger.Warning("Validation failed for updating product. Errors: {@ValidationErrors}", validationResult.Errors);
                 return BadRequest(validationResult.Errors);
             }
 
@@ -82,9 +89,11 @@ namespace SynthShop.Controllers
 
             if (product == null)
             {
+                _logger.Warning("Failed to update product with ID {ProductId}", id);
                 return NotFound();
             }
 
+            _logger.Information("Successfully updated product {@Product}", product);
             return Ok(_mapper.Map<UpdateProductDTO>(product));
         }
 
@@ -96,9 +105,10 @@ namespace SynthShop.Controllers
 
             if (deletedProduct == null)
             {
+                _logger.Warning("Failed to delete product with ID {ProductId}", id);
                 return NotFound();
             }
-
+            _logger.Information("Successfully deleted product with ID {ProductId}", id);
             return Ok(_mapper.Map<ProductDTO>(deletedProduct));
         }
     }

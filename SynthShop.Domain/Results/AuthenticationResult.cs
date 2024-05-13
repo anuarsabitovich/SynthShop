@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SynthShop.Domain.Entities
+namespace SynthShop.Domain.Results
 {
     public class AuthenticationResult
     {
         public string Token { get; set; }
         public string RefreshToken { get; set; }
-        public bool Success {get; set; }
-        public IEnumerable<string> Errors { get; set; }
+        public bool Success { get; set; }
+        public IEnumerable<string> Errors { get; set; } = Enumerable.Empty<string>();
     }
 }

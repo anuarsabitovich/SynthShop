@@ -1,4 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Serilog;
 using SynthShop.Domain.Entities;
 using SynthShop.Infrastructure.Data;
 using SynthShop.Infrastructure.Data.Interfaces;
@@ -8,66 +12,46 @@ namespace SynthShop.Infrastructure.Data.Repositories
     public class CategoryRepository : ICategoryRepository
     {
         private readonly MainDbContext _dbContext;
+        private readonly ILogger _logger;
 
-        public CategoryRepository(MainDbContext dbContext)
+        public CategoryRepository(MainDbContext dbContext, ILogger logger)
         {
             _dbContext = dbContext;
+            _logger = logger.ForContext<CategoryRepository>();
         }
 
         public async Task<Category> CreateAsync(Category category)
         {
-            await _dbContext.AddAsync(category);
+            await _dbContext.Categories.AddAsync(category);
             await _dbContext.SaveChangesAsync();
+            _logger.Information("Category created with ID {CategoryId}", category.CategoryID);
             return category;
         }
+
         public async Task<List<Category>> GetAllAsync()
         {
-
-            var categories = await _dbContext.Categories.AsNoTracking().ToListAsync();
-
-            return  categories;
+            return await _dbContext.Categories.AsNoTracking().ToListAsync();
         }
-
-        public async Task<Category?> DeleteAsync(Guid id)
-        {
-            var existingCategory = await _dbContext.Categories.FirstOrDefaultAsync(x => x.CategoryID == id);
-            if (existingCategory == null)
-            {
-                return null;
-            }
-
-            existingCategory.IsDeleted = true;
-            await _dbContext.SaveChangesAsync();
-            return existingCategory;
-        }
-
-       
 
         public async Task<Category?> GetByIdAsync(Guid id)
         {
-            var existingCategory = await _dbContext.Categories.FirstOrDefaultAsync(x => x.CategoryID == id);
-            if (existingCategory == null)
-            {
-                return null;
-            }
-            return existingCategory;
+            return await _dbContext.Categories.FirstOrDefaultAsync(x => x.CategoryID == id);
         }
 
-        public async Task<Category?> UpdateAsync(Guid id, Category category)
+        public async Task<Category?> UpdateAsync(Category category)
         {
-            var existingCategory = await _dbContext.Categories.FirstOrDefaultAsync(x => x.CategoryID == id);
-
-            if(existingCategory == null)
-            {
-                return null;
-            }
-            existingCategory.Name = category.Name;
-            existingCategory.Description = category.Description;
-            existingCategory.UpdateAt = DateTime.UtcNow;
+            _dbContext.Categories.Update(category);
             await _dbContext.SaveChangesAsync();
+            _logger.Information("Category updated with ID {CategoryId}", category.CategoryID);
             return category;
         }
 
-      
+        public async Task<Category?> DeleteAsync(Category category)
+        {
+            category.IsDeleted = true;
+            await _dbContext.SaveChangesAsync();
+            _logger.Information("Category marked as deleted with ID {CategoryId}", category.CategoryID);
+            return category;
+        }
     }
 }
