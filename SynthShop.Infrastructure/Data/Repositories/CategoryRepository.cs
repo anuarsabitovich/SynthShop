@@ -28,9 +28,16 @@ namespace SynthShop.Infrastructure.Data.Repositories
             return category;
         }
 
-        public async Task<List<Category>> GetAllAsync()
+        public async Task<List<Category>> GetAllAsync(string? sortBy, bool? IsAscending = true)
         {
-            return await _dbContext.Categories.AsNoTracking().ToListAsync();
+            var categories = _dbContext.Categories.AsQueryable();
+
+            if (sortBy.Equals("Name", StringComparison.OrdinalIgnoreCase))
+            {
+                categories = IsAscending?? true ? categories.OrderBy(x => x.Name) : categories.OrderByDescending(x => x.Name);
+            }
+            
+            return await categories.ToListAsync();
         }
 
         public async Task<Category?> GetByIdAsync(Guid id)

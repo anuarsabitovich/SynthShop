@@ -96,9 +96,10 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseSerilogRequestLogging();
+
 }
 
-//app.UseSerilogRequestLogging();
 
 app.UseExceptionHandler("/Error");
 app.UseHsts();

@@ -46,9 +46,12 @@ namespace SynthShop.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(
+            [FromQuery] string? filterOn, [FromQuery] string? filterQuery,
+            [FromQuery] string? sortBy, [FromQuery] bool? IsAscending,
+            [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 1000)
         {
-            var customers = await _customerService.GetAllAsync();
+            var customers = await _customerService.GetAllAsync(filterOn, filterQuery, sortBy, IsAscending ?? true, pageNumber, pageSize);
             return Ok(_mapper.Map<List<CustomerDTO>>(customers));
         }
 
@@ -103,7 +106,6 @@ namespace SynthShop.Controllers
 
             if (deletedCustomer == null)
             {
-                _logger.Warning("Failed to delete user with ID {UserId}", id);
                 return NotFound();
             }
             _logger.Information("Deleted user with ID {UserId}", id);

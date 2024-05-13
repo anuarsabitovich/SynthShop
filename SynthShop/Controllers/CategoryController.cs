@@ -42,7 +42,7 @@ namespace SynthShop.Controllers
             var categoryDomainModel = _mapper.Map<Category>(addCategoryDTO);
             
             await _categoryService.CreateAsync(categoryDomainModel);
-            _logger.Information("Successfully created a new category with ID {@CategoryId}", addCategoryDTO);
+            _logger.Information("Successfully created a new category {Category}", addCategoryDTO.Name);
             return Ok(_mapper.Map<AddCategoryDTO>(categoryDomainModel));
         }
 
@@ -54,7 +54,6 @@ namespace SynthShop.Controllers
 
             if (deletedCategory == null)
             {
-                _logger.Warning("Failed to find category with ID {CategoryId} to delete", id);
                 return NotFound();
             }
             _logger.Information("Successfully deleted category with ID {CategoryId}", id);
@@ -62,10 +61,12 @@ namespace SynthShop.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(
+            [FromQuery] string? sortBy, [FromQuery] bool? IsAscending
+            )
         {
             
-            var categories = await _categoryService.GetAllAsync();
+            var categories = await _categoryService.GetAllAsync(sortBy, IsAscending);
             return Ok(_mapper.Map<List<CategoryDTO>>(categories));
         }
 

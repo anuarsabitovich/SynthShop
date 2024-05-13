@@ -1,4 +1,5 @@
-﻿using SynthShop.Domain.Entities;
+﻿using Microsoft.AspNetCore.Mvc;
+using SynthShop.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ namespace SynthShop.Core.Services.Interfaces
     public interface ICategoryService
     {
         Task CreateAsync(Category category);
-        Task<List<Category>> GetAllAsync();
+        Task<List<Category>> GetAllAsync(string? sortBy = null, bool? IsAscending= true);
         Task<Category?> GetByIdAsync(Guid id);
         Task<Category?> UpdateAsync(Guid id, Category category);
         Task<Category?> DeleteAsync(Guid id);

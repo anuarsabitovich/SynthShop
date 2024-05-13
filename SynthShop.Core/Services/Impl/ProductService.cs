@@ -31,21 +31,16 @@ namespace SynthShop.Core.Services.Impl
             _logger.Information("Product created with ID {ProductId}", product.ProductID);
         }
 
-        public async Task<List<Product>> GetAllAsync()
+        public async Task<List<Product>> GetAllAsync(string? filterOn = null, string? filterQuery = null, 
+            string? sortBy = null, bool? IsAscending = true,
+            int pageNumber = 1, int pageSize = 1000)
         {
-            return await _productRepository.GetAllAsync();
+            return await _productRepository.GetAllAsync(filterOn, filterQuery, sortBy, IsAscending ?? true, pageNumber, pageSize);
         }
 
         public async Task<Product?> GetByIdAsync(Guid id)
         {
-            var product = await _productRepository.GetByIdAsync(id);
-            if (product == null)
-            {
-                _logger.Warning("Product with ID {ProductId} not found", id);
-                return null;
-            }
-
-            return product;
+            return await _productRepository.GetByIdAsync(id);
         }
 
         public async Task<Product?> UpdateAsync(Guid id, Product updatedProduct)

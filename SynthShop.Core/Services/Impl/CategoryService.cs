@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Serilog;
 using SynthShop.Core.Services.Interfaces;
 using SynthShop.Domain.Entities;
@@ -21,11 +22,6 @@ namespace SynthShop.Core.Services.Impl
 
         public async Task CreateAsync(Category category)
         {
-            if (category == null)
-            {
-                _logger.Warning("Attempted to create a null category");
-                return;
-            }
 
             var existingCategory = await _categoryRepository.GetAllAsync();
             if (existingCategory.Exists(x => x.Name.Equals(category.Name, StringComparison.OrdinalIgnoreCase)))
@@ -38,21 +34,14 @@ namespace SynthShop.Core.Services.Impl
             _logger.Information("Category created with ID {CategoryId}", category.CategoryID);
         }
 
-        public async Task<List<Category>> GetAllAsync()
+        public async Task<List<Category>> GetAllAsync(string? sortBy, bool? IsAscending)
         {
-            return await _categoryRepository.GetAllAsync();
+            return await _categoryRepository.GetAllAsync(sortBy, IsAscending ?? true);
         }
 
         public async Task<Category?> GetByIdAsync(Guid id)
         {
-            var category = await _categoryRepository.GetByIdAsync(id);
-            if (category == null)
-            {
-                _logger.Warning("Category with ID {CategoryId} not found", id);
-                return null;
-            }
-
-            return category;
+            return await _categoryRepository.GetByIdAsync(id);
         }
 
         public async Task<Category?> UpdateAsync(Guid id, Category updatedCategory)

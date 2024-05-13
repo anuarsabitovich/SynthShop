@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using AutoMapper;
 using SynthShop.Core.Services.Interfaces;
+using SynthShop.Validations;
 using ILogger = Serilog.ILogger;
 
 [Route("api/[controller]")]
@@ -27,18 +28,26 @@ public class AuthController : ControllerBase
     private readonly IMapper _mapper;
     private readonly IAuthService _authService;
     private readonly ILogger _logger;
+    private readonly RegistrationRequestValidator _registrationRequestValidator;
     
-    public AuthController( IMapper mapper, IAuthService authService, ILogger logger)
+    public AuthController( IMapper mapper, IAuthService authService, ILogger logger, RegistrationRequestValidator registrationRequestValidator)
     {
         _mapper = mapper;
         _authService = authService;
+        _registrationRequestValidator = registrationRequestValidator;
         _logger = logger.ForContext<AuthController>();
     }
 
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegistrationRequest registerRequest)
-    
     {
+        var validationResult = _registrationRequestValidator.Validate(registerRequest);
+        if (validationResult.IsValid == false)
+        {
+            _logger.Warning("Validation failed for creating user. Errors: {@ValidationErrors}", validationResult.Errors);
+            return BadRequest(validationResult.Errors);
+        }
+
         var user = _mapper.Map<User>(registerRequest);
 
         var result = _authService.RegisterUserAsync(user, registerRequest.Password);
@@ -78,10 +87,8 @@ public class AuthController : ControllerBase
 
         if (authResponse.Errors.Any())
         {
-            _logger.Warning("{token} failed to login", refreshRequest.Token);
             return BadRequest(authResponse.Errors);
         }
-        _logger.Information("Token {token} successfully refreshed", refreshRequest.Token);
         return Ok(authResponse);
     }
         

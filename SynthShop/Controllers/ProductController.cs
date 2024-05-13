@@ -48,11 +48,15 @@ namespace SynthShop.Controllers
         }
 
         [HttpGet]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme) ]
+       // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme) ]
 
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(
+           [FromQuery] string? filterOn, [FromQuery] string? filterQuery, 
+           [FromQuery] string? sortBy, [FromQuery] bool? IsAscending,
+           [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 1000
+           )
         {
-            var products = await _productService.GetAllAsync();
+            var products = await _productService.GetAllAsync(filterOn,filterQuery, sortBy, IsAscending?? true, pageNumber, pageSize );
             return Ok(_mapper.Map<List<ProductDTO>>(products));
         }
 
@@ -105,7 +109,6 @@ namespace SynthShop.Controllers
 
             if (deletedProduct == null)
             {
-                _logger.Warning("Failed to delete product with ID {ProductId}", id);
                 return NotFound();
             }
             _logger.Information("Successfully deleted product with ID {ProductId}", id);

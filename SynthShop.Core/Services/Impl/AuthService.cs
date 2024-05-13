@@ -49,7 +49,7 @@ namespace SynthShop.Core.Services.Impl
             }
             else
             {
-                _logger.Warning("User registration failed for {Email}. Errors: {Errors}", user.Email, result.Errors);
+                _logger.Error("User registration failed for {Email}. Errors: {@Errors}", user.Email, result.Errors);
             }
 
             return result;
@@ -86,7 +86,6 @@ namespace SynthShop.Core.Services.Impl
 
             if (!ValidateAccessToken(validatedToken))
             {
-                _logger.Warning("Token validation failed for refresh token {RefreshToken}", refreshToken);
                 return new AuthenticationResult() { Errors = new[] { "Invalid token" } };
             }
           
@@ -99,7 +98,6 @@ namespace SynthShop.Core.Services.Impl
 
             if (!ValidateRefreshToken(storedRefreshToken, jti))
             {
-                _logger.Warning("Refresh token validation failed for {RefreshToken}", refreshToken);
                 return new AuthenticationResult { Errors = new[] { "Invalid refresh token" } };
             }
 

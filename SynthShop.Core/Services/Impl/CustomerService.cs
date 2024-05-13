@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading.Tasks;
 using Serilog;
 using SynthShop.Core.Services.Interfaces;
@@ -21,31 +22,20 @@ namespace SynthShop.Core.Services.Impl
 
         public async Task CreateAsync(User user)
         {
-            if (user == null)
-            {
-                _logger.Warning("Attempted to create a null customer");
-                return;
-            }
-
             await _customerRepository.CreateAsync(user);
             _logger.Information("Customer created with ID {CustomerId}", user.Id);
         }
 
-        public async Task<List<User>> GetAllAsync()
+        public async Task<List<User>> GetAllAsync(string? filterOn = null, string? filterQuery = null,
+            string? sortBy = null, bool? IsAscending = true,
+            int pageNumber = 1, int pageSize = 1000)
         {
-            return await _customerRepository.GetAllAsync();
+            return await _customerRepository.GetAllAsync(filterOn, filterQuery, sortBy, IsAscending ?? true, pageNumber, pageSize);
         }
 
         public async Task<User?> GetByIdAsync(Guid id)
         {
-            var customer = await _customerRepository.GetByIdAsync(id);
-            if (customer == null)
-            {
-                _logger.Warning("Customer with ID {CustomerId} not found", id);
-                return null;
-            }
-
-            return customer;
+            return await _customerRepository.GetByIdAsync(id);
         }
 
         public async Task<User?> UpdateAsync(Guid id, User updatedUser)

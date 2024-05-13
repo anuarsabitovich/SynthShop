@@ -35,14 +35,7 @@ namespace SynthShop.Core.Services.Impl
 
         public async Task<Basket?> GetBasketByIdAsync(Guid basketId)
         {
-
-            var basket = await _basketRepository.GetBasketByIdAsync(basketId);
-            if (basket == null)
-            {
-                _logger.Warning("Basket with ID {BasketId} not found", basketId);
-                return null;
-            }
-            return basket;
+            return await _basketRepository.GetBasketByIdAsync(basketId);
         }
         public async Task AddItemToBasketAsync(Guid basketId, Guid productId, int quantity)
         {
