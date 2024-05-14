@@ -6,6 +6,7 @@ using Serilog.Core;
 using SynthShop.Core.Services.Interfaces;
 using SynthShop.Domain.Entities;
 using SynthShop.DTO;
+using SynthShop.Queries;
 using SynthShop.Validations;
 using ILogger = Serilog.ILogger;
 
@@ -61,11 +62,7 @@ namespace SynthShop.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll(
-            [FromQuery] string? searchTerm,
-            [FromQuery] string? sortBy, [FromQuery] bool? isAscending,
-            [FromQuery] QueryParameters queryParameters
-            )
+        public async Task<IActionResult> GetAll([FromQuery] SearchQueryParameters searchQueryParameters)
         {
 
             if (!ModelState.IsValid)
@@ -73,7 +70,7 @@ namespace SynthShop.Controllers
                 return BadRequest(ModelState);
             }
             
-            var categories = await _categoryService.GetAllAsync(searchTerm, sortBy, isAscending ?? true, queryParameters.PageNumber, queryParameters.PageSize);
+            var categories = await _categoryService.GetAllAsync(searchQueryParameters.SearchTerm, searchQueryParameters.SortBy, searchQueryParameters.IsAscending ?? true, searchQueryParameters.PageNumber, searchQueryParameters.PageSize);
             return Ok(_mapper.Map<List<CategoryDTO>>(categories));
         }
 

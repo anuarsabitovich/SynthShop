@@ -1,9 +1,10 @@
 ﻿using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using SynthShop.Domain.Entities;
+using SynthShop.Domain.Extensions;
 using SynthShop.Infrastructure.Data;
 using SynthShop.Infrastructure.Data.Interfaces;
-using X.PagedList;
+
 
 namespace SynthShop.Infrastructure.Data.Repositories
 {
@@ -23,7 +24,7 @@ namespace SynthShop.Infrastructure.Data.Repositories
             return user;
         }
 
-        public async Task<IPagedList<User>> GetAllAsync(Expression<Func<User, bool>>? filter = null,
+        public async Task<PagedList<User>> GetAllAsync(Expression<Func<User, bool>>? filter = null,
             string? sortBy = null, bool IsAscending = true,
             int pageNumber = 1, int pageSize = 1000,
             string? includeProperties = null)
@@ -63,7 +64,7 @@ namespace SynthShop.Infrastructure.Data.Repositories
                 }
             }
             
-            return await customers.ToPagedListAsync(pageNumber, pageSize);
+            return customers.ToPagedList(pageNumber, pageSize);
         }
 
         public async Task<User?> GetByIdAsync(Guid id)

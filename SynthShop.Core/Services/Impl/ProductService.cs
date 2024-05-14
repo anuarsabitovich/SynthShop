@@ -5,8 +5,9 @@ using System.Threading.Tasks;
 using Serilog;
 using SynthShop.Core.Services.Interfaces;
 using SynthShop.Domain.Entities;
+using SynthShop.Domain.Extensions;
 using SynthShop.Infrastructure.Data.Interfaces;
-using X.PagedList;
+
 
 namespace SynthShop.Core.Services.Impl
 {
@@ -33,7 +34,7 @@ namespace SynthShop.Core.Services.Impl
             _logger.Information("Product created with ID {ProductId}", product.ProductID);
         }
 
-        public async Task<IPagedList<Product>> GetAllAsync( string? searchTerm = null, 
+        public async Task<PagedList<Product>> GetAllAsync( string? searchTerm = null, 
             string? sortBy = null, bool? isAscending = true,
             int pageNumber = 1, int pageSize = 1000)
         {

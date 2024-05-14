@@ -17,7 +17,6 @@
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="Serilog.AspNetCore" Version="8.0.1" />
-		<PackageReference Include="X.PagedList" Version="9.1.2" />
 	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\SynthShop.Domain\SynthShop.Domain.csproj" />

@@ -6,8 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 using Serilog;
 using SynthShop.Core.Services.Interfaces;
 using SynthShop.Domain.Entities;
+using SynthShop.Domain.Extensions;
 using SynthShop.Infrastructure.Data.Interfaces;
-using X.PagedList;
+
 
 namespace SynthShop.Core.Services.Impl
 {
@@ -26,7 +27,7 @@ namespace SynthShop.Core.Services.Impl
         {
 
             var existingCategory = await _categoryRepository.GetAllAsync();
-            if (existingCategory.Exists(x => x.Name.Equals(category.Name, StringComparison.OrdinalIgnoreCase)))
+            if (existingCategory.Items.Exists(x => x.Name.Equals(category.Name, StringComparison.OrdinalIgnoreCase)))
             {
                 _logger.Warning("Attempted to create a category with a duplicate name: {CategoryName}", category.Name);
                 throw new InvalidOperationException($"Category with name '{category.Name}' already exists.");
@@ -36,7 +37,7 @@ namespace SynthShop.Core.Services.Impl
             _logger.Information("Category created with ID {CategoryId}", category.CategoryID);
         }
 
-        public async Task<IPagedList<Category>> GetAllAsync(string? searchTerm = null,
+        public async Task<PagedList<Category>> GetAllAsync(string? searchTerm = null,
             string? sortBy = null, bool? isAscending = true,
             int pageNumber = 1, int pageSize = 1000)
         {

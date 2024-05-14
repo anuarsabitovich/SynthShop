@@ -6,10 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 using SynthShop.Core.Services.Impl;
 using SynthShop.Core.Services.Interfaces;
 using SynthShop.Domain.Entities;
+using SynthShop.Domain.Extensions;
 using SynthShop.DTO;
-using SynthShop.Extensions;
+using SynthShop.Queries;
 using SynthShop.Validations;
-using X.PagedList;
+
 using ILogger = Serilog.ILogger;
 
 namespace SynthShop.Controllers
@@ -54,9 +55,8 @@ namespace SynthShop.Controllers
 
         public async Task<IActionResult> GetAll( 
            //TODO validate inputs 
-           [FromQuery] string? searchTerm, 
-           [FromQuery] string? sortBy, [FromQuery] bool? isAscending,
-           [FromQuery] QueryParameters queryParameters
+           
+           [FromQuery] SearchQueryParameters searchQueryParameters
            )
         {
             if (!ModelState.IsValid)
@@ -64,8 +64,8 @@ namespace SynthShop.Controllers
                 return BadRequest(ModelState);
             }
             
-            var products = await _productService.GetAllAsync(searchTerm, sortBy, isAscending?? true, queryParameters.PageNumber, queryParameters.PageSize);
-            return Ok(products.ToMappedPagedList<Product, ProductDTO>(_mapper));
+            var products = await _productService.GetAllAsync(searchQueryParameters.SearchTerm, searchQueryParameters.SortBy, searchQueryParameters.IsAscending ?? true, searchQueryParameters.PageNumber, searchQueryParameters.PageSize);
+            return Ok(_mapper.Map<PagedList<Product>, PagedList<ProductDTO>>(products));
         }
 
         [HttpGet]

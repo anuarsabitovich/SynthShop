@@ -7,6 +7,7 @@ using SynthShop.DTO;
 using SynthShop.Core.Services.Interfaces;
 using SynthShop.Validations;
 using ILogger = Serilog.ILogger;
+using SynthShop.Queries;
 
 namespace SynthShop.Controllers
 {
@@ -47,17 +48,14 @@ namespace SynthShop.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll(
-            [FromQuery] string? searchTerm,
-            [FromQuery] string? sortBy, [FromQuery] bool? IsAscending,
-            [FromQuery] QueryParameters queryParameters)
+        public async Task<IActionResult> GetAll([FromQuery] SearchQueryParameters searchQueryParameters)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
             
-            var customers = await _customerService.GetAllAsync(searchTerm, sortBy, IsAscending ?? true, queryParameters.PageNumber, queryParameters.PageSize);
+            var customers = await _customerService.GetAllAsync(searchQueryParameters.SearchTerm, searchQueryParameters.SortBy, searchQueryParameters.IsAscending ?? true, searchQueryParameters.PageNumber, searchQueryParameters.PageSize);
             return Ok(_mapper.Map<List<CustomerDTO>>(customers));
         }
 

@@ -1,8 +1,9 @@
 ﻿using FluentValidation;
+using SynthShop.Queries;
 
 namespace SynthShop.Validations
 {
-    public class QueryParametersValidator : AbstractValidator<QueryParameters>
+    public class QueryParametersValidator : AbstractValidator<SearchQueryParameters>
     {
         public QueryParametersValidator()
         {

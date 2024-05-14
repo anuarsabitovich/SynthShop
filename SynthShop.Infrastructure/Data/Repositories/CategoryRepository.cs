@@ -5,9 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using SynthShop.Domain.Entities;
+using SynthShop.Domain.Extensions;
 using SynthShop.Infrastructure.Data;
 using SynthShop.Infrastructure.Data.Interfaces;
-using X.PagedList;
+
 
 namespace SynthShop.Infrastructure.Data.Repositories
 {
@@ -30,7 +31,7 @@ namespace SynthShop.Infrastructure.Data.Repositories
             return category;
         }
 
-        public async Task<IPagedList<Category>> GetAllAsync(Expression<Func<Category, bool>> filter = null,
+        public async Task<PagedList<Category>> GetAllAsync(Expression<Func<Category, bool>> filter = null,
             string? sortBy = null, bool isAscending = true,
             int pageNumber = 1, int pageSize = 1000, string? includeProperties = null)
         {
@@ -59,7 +60,7 @@ namespace SynthShop.Infrastructure.Data.Repositories
                 }
             }
             
-            return await categories.ToPagedListAsync(pageNumber, pageSize);
+            return categories.ToPagedList(pageNumber, pageSize);
         }
 
         public async Task<Category?> GetByIdAsync(Guid id)
