@@ -5,6 +5,7 @@ using SynthShop.Core.Services.Impl;
 using SynthShop.Domain.Entities;
 using SynthShop.DTO;
 using SynthShop.Core.Services.Interfaces;
+using SynthShop.Domain.Extensions;
 using SynthShop.Validations;
 using ILogger = Serilog.ILogger;
 using SynthShop.Queries;
@@ -56,7 +57,7 @@ namespace SynthShop.Controllers
             }
             
             var customers = await _customerService.GetAllAsync(searchQueryParameters.SearchTerm, searchQueryParameters.SortBy, searchQueryParameters.IsAscending ?? true, searchQueryParameters.PageNumber, searchQueryParameters.PageSize);
-            return Ok(_mapper.Map<List<CustomerDTO>>(customers));
+            return Ok(_mapper.Map<PagedList<CustomerDTO>>(customers));
         }
 
         [HttpGet]

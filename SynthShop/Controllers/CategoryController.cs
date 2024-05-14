@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Serilog.Core;
 using SynthShop.Core.Services.Interfaces;
 using SynthShop.Domain.Entities;
+using SynthShop.Domain.Extensions;
 using SynthShop.DTO;
 using SynthShop.Queries;
 using SynthShop.Validations;
@@ -71,7 +72,7 @@ namespace SynthShop.Controllers
             }
             
             var categories = await _categoryService.GetAllAsync(searchQueryParameters.SearchTerm, searchQueryParameters.SortBy, searchQueryParameters.IsAscending ?? true, searchQueryParameters.PageNumber, searchQueryParameters.PageSize);
-            return Ok(_mapper.Map<List<CategoryDTO>>(categories));
+            return Ok(_mapper.Map<PagedList<CategoryDTO>>(categories));
         }
 
         [HttpGet]

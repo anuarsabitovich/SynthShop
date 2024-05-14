@@ -65,7 +65,7 @@ namespace SynthShop.Controllers
             }
             
             var products = await _productService.GetAllAsync(searchQueryParameters.SearchTerm, searchQueryParameters.SortBy, searchQueryParameters.IsAscending ?? true, searchQueryParameters.PageNumber, searchQueryParameters.PageSize);
-            return Ok(_mapper.Map<PagedList<Product>, PagedList<ProductDTO>>(products));
+            return Ok(_mapper.Map<PagedList<ProductDTO> >(products));
         }
 
         [HttpGet]
