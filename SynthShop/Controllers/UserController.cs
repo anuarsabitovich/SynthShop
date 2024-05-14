@@ -5,8 +5,10 @@ using SynthShop.Core.Services.Impl;
 using SynthShop.Domain.Entities;
 using SynthShop.DTO;
 using SynthShop.Core.Services.Interfaces;
+using SynthShop.Domain.Extensions;
 using SynthShop.Validations;
 using ILogger = Serilog.ILogger;
+using SynthShop.Queries;
 
 namespace SynthShop.Controllers
 {
@@ -17,9 +19,10 @@ namespace SynthShop.Controllers
         private readonly ICustomerService _customerService;
         private readonly IMapper _mapper;
         private readonly CustomerValidator _customerValidator;
+        private readonly QueryParametersValidator _queryParametersValidator;
         private readonly ILogger _logger;
 
-        public UserController(ICustomerService customerService, IMapper mapper, CustomerValidator customerValidator, ILogger logger)
+        public UserController(ICustomerService customerService, IMapper mapper, CustomerValidator customerValidator, ILogger logger, QueryParametersValidator queryParametersValidator)
         {
             _customerService = customerService;
             _mapper = mapper;
@@ -46,10 +49,15 @@ namespace SynthShop.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] SearchQueryParameters searchQueryParameters)
         {
-            var customers = await _customerService.GetAllAsync();
-            return Ok(_mapper.Map<List<CustomerDTO>>(customers));
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
+            var customers = await _customerService.GetAllAsync(searchQueryParameters.PageSize, searchQueryParameters.PageNumber, searchQueryParameters.SearchTerm, searchQueryParameters.SortBy, searchQueryParameters.IsAscending ?? true );
+            return Ok(_mapper.Map<PagedList<CustomerDTO>>(customers));
         }
 
         [HttpGet]
@@ -103,7 +111,6 @@ namespace SynthShop.Controllers
 
             if (deletedCustomer == null)
             {
-                _logger.Warning("Failed to delete user with ID {UserId}", id);
                 return NotFound();
             }
             _logger.Information("Deleted user with ID {UserId}", id);

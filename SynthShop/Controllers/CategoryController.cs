@@ -5,7 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 using Serilog.Core;
 using SynthShop.Core.Services.Interfaces;
 using SynthShop.Domain.Entities;
+using SynthShop.Domain.Extensions;
 using SynthShop.DTO;
+using SynthShop.Queries;
 using SynthShop.Validations;
 using ILogger = Serilog.ILogger;
 
@@ -42,7 +44,7 @@ namespace SynthShop.Controllers
             var categoryDomainModel = _mapper.Map<Category>(addCategoryDTO);
             
             await _categoryService.CreateAsync(categoryDomainModel);
-            _logger.Information("Successfully created a new category with ID {@CategoryId}", addCategoryDTO);
+            _logger.Information("Successfully created a new category {Category}", addCategoryDTO.Name);
             return Ok(_mapper.Map<AddCategoryDTO>(categoryDomainModel));
         }
 
@@ -54,7 +56,6 @@ namespace SynthShop.Controllers
 
             if (deletedCategory == null)
             {
-                _logger.Warning("Failed to find category with ID {CategoryId} to delete", id);
                 return NotFound();
             }
             _logger.Information("Successfully deleted category with ID {CategoryId}", id);
@@ -62,11 +63,17 @@ namespace SynthShop.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] SearchQueryParameters searchQueryParameters)
         {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             
-            var categories = await _categoryService.GetAllAsync();
-            return Ok(_mapper.Map<List<CategoryDTO>>(categories));
+            var categories = await _categoryService.GetAllAsync( searchQueryParameters.PageSize, searchQueryParameters.PageNumber, searchQueryParameters.SearchTerm, searchQueryParameters.SortBy, 
+                searchQueryParameters.IsAscending ?? true );
+            return Ok(_mapper.Map<PagedList<CategoryDTO>>(categories));
         }
 
         [HttpGet]

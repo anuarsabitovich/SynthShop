@@ -6,8 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 using SynthShop.Core.Services.Impl;
 using SynthShop.Core.Services.Interfaces;
 using SynthShop.Domain.Entities;
+using SynthShop.Domain.Extensions;
 using SynthShop.DTO;
+using SynthShop.Queries;
 using SynthShop.Validations;
+
 using ILogger = Serilog.ILogger;
 
 namespace SynthShop.Controllers
@@ -48,12 +51,21 @@ namespace SynthShop.Controllers
         }
 
         [HttpGet]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme) ]
+       // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme) ]
 
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll( 
+           //TODO validate inputs 
+           
+           [FromQuery] SearchQueryParameters searchQueryParameters
+           )
         {
-            var products = await _productService.GetAllAsync();
-            return Ok(_mapper.Map<List<ProductDTO>>(products));
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
+            var products = await _productService.GetAllAsync(searchQueryParameters.PageSize, searchQueryParameters.PageNumber,  searchQueryParameters.SearchTerm, searchQueryParameters.SortBy, searchQueryParameters.IsAscending ?? true);
+            return Ok(_mapper.Map<PagedList<ProductDTO> >(products));
         }
 
         [HttpGet]
@@ -105,7 +117,6 @@ namespace SynthShop.Controllers
 
             if (deletedProduct == null)
             {
-                _logger.Warning("Failed to delete product with ID {ProductId}", id);
                 return NotFound();
             }
             _logger.Information("Successfully deleted product with ID {ProductId}", id);

@@ -1,34 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Serilog;
 using SynthShop.Core.Services.Interfaces;
 using SynthShop.Domain.Entities;
+using SynthShop.Domain.Extensions;
+using SynthShop.Domain.Settings;
 using SynthShop.Infrastructure.Data.Interfaces;
+
 
 namespace SynthShop.Core.Services.Impl
 {
     public class CategoryService : ICategoryService
     {
         private readonly ICategoryRepository _categoryRepository;
+        private readonly PagingSettings _pagingSettings;
         private readonly ILogger _logger;
 
-        public CategoryService(ICategoryRepository categoryRepository, ILogger logger)
+        public CategoryService(ICategoryRepository categoryRepository, ILogger logger, IOptions<PagingSettings> pagingSettings)
         {
             _categoryRepository = categoryRepository;
+            _pagingSettings = pagingSettings.Value;
             _logger = logger.ForContext<CategoryService>();
         }
 
         public async Task CreateAsync(Category category)
         {
-            if (category == null)
-            {
-                _logger.Warning("Attempted to create a null category");
-                return;
-            }
 
             var existingCategory = await _categoryRepository.GetAllAsync();
-            if (existingCategory.Exists(x => x.Name.Equals(category.Name, StringComparison.OrdinalIgnoreCase)))
+            if (existingCategory.Items.Exists(x => x.Name.Equals(category.Name, StringComparison.OrdinalIgnoreCase)))
             {
                 _logger.Warning("Attempted to create a category with a duplicate name: {CategoryName}", category.Name);
                 throw new InvalidOperationException($"Category with name '{category.Name}' already exists.");
@@ -38,21 +41,17 @@ namespace SynthShop.Core.Services.Impl
             _logger.Information("Category created with ID {CategoryId}", category.CategoryID);
         }
 
-        public async Task<List<Category>> GetAllAsync()
+        public async Task<PagedList<Category>> GetAllAsync(int? pageSize, int pageNumber = 1, string? searchTerm = null,
+            string? sortBy = null, bool? isAscending = true)
         {
-            return await _categoryRepository.GetAllAsync();
+            Expression<Func<Category, bool>> filter = searchTerm is not null ? x => x.Name.Contains(searchTerm) : null;
+
+            return await _categoryRepository.GetAllAsync(filter, sortBy, isAscending ?? true, pageNumber, pageSize ?? _pagingSettings.PageSize );
         }
 
         public async Task<Category?> GetByIdAsync(Guid id)
         {
-            var category = await _categoryRepository.GetByIdAsync(id);
-            if (category == null)
-            {
-                _logger.Warning("Category with ID {CategoryId} not found", id);
-                return null;
-            }
-
-            return category;
+            return await _categoryRepository.GetByIdAsync(id);
         }
 
         public async Task<Category?> UpdateAsync(Guid id, Category updatedCategory)

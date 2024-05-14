@@ -1,51 +1,48 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using Serilog;
 using SynthShop.Core.Services.Interfaces;
 using SynthShop.Domain.Entities;
+using SynthShop.Domain.Extensions;
+using SynthShop.Domain.Settings;
 using SynthShop.Infrastructure.Data.Interfaces;
+
 
 namespace SynthShop.Core.Services.Impl
 {
     public class CustomerService : ICustomerService
     {
         private readonly ICustomerRepository _customerRepository;
+        private readonly PagingSettings _pagingSettings;
         private readonly ILogger _logger;
 
-        public CustomerService(ICustomerRepository customerRepository, ILogger logger)
+        public CustomerService(ICustomerRepository customerRepository, ILogger logger, IOptions<PagingSettings> pagingSettings)
         {
             _customerRepository = customerRepository;
+            _pagingSettings = pagingSettings.Value;
             _logger = logger.ForContext<CustomerService>();
         }
 
         public async Task CreateAsync(User user)
         {
-            if (user == null)
-            {
-                _logger.Warning("Attempted to create a null customer");
-                return;
-            }
-
             await _customerRepository.CreateAsync(user);
             _logger.Information("Customer created with ID {CustomerId}", user.Id);
         }
 
-        public async Task<List<User>> GetAllAsync()
+        public async Task<PagedList<User>> GetAllAsync(int? pageSize, int pageNumber = 1, string? searchTerm = null,
+            string? sortBy = null, bool? IsAscending = true)
         {
-            return await _customerRepository.GetAllAsync();
+            Expression<Func<User, bool>> filter = searchTerm is not null ?  x => x.FirstName.Contains(searchTerm) || x.LastName.Contains(searchTerm) || x.UserName.Contains(searchTerm) : null  ;
+            return await _customerRepository.GetAllAsync(filter, sortBy, IsAscending ?? true, pageNumber, pageSize ?? _pagingSettings.PageSize);
         }
 
         public async Task<User?> GetByIdAsync(Guid id)
         {
-            var customer = await _customerRepository.GetByIdAsync(id);
-            if (customer == null)
-            {
-                _logger.Warning("Customer with ID {CustomerId} not found", id);
-                return null;
-            }
-
-            return customer;
+            return await _customerRepository.GetByIdAsync(id);
         }
 
         public async Task<User?> UpdateAsync(Guid id, User updatedUser)

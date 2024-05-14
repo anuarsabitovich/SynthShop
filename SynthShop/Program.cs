@@ -13,6 +13,7 @@ using Microsoft.IdentityModel.Tokens;
 using SynthShop.Domain.Entities;
 using Microsoft.OpenApi.Models;
 using Serilog;
+using SynthShop.Domain.Settings;
 using static AuthController;
 using SynthShop.Middleware;
 
@@ -21,6 +22,8 @@ var config = builder.Configuration;
 
 builder.Host.UseSerilog((context, configuration) =>
     configuration.ReadFrom.Configuration(context.Configuration));
+
+builder.Services.Configure<PagingSettings>(config.GetSection(nameof(PagingSettings)));
 
 builder.Services.AddExceptionHandler<CustomExceptionHandler>();
 
@@ -96,9 +99,10 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseSerilogRequestLogging();
+
 }
 
-//app.UseSerilogRequestLogging();
 
 app.UseExceptionHandler("/Error");
 app.UseHsts();

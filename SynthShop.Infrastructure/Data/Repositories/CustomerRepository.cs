@@ -1,7 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
 using SynthShop.Domain.Entities;
+using SynthShop.Domain.Extensions;
 using SynthShop.Infrastructure.Data;
 using SynthShop.Infrastructure.Data.Interfaces;
+
 
 namespace SynthShop.Infrastructure.Data.Repositories
 {
@@ -21,9 +24,47 @@ namespace SynthShop.Infrastructure.Data.Repositories
             return user;
         }
 
-        public async Task<List<User>> GetAllAsync()
+        public async Task<PagedList<User>> GetAllAsync(Expression<Func<User, bool>>? filter = null,
+            string? sortBy = null, bool IsAscending = true,
+            int pageNumber = 1, int pageSize = 1000,
+            string? includeProperties = null)
         {
-            return await _dbContext.Customers.AsNoTracking().ToListAsync();
+
+            var customers = _dbContext.Customers.AsQueryable();
+
+            if (includeProperties is not null)
+            {
+                foreach (var includeProperty in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    customers = customers.Include(includeProperty);
+                }
+            }
+
+            if (filter is not null)
+            {
+                customers = customers.Where(filter);
+            }
+            
+            
+       
+
+            if (string.IsNullOrWhiteSpace(sortBy) == false)
+            {
+                if (sortBy.Equals("Name", StringComparison.OrdinalIgnoreCase))
+                {
+                    customers = IsAscending
+                        ? customers.OrderBy(x => x.FirstName)
+                        : customers.OrderByDescending(x => x.FirstName);
+                } 
+                else if (sortBy.Equals("Last Name", StringComparison.OrdinalIgnoreCase))
+                {
+                    customers = IsAscending
+                        ? customers.OrderBy(x => x.FirstName)
+                        : customers.OrderByDescending(x => x.LastName);
+                }
+            }
+            
+            return customers.ToPagedList(pageNumber, pageSize);
         }
 
         public async Task<User?> GetByIdAsync(Guid id)

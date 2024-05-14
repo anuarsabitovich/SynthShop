@@ -39,9 +39,6 @@ namespace SynthShop.Core.Services.Impl
         }
         public async Task<IdentityResult> RegisterUserAsync(User user, string password)
         {
-
-
-
             var result = await _userManager.CreateAsync(user, password);
             if (result.Succeeded)
             {
@@ -49,9 +46,8 @@ namespace SynthShop.Core.Services.Impl
             }
             else
             {
-                _logger.Warning("User registration failed for {Email}. Errors: {Errors}", user.Email, result.Errors);
+                _logger.Error("User registration failed for {Email}. Errors: {@Errors}", user.Email, result.Errors);
             }
-
             return result;
         }
 
@@ -86,12 +82,8 @@ namespace SynthShop.Core.Services.Impl
 
             if (!ValidateAccessToken(validatedToken))
             {
-                _logger.Warning("Token validation failed for refresh token {RefreshToken}", refreshToken);
                 return new AuthenticationResult() { Errors = new[] { "Invalid token" } };
             }
-          
-
-           
 
             var jti = validatedToken.Claims.Single(x => x.Type == JwtRegisteredClaimNames.Jti).Value;
 
@@ -99,11 +91,8 @@ namespace SynthShop.Core.Services.Impl
 
             if (!ValidateRefreshToken(storedRefreshToken, jti))
             {
-                _logger.Warning("Refresh token validation failed for {RefreshToken}", refreshToken);
                 return new AuthenticationResult { Errors = new[] { "Invalid refresh token" } };
             }
-
-          
 
             storedRefreshToken.Used = true;
             await _authRepository.UpdateRefreshToken(storedRefreshToken);
@@ -163,7 +152,6 @@ namespace SynthShop.Core.Services.Impl
                 signingCredentials: creds
             );
 
-
             var refreshToken = await _authRepository.AddRefreshToken(new RefreshToken
             {
                 JwtId = token.Id,
@@ -171,7 +159,6 @@ namespace SynthShop.Core.Services.Impl
                 CreationDate = DateTime.UtcNow,
                 ExpiryDate = DateTime.UtcNow.AddMonths(6)
             });
-
 
             return new AuthenticationResult
             {
@@ -184,7 +171,6 @@ namespace SynthShop.Core.Services.Impl
         private bool ValidateAccessToken(ClaimsPrincipal validatedToken)
         {
             
-
             if (validatedToken == null)
             {
                 return false;
@@ -193,7 +179,6 @@ namespace SynthShop.Core.Services.Impl
                 long.Parse(validatedToken.Claims.Single(x => x.Type == JwtRegisteredClaimNames.Exp).Value);
 
             var expiryDateTimeUtc = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddSeconds(expiryDateUnix);
-
 
             if (expiryDateTimeUtc > DateTime.UtcNow)
             {

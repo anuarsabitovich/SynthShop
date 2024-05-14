@@ -65,7 +65,7 @@ namespace SynthShop.Controllers
             var validationResult = await _basketItemValidator.ValidateAsync(addBasketItemDto);
             if (!validationResult.IsValid)
             {
-                _logger.Warning("Validation failed for adding item to basket {BasketId}: {Errors}", id, validationResult.Errors);
+                _logger.Error("Validation failed for adding item to basket {BasketId}: {@Errors}", id, validationResult.Errors);
                 return BadRequest(validationResult.Errors);
             }
             

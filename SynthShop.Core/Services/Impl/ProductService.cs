@@ -1,10 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using Serilog;
 using SynthShop.Core.Services.Interfaces;
 using SynthShop.Domain.Entities;
+using SynthShop.Domain.Extensions;
+using SynthShop.Domain.Settings;
 using SynthShop.Infrastructure.Data.Interfaces;
+
 
 namespace SynthShop.Core.Services.Impl
 {
@@ -12,11 +17,14 @@ namespace SynthShop.Core.Services.Impl
     {
         private readonly IProductRepository _productRepository;
         private readonly ILogger _logger;
+        private readonly PagingSettings _pagingSettings;
 
-        public ProductService(IProductRepository productRepository, ILogger logger)
+
+        public ProductService(IProductRepository productRepository, ILogger logger, IOptions<PagingSettings> pagingSettings)
         {
             _productRepository = productRepository;
             _logger = logger.ForContext<ProductService>();
+            _pagingSettings = pagingSettings.Value;
         }
 
         public async Task CreateAsync(Product product)
@@ -31,21 +39,17 @@ namespace SynthShop.Core.Services.Impl
             _logger.Information("Product created with ID {ProductId}", product.ProductID);
         }
 
-        public async Task<List<Product>> GetAllAsync()
+        public async Task<PagedList<Product>> GetAllAsync(int? pageSize, int pageNumber = 1, string? searchTerm = null, 
+            string? sortBy = null, bool? isAscending = true)
         {
-            return await _productRepository.GetAllAsync();
+            Expression<Func<Product, bool>> filter = searchTerm is not null ?  x => x.Name.Contains(searchTerm) : null  ;
+
+            return await _productRepository.GetAllAsync(filter, sortBy, isAscending ?? true, pageNumber, pageSize ?? _pagingSettings.PageSize);
         }
 
         public async Task<Product?> GetByIdAsync(Guid id)
         {
-            var product = await _productRepository.GetByIdAsync(id);
-            if (product == null)
-            {
-                _logger.Warning("Product with ID {ProductId} not found", id);
-                return null;
-            }
-
-            return product;
+            return await _productRepository.GetByIdAsync(id);
         }
 
         public async Task<Product?> UpdateAsync(Guid id, Product updatedProduct)

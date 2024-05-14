@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Serilog;
 using SynthShop.Core.Services.Interfaces;
 using SynthShop.Domain.Entities;
 using SynthShop.Domain.Enums;
@@ -10,12 +11,14 @@ namespace SynthShop.Core.Services.Impl
     {
         private readonly IOrderRepository _orderRepository;
         private readonly IBasketRepository _basketRepository;
+        private readonly ILogger _logger;
 
 
-        public OrderService(IOrderRepository orderRepository, IBasketRepository basketRepository)
+        public OrderService(IOrderRepository orderRepository, IBasketRepository basketRepository, ILogger logger)
         {
             _orderRepository = orderRepository;
             _basketRepository = basketRepository;
+            _logger = logger;
         }
 
         public async Task<Order> CreateOrder(Guid basketId, Guid customerId) 
@@ -48,6 +51,8 @@ namespace SynthShop.Core.Services.Impl
 
                 if (availabilityIssues.Any())
                 {
+                    _logger.Warning("Failed to create order due to concurrency conflicts for basket ID {BasketId}", basketId);
+
                     throw new InvalidOperationException("There are issues with product availability: " + string.Join(", ", availabilityIssues));
                 }
 
@@ -75,6 +80,7 @@ namespace SynthShop.Core.Services.Impl
             catch (DbUpdateConcurrencyException)
             {
                 // warning
+                
                 throw new InvalidOperationException("Failed to create order due to concurrency conflicts.");
             }
         }
