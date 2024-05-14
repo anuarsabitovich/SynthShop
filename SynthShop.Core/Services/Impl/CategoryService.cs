@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Serilog;
 using SynthShop.Core.Services.Interfaces;
 using SynthShop.Domain.Entities;
 using SynthShop.Domain.Extensions;
+using SynthShop.Domain.Settings;
 using SynthShop.Infrastructure.Data.Interfaces;
 
 
@@ -15,11 +17,13 @@ namespace SynthShop.Core.Services.Impl
     public class CategoryService : ICategoryService
     {
         private readonly ICategoryRepository _categoryRepository;
+        private readonly PagingSettings _pagingSettings;
         private readonly ILogger _logger;
 
-        public CategoryService(ICategoryRepository categoryRepository, ILogger logger)
+        public CategoryService(ICategoryRepository categoryRepository, ILogger logger, IOptions<PagingSettings> pagingSettings)
         {
             _categoryRepository = categoryRepository;
+            _pagingSettings = pagingSettings.Value;
             _logger = logger.ForContext<CategoryService>();
         }
 
@@ -37,13 +41,12 @@ namespace SynthShop.Core.Services.Impl
             _logger.Information("Category created with ID {CategoryId}", category.CategoryID);
         }
 
-        public async Task<PagedList<Category>> GetAllAsync(string? searchTerm = null,
-            string? sortBy = null, bool? isAscending = true,
-            int pageNumber = 1, int pageSize = 1000)
+        public async Task<PagedList<Category>> GetAllAsync(int? pageSize, int pageNumber = 1, string? searchTerm = null,
+            string? sortBy = null, bool? isAscending = true)
         {
             Expression<Func<Category, bool>> filter = searchTerm is not null ? x => x.Name.Contains(searchTerm) : null;
 
-            return await _categoryRepository.GetAllAsync(filter, sortBy, isAscending ?? true, pageNumber, pageSize);
+            return await _categoryRepository.GetAllAsync(filter, sortBy, isAscending ?? true, pageNumber, pageSize ?? _pagingSettings.PageSize );
         }
 
         public async Task<Category?> GetByIdAsync(Guid id)
