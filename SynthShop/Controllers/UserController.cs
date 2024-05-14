@@ -56,7 +56,7 @@ namespace SynthShop.Controllers
                 return BadRequest(ModelState);
             }
             
-            var customers = await _customerService.GetAllAsync(searchQueryParameters.PageNumber, searchQueryParameters.PageSize, searchQueryParameters.SearchTerm, searchQueryParameters.SortBy, searchQueryParameters.IsAscending ?? true );
+            var customers = await _customerService.GetAllAsync(searchQueryParameters.PageSize, searchQueryParameters.PageNumber, searchQueryParameters.SearchTerm, searchQueryParameters.SortBy, searchQueryParameters.IsAscending ?? true );
             return Ok(_mapper.Map<PagedList<CustomerDTO>>(customers));
         }
 

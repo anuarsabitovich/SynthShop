@@ -37,7 +37,7 @@ namespace SynthShop.Core.Services.Impl
             string? sortBy = null, bool? IsAscending = true)
         {
             Expression<Func<User, bool>> filter = searchTerm is not null ?  x => x.FirstName.Contains(searchTerm) || x.LastName.Contains(searchTerm) || x.UserName.Contains(searchTerm) : null  ;
-            return await _customerRepository.GetAllAsync(filter, sortBy, IsAscending ?? true, pageNumber, _pagingSettings.PageSize);
+            return await _customerRepository.GetAllAsync(filter, sortBy, IsAscending ?? true, pageNumber, pageSize ?? _pagingSettings.PageSize);
         }
 
         public async Task<User?> GetByIdAsync(Guid id)
