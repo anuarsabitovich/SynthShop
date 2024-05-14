@@ -17,9 +17,10 @@ namespace SynthShop.Controllers
         private readonly ICustomerService _customerService;
         private readonly IMapper _mapper;
         private readonly CustomerValidator _customerValidator;
+        private readonly QueryParametersValidator _queryParametersValidator;
         private readonly ILogger _logger;
 
-        public UserController(ICustomerService customerService, IMapper mapper, CustomerValidator customerValidator, ILogger logger)
+        public UserController(ICustomerService customerService, IMapper mapper, CustomerValidator customerValidator, ILogger logger, QueryParametersValidator queryParametersValidator)
         {
             _customerService = customerService;
             _mapper = mapper;
@@ -47,11 +48,16 @@ namespace SynthShop.Controllers
 
         [HttpGet]
         public async Task<IActionResult> GetAll(
-            [FromQuery] string? filterOn, [FromQuery] string? filterQuery,
+            [FromQuery] string? searchTerm,
             [FromQuery] string? sortBy, [FromQuery] bool? IsAscending,
-            [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 1000)
+            [FromQuery] QueryParameters queryParameters)
         {
-            var customers = await _customerService.GetAllAsync(filterOn, filterQuery, sortBy, IsAscending ?? true, pageNumber, pageSize);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
+            var customers = await _customerService.GetAllAsync(searchTerm, sortBy, IsAscending ?? true, queryParameters.PageNumber, queryParameters.PageSize);
             return Ok(_mapper.Map<List<CustomerDTO>>(customers));
         }
 

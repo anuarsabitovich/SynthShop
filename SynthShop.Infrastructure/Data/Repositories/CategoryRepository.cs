@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using SynthShop.Domain.Entities;
 using SynthShop.Infrastructure.Data;
 using SynthShop.Infrastructure.Data.Interfaces;
+using X.PagedList;
 
 namespace SynthShop.Infrastructure.Data.Repositories
 {
@@ -28,16 +30,36 @@ namespace SynthShop.Infrastructure.Data.Repositories
             return category;
         }
 
-        public async Task<List<Category>> GetAllAsync(string? sortBy, bool? IsAscending = true)
+        public async Task<IPagedList<Category>> GetAllAsync(Expression<Func<Category, bool>> filter = null,
+            string? sortBy = null, bool isAscending = true,
+            int pageNumber = 1, int pageSize = 1000, string? includeProperties = null)
         {
             var categories = _dbContext.Categories.AsQueryable();
 
-            if (sortBy.Equals("Name", StringComparison.OrdinalIgnoreCase))
+            if (includeProperties is not null)
             {
-                categories = IsAscending?? true ? categories.OrderBy(x => x.Name) : categories.OrderByDescending(x => x.Name);
+                foreach (var includeProperty in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    categories = categories.Include(includeProperty);
+                }
+            }
+
+            if (filter is not null)
+            {
+                categories = categories.Where(filter);
+            }
+
+            if (string.IsNullOrWhiteSpace(sortBy) == false)
+            {
+                if (sortBy.Equals("Name", StringComparison.OrdinalIgnoreCase))
+                {
+                    categories = isAscending
+                        ? categories.OrderBy(x => x.Name)
+                        : categories.OrderByDescending(x => x.Name);
+                }
             }
             
-            return await categories.ToListAsync();
+            return await categories.ToPagedListAsync(pageNumber, pageSize);
         }
 
         public async Task<Category?> GetByIdAsync(Guid id)

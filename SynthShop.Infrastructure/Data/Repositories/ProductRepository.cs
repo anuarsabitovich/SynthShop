@@ -4,6 +4,8 @@ using Serilog;
 using SynthShop.Domain.Entities;
 using SynthShop.Infrastructure.Data;
 using SynthShop.Infrastructure.Data.Interfaces;
+using System.Linq.Expressions;
+using X.PagedList;
 
 namespace SynthShop.Infrastructure.Data.Repositories
 {
@@ -26,45 +28,48 @@ namespace SynthShop.Infrastructure.Data.Repositories
 
       
 
-        public async Task<List<Product>> GetAllAsync(string? filterOn = null, string? filterQuery = null,
-            string? sortBy = null, bool IsAscending = true,
-            int pageNumber = 1, int pageSize = 1000
+        public async Task<IPagedList<Product>> GetAllAsync(Expression<Func<Product, bool>> filter = null,
+            string? sortBy = null, bool isAscending = true,
+            int pageNumber = 1, int pageSize = 1000, string? includeProperties = null
             )
         {
             var products = _dbContext.Products.AsQueryable();
-            
-            // Filtering
-            if (string.IsNullOrWhiteSpace(filterOn) == false && string.IsNullOrWhiteSpace(filterQuery) == false)
+
+            if (includeProperties is not null)
             {
-                if (filterOn.Equals("Name", StringComparison.OrdinalIgnoreCase))
+                foreach (var includeProperty in includeProperties.Split(new char[]{','}, StringSplitOptions.RemoveEmptyEntries))
                 {
-                    products = products.Where(x => x.Name.Contains(filterQuery));
+                    products = products.Include(includeProperty);
                 }
             }
+           
+            if (filter is not null)
+            {
+               products = products.Where(filter);
+            }
+            
+            
             
             // Sorting
             if (string.IsNullOrWhiteSpace(sortBy) == false)
             {
                 if (sortBy.Equals("Name", StringComparison.OrdinalIgnoreCase))
                 {
-                    products = IsAscending ? products.OrderBy(x => x.Name): products.OrderByDescending(x => x.Name);
+                    products = isAscending ? products.OrderBy(x => x.Name): products.OrderByDescending(x => x.Name);
                 }
                 else if (sortBy.Equals("Price", StringComparison.OrdinalIgnoreCase))
                 {
-                    products = IsAscending ? products.OrderBy(x => x.Price) : products.OrderByDescending(x => x.Price);
+                    products = isAscending ? products.OrderBy(x => x.Price) : products.OrderByDescending(x => x.Price);
                 }
                 else if (sortBy.Equals("StockQuantity", StringComparison.OrdinalIgnoreCase))
                 {
-                    products = IsAscending
+                    products = isAscending
                         ? products.OrderBy(x => x.StockQuantity)
                         : products.OrderByDescending(x => x.StockQuantity);
                 }
             }
-            
-            // Pagination 
-            var skipResult = (pageNumber-1) * pageSize;
-            
-            return await products.Skip(skipResult).Take(pageSize).ToListAsync();
+           
+            return await products.ToPagedListAsync(pageNumber,pageSize) ;
         }
 
         public async Task<Product?> GetByIdAsync(Guid id)

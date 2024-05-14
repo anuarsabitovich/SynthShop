@@ -5,13 +5,14 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using X.PagedList;
 
 namespace SynthShop.Core.Services.Interfaces
 {
     public interface ICustomerService
     {
         Task CreateAsync(User user);
-        Task<List<User>> GetAllAsync(string? filterOn = null, string? filterQuery = null,
+        Task<IPagedList<User>> GetAllAsync( string? searchTerm,
             string? sortBy = null, bool? IsAscending = true,
             int pageNumber = 1, int pageSize = 1000);
         Task<User?> GetByIdAsync(Guid id);

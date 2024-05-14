@@ -1,7 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
 using SynthShop.Domain.Entities;
 using SynthShop.Infrastructure.Data;
 using SynthShop.Infrastructure.Data.Interfaces;
+using X.PagedList;
 
 namespace SynthShop.Infrastructure.Data.Repositories
 {
@@ -21,24 +23,29 @@ namespace SynthShop.Infrastructure.Data.Repositories
             return user;
         }
 
-        public async Task<List<User>> GetAllAsync(string? filterOn = null, string? filterQuery = null,
+        public async Task<IPagedList<User>> GetAllAsync(Expression<Func<User, bool>>? filter = null,
             string? sortBy = null, bool IsAscending = true,
-            int pageNumber = 1, int pageSize = 1000)
+            int pageNumber = 1, int pageSize = 1000,
+            string? includeProperties = null)
         {
 
             var customers = _dbContext.Customers.AsQueryable();
 
-            if (string.IsNullOrWhiteSpace(filterOn) == false && string.IsNullOrWhiteSpace(filterQuery) == false)
+            if (includeProperties is not null)
             {
-                if (filterOn.Equals("Name", StringComparison.OrdinalIgnoreCase))
+                foreach (var includeProperty in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
                 {
-                    customers = customers.Where(x => x.FirstName.Contains(filterQuery));
-                }
-                else if (filterOn.Equals("Last Name", StringComparison.OrdinalIgnoreCase))
-                {
-                    customers = customers.Where(x => x.LastName.Contains(filterQuery));
+                    customers = customers.Include(includeProperty);
                 }
             }
+
+            if (filter is not null)
+            {
+                customers = customers.Where(filter);
+            }
+            
+            
+       
 
             if (string.IsNullOrWhiteSpace(sortBy) == false)
             {
@@ -56,9 +63,7 @@ namespace SynthShop.Infrastructure.Data.Repositories
                 }
             }
             
-            var skipResult = (pageNumber - 1) * pageSize;
-
-            return await customers.Skip(skipResult).Take(pageSize).ToListAsync();
+            return await customers.ToPagedListAsync(pageNumber, pageSize);
         }
 
         public async Task<User?> GetByIdAsync(Guid id)

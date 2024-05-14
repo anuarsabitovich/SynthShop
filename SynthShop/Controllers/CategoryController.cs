@@ -62,11 +62,18 @@ namespace SynthShop.Controllers
 
         [HttpGet]
         public async Task<IActionResult> GetAll(
-            [FromQuery] string? sortBy, [FromQuery] bool? IsAscending
+            [FromQuery] string? searchTerm,
+            [FromQuery] string? sortBy, [FromQuery] bool? isAscending,
+            [FromQuery] QueryParameters queryParameters
             )
         {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             
-            var categories = await _categoryService.GetAllAsync(sortBy, IsAscending);
+            var categories = await _categoryService.GetAllAsync(searchTerm, sortBy, isAscending ?? true, queryParameters.PageNumber, queryParameters.PageSize);
             return Ok(_mapper.Map<List<CategoryDTO>>(categories));
         }
 

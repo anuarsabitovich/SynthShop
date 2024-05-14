@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Serilog;
 using SynthShop.Core.Services.Interfaces;
 using SynthShop.Domain.Entities;
 using SynthShop.Infrastructure.Data.Interfaces;
+using X.PagedList;
 
 namespace SynthShop.Core.Services.Impl
 {
@@ -31,11 +33,14 @@ namespace SynthShop.Core.Services.Impl
             _logger.Information("Product created with ID {ProductId}", product.ProductID);
         }
 
-        public async Task<List<Product>> GetAllAsync(string? filterOn = null, string? filterQuery = null, 
-            string? sortBy = null, bool? IsAscending = true,
+        public async Task<IPagedList<Product>> GetAllAsync( string? searchTerm = null, 
+            string? sortBy = null, bool? isAscending = true,
             int pageNumber = 1, int pageSize = 1000)
         {
-            return await _productRepository.GetAllAsync(filterOn, filterQuery, sortBy, IsAscending ?? true, pageNumber, pageSize);
+            Expression<Func<Product, bool>> filter = searchTerm is not null ?  x => x.Name.Contains(searchTerm) : null  ;
+            //Expression<Func<User, bool>> filte = searchTerm is not null ?  x => x.FirstName.Contains(searchTerm) || x.LastName.Contains(searchTerm) || x.UserName.Contains(searchTerm) : null  ;
+
+            return await _productRepository.GetAllAsync(filter, sortBy, isAscending ?? true, pageNumber, pageSize);
         }
 
         public async Task<Product?> GetByIdAsync(Guid id)

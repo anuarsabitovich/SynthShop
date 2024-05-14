@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 using SynthShop.Core.Services.Interfaces;
 using SynthShop.Domain.Entities;
 using SynthShop.Infrastructure.Data.Interfaces;
+using X.PagedList;
 
 namespace SynthShop.Core.Services.Impl
 {
@@ -34,9 +36,13 @@ namespace SynthShop.Core.Services.Impl
             _logger.Information("Category created with ID {CategoryId}", category.CategoryID);
         }
 
-        public async Task<List<Category>> GetAllAsync(string? sortBy, bool? IsAscending)
+        public async Task<IPagedList<Category>> GetAllAsync(string? searchTerm = null,
+            string? sortBy = null, bool? isAscending = true,
+            int pageNumber = 1, int pageSize = 1000)
         {
-            return await _categoryRepository.GetAllAsync(sortBy, IsAscending ?? true);
+            Expression<Func<Category, bool>> filter = searchTerm is not null ? x => x.Name.Contains(searchTerm) : null;
+
+            return await _categoryRepository.GetAllAsync(filter, sortBy, isAscending ?? true, pageNumber, pageSize);
         }
 
         public async Task<Category?> GetByIdAsync(Guid id)

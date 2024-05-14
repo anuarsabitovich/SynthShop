@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using SynthShop.Domain.Entities;
 using SynthShop.DTO;
+using X.PagedList;
 
 
 namespace SynthShop.Mapper.Profiles
@@ -9,6 +10,8 @@ namespace SynthShop.Mapper.Profiles
     {
         public AutoMapperProfiles()
         {
+            CreateMap(typeof(IPagedList<>), typeof(IPagedList<>));
+
             CreateMap<AddCategoryDTO, Category>().ReverseMap();
             CreateMap<CategoryDTO, Category>().ReverseMap();
             CreateMap<UpdateCategoryDTO, Category>().ReverseMap();

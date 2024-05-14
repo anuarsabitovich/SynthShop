@@ -7,7 +7,9 @@ using SynthShop.Core.Services.Impl;
 using SynthShop.Core.Services.Interfaces;
 using SynthShop.Domain.Entities;
 using SynthShop.DTO;
+using SynthShop.Extensions;
 using SynthShop.Validations;
+using X.PagedList;
 using ILogger = Serilog.ILogger;
 
 namespace SynthShop.Controllers
@@ -50,14 +52,20 @@ namespace SynthShop.Controllers
         [HttpGet]
        // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme) ]
 
-        public async Task<IActionResult> GetAll(
-           [FromQuery] string? filterOn, [FromQuery] string? filterQuery, 
-           [FromQuery] string? sortBy, [FromQuery] bool? IsAscending,
-           [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 1000
+        public async Task<IActionResult> GetAll( 
+           //TODO validate inputs 
+           [FromQuery] string? searchTerm, 
+           [FromQuery] string? sortBy, [FromQuery] bool? isAscending,
+           [FromQuery] QueryParameters queryParameters
            )
         {
-            var products = await _productService.GetAllAsync(filterOn,filterQuery, sortBy, IsAscending?? true, pageNumber, pageSize );
-            return Ok(_mapper.Map<List<ProductDTO>>(products));
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
+            var products = await _productService.GetAllAsync(searchTerm, sortBy, isAscending?? true, queryParameters.PageNumber, queryParameters.PageSize);
+            return Ok(products.ToMappedPagedList<Product, ProductDTO>(_mapper));
         }
 
         [HttpGet]
