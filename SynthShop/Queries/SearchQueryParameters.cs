@@ -8,7 +8,7 @@ namespace SynthShop.Queries
         public required int PageNumber { get; set; } = 1;
 
         [FromQuery(Name = "pageSize")]
-        public int PageSize { get; set; }
+        public int? PageSize { get; set; }
 
         [FromQuery(Name = "searchTerm")]
         public string? SearchTerm { get; set; }
