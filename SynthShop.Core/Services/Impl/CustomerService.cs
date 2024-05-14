@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using Serilog;
 using SynthShop.Core.Services.Interfaces;
 using SynthShop.Domain.Entities;
 using SynthShop.Domain.Extensions;
+using SynthShop.Domain.Settings;
 using SynthShop.Infrastructure.Data.Interfaces;
 
 
@@ -15,11 +17,13 @@ namespace SynthShop.Core.Services.Impl
     public class CustomerService : ICustomerService
     {
         private readonly ICustomerRepository _customerRepository;
+        private readonly PagingSettings _pagingSettings;
         private readonly ILogger _logger;
 
-        public CustomerService(ICustomerRepository customerRepository, ILogger logger)
+        public CustomerService(ICustomerRepository customerRepository, ILogger logger, IOptions<PagingSettings> pagingSettings)
         {
             _customerRepository = customerRepository;
+            _pagingSettings = pagingSettings.Value;
             _logger = logger.ForContext<CustomerService>();
         }
 
@@ -29,12 +33,11 @@ namespace SynthShop.Core.Services.Impl
             _logger.Information("Customer created with ID {CustomerId}", user.Id);
         }
 
-        public async Task<PagedList<User>> GetAllAsync(string? searchTerm = null,
-            string? sortBy = null, bool? IsAscending = true,
-            int pageNumber = 1, int pageSize = 1000)
+        public async Task<PagedList<User>> GetAllAsync(int? pageSize, int pageNumber = 1, string? searchTerm = null,
+            string? sortBy = null, bool? IsAscending = true)
         {
             Expression<Func<User, bool>> filter = searchTerm is not null ?  x => x.FirstName.Contains(searchTerm) || x.LastName.Contains(searchTerm) || x.UserName.Contains(searchTerm) : null  ;
-            return await _customerRepository.GetAllAsync(filter, sortBy, IsAscending ?? true, pageNumber, pageSize);
+            return await _customerRepository.GetAllAsync(filter, sortBy, IsAscending ?? true, pageNumber, _pagingSettings.PageSize);
         }
 
         public async Task<User?> GetByIdAsync(Guid id)

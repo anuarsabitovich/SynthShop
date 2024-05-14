@@ -14,9 +14,9 @@ namespace SynthShop.Core.Services.Interfaces
     {
         Task CreateAsync(Product product);
         Task<PagedList<Product>> GetAllAsync(
+            int? pageSize, int pageNumber = 1,
             string? searchTerm = null,
-            string? sortBy = null, bool? isAscending = true,
-            int pageNumber = 1, int pageSize = 1000
+            string? sortBy = null, bool? isAscending = true
             );
         Task<Product?> GetByIdAsync(Guid id);
         Task<Product?> UpdateAsync(Guid id, Product product);

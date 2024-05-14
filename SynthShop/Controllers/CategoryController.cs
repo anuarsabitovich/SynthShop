@@ -71,7 +71,8 @@ namespace SynthShop.Controllers
                 return BadRequest(ModelState);
             }
             
-            var categories = await _categoryService.GetAllAsync(searchQueryParameters.SearchTerm, searchQueryParameters.SortBy, searchQueryParameters.IsAscending ?? true, searchQueryParameters.PageNumber, searchQueryParameters.PageSize);
+            var categories = await _categoryService.GetAllAsync(searchQueryParameters.PageNumber, searchQueryParameters.PageSize, searchQueryParameters.SearchTerm, searchQueryParameters.SortBy, 
+                searchQueryParameters.IsAscending ?? true );
             return Ok(_mapper.Map<PagedList<CategoryDTO>>(categories));
         }
 
