@@ -69,8 +69,9 @@ namespace SynthShop.Infrastructure.Data.Repositories
                         : products.OrderByDescending(x => x.StockQuantity);
                 }
             }
-           
-            return  products.ToPagedList(pageNumber,pageSize) ;
+            
+            
+            return products.ToPagedList(pageNumber,pageSize) ;
         }
 
         public async Task<Product?> GetByIdAsync(Guid id)

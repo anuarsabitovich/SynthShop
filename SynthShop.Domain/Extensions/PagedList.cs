@@ -13,7 +13,7 @@
 
         public bool HasNextPage => Page * PageSize < TotalItems;
 
-        public bool HasPreviousPage => Page - 1 is not 0;
+        public bool HasPreviousPage => Page > 1;
 
         public PagedList(IEnumerable<T> items, int totalItems, int page, int pageSize)
         {
