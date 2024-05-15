@@ -18,6 +18,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		TODO.txt = TODO.txt
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SynthShop.Tests", "SynthShop.Tests\SynthShop.Tests.csproj", "{ED05F249-B058-4728-B7A3-0A5631A50425}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,6 +42,10 @@ Global
 		{41CC87A8-8EA9-4092-B768-C19935DFEB7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{41CC87A8-8EA9-4092-B768-C19935DFEB7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{41CC87A8-8EA9-4092-B768-C19935DFEB7F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED05F249-B058-4728-B7A3-0A5631A50425}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED05F249-B058-4728-B7A3-0A5631A50425}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED05F249-B058-4728-B7A3-0A5631A50425}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED05F249-B058-4728-B7A3-0A5631A50425}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
