@@ -13,7 +13,7 @@ using SynthShop.Infrastructure.Data.Repositories;
 
 namespace SynthShop.Core.Services.Impl
 {
-    internal class BasketService : IBasketService
+    public class BasketService : IBasketService
     {
         private readonly IBasketRepository _basketRepository;
         private readonly ILogger _logger;
