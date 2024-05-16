@@ -2,26 +2,26 @@ using System.Text;
 using Microsoft.EntityFrameworkCore;
 using SynthShop.Infrastructure.Data;
 using AutoMapper;
-using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using SynthShop.Mapper.Profiles;
 using SynthShop.Core.Services;
 using SynthShop.Validations;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
-using SynthShop.Domain.Entities;
 using Microsoft.OpenApi.Models;
 using Serilog;
+using SynthShop.Domain.Constants;
 using SynthShop.Domain.Settings;
-using static AuthController;
 using SynthShop.Middleware;
+using SynthShop.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
 
 builder.Host.UseSerilog((context, configuration) =>
-    configuration.ReadFrom.Configuration(context.Configuration));
+    configuration.ReadFrom.Configuration(context.Configuration)
+        .Enrich.WithCorrelationIdHeader(LogConstants.CorrelationHeader));
+
 
 builder.Services.Configure<PagingSettings>(config.GetSection(nameof(PagingSettings)));
 
@@ -53,10 +53,15 @@ builder.Services.AddAuthentication(x =>
 // Add services to the container.
 
 builder.Services.AddControllers();
+// 
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddHeaderPropagation(options => options.Headers.Add(LogConstants.CorrelationHeader));
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
+    options.OperationFilter<CorrelationHeaderSwaggerOperationFilter>();
     options.SwaggerDoc("v1", new OpenApiInfo { Title = "NZ Walk API", Version = "v1" });
     options.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
     {
@@ -111,6 +116,8 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+app.UseHeaderPropagation();
 
 app.MapControllers();
 
