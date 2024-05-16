@@ -1,9 +1,4 @@
 ﻿using SynthShop.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SynthShop.Core.Services.Interfaces
 {
@@ -11,8 +6,8 @@ namespace SynthShop.Core.Services.Interfaces
     {
         Task<Order> CreateOrder(Guid basketId, Guid customerId);
         
-        Task CancelOrder(Guid orderID);
+        Task CancelOrder(Guid orderId, Guid customerId);
 
-        Task CompleteOrder(Guid basketId);
+        Task CompleteOrder(Guid basketId, Guid customerId);
     }
 }

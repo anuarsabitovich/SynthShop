@@ -5,9 +5,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SynthShop.Core.Services.Impl;
 using SynthShop.Core.Services.Interfaces;
+using SynthShop.Domain.Constants;
 using SynthShop.Domain.Entities;
 using SynthShop.Domain.Extensions;
 using SynthShop.DTO;
+using SynthShop.Extensions;
 using SynthShop.Queries;
 using SynthShop.Validations;
 
@@ -17,7 +19,7 @@ namespace SynthShop.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-
+    [Roles(RoleConstants.Admin)]
     public class ProductController : ControllerBase
     {
         private readonly IProductService _productService;
@@ -51,13 +53,8 @@ namespace SynthShop.Controllers
         }
 
         [HttpGet]
-       // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme) ]
-
-        public async Task<IActionResult> GetAll( 
-           //TODO validate inputs 
-           
-           [FromQuery] SearchQueryParameters searchQueryParameters
-           )
+        [AllowAnonymous]
+        public async Task<IActionResult> GetAll([FromQuery] SearchQueryParameters searchQueryParameters)
         {
             if (!ModelState.IsValid)
             {
@@ -70,6 +67,7 @@ namespace SynthShop.Controllers
 
         [HttpGet]
         [Route("{id:Guid}")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
             var product = await _productService.GetByIdAsync(id);
