@@ -1,12 +1,15 @@
 ﻿using AutoMapper;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Serilog.Core;
 using SynthShop.Core.Services.Interfaces;
+using SynthShop.Domain.Constants;
 using SynthShop.Domain.Entities;
 using SynthShop.Domain.Extensions;
 using SynthShop.DTO;
+using SynthShop.Extensions;
 using SynthShop.Queries;
 using SynthShop.Validations;
 using ILogger = Serilog.ILogger;
@@ -15,7 +18,7 @@ namespace SynthShop.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-
+    [Roles(RoleConstants.Admin)]
     public class CategoryController : ControllerBase
     {
         private readonly ICategoryService _categoryService;
@@ -28,7 +31,7 @@ namespace SynthShop.Controllers
             _categoryService = categoryService;
             _mapper = mapper;
             _categoryValidator = categoryValidator;
-            _logger = logger.ForContext<CategoryController>(); // Contextual logging
+            _logger = logger.ForContext<CategoryController>();
         }
 
         [HttpPost]
@@ -63,6 +66,7 @@ namespace SynthShop.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> GetAll([FromQuery] SearchQueryParameters searchQueryParameters)
         {
 
@@ -78,6 +82,7 @@ namespace SynthShop.Controllers
 
         [HttpGet]
         [Route("{id:Guid}")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
             var category = await _categoryService.GetByIdAsync(id);

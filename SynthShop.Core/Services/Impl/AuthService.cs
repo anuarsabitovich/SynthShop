@@ -15,6 +15,7 @@ using Microsoft.Identity.Client;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using SynthShop.Core.Services.Interfaces;
+using SynthShop.Domain.Constants;
 using SynthShop.Domain.Entities;
 using SynthShop.Infrastructure.Data.Interfaces;
 using AuthenticationResult = SynthShop.Domain.Results.AuthenticationResult;
@@ -43,6 +44,7 @@ namespace SynthShop.Core.Services.Impl
             if (result.Succeeded)
             {
                 _logger.Information("User {Email} registered successfully", user.Email);
+                await _userManager.AddToRoleAsync(user, RoleConstants.User);
             }
             else
             {
@@ -97,7 +99,7 @@ namespace SynthShop.Core.Services.Impl
             storedRefreshToken.Used = true;
             await _authRepository.UpdateRefreshToken(storedRefreshToken);
 
-            var user = await _userManager.FindByIdAsync(validatedToken.Claims.Single(x => x.Type == "id").Value);
+            var user = await _userManager.FindByIdAsync(validatedToken.Claims.Single(x => x.Type == ClaimTypes.NameIdentifier).Value);
             _logger.Information("Token refreshed successfully for user {UserId}", user.Id);
             return await GenerateAuthenticationResultForUser(user);
         }
@@ -131,16 +133,20 @@ namespace SynthShop.Core.Services.Impl
 
         private async Task<AuthenticationResult> GenerateAuthenticationResultForUser(User user)
         {
+            var userRoles = await _userManager.GetRolesAsync(user);
+
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(JwtRegisteredClaimNames.Sub, user.Email),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim("id", user.Id.ToString())
+                new (ClaimTypes.Name, user.UserName),
+                new (ClaimTypes.Email, user.Email),
+                new (ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new (JwtRegisteredClaimNames.Sub, user.Email),
+                new (JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
+            foreach (var userRole in userRoles)
+                claims.Add(new Claim(ClaimTypes.Role, userRole));
+            
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 

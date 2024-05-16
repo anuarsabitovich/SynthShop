@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-using SynthShop.Domain.Entities;
 using SynthShop.DTO;
 
 namespace SynthShop.Validations
@@ -8,10 +7,6 @@ namespace SynthShop.Validations
     {
         public OrderValidator() 
         {
-            RuleFor(dto => dto.CustomerId)
-                .NotEmpty()
-                .WithMessage("CustomerId is required.");
-
             RuleFor(dto => dto.BasketId)
                 .NotEmpty()
                 .WithMessage("BasketId is required.");

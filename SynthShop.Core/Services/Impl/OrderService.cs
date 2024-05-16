@@ -36,6 +36,11 @@ namespace SynthShop.Core.Services.Impl
                     basket.CustomerId = customerId;
                 }
 
+                if (!basket.Items.Any())
+                {
+                    throw new InvalidOperationException("Basket is empty");
+                }
+
                 var availabilityIssues = new List<string>();
                 foreach (var item in basket.Items)
                 {
@@ -79,27 +84,29 @@ namespace SynthShop.Core.Services.Impl
             }
             catch (DbUpdateConcurrencyException)
             {
-                // warning
-                
+                _logger.Warning("Failed to create order due to concurrency conflicts customerId: {customer}, basketId: {basket}", customerId, basketId);                
                 throw new InvalidOperationException("Failed to create order due to concurrency conflicts.");
             }
         }
 
-        public async Task CancelOrder(Guid orderId)
+        public async Task CancelOrder(Guid orderId, Guid customerId)
         {
             var order = await _orderRepository.GetOrderAsync(orderId);
-
 
             if (order == null)
             {
                 throw new InvalidOperationException("Order not found.");
             }
 
+            if (order.UserId != customerId)
+            {
+                throw new InvalidOperationException("User can't modify other user's order");
+            }
+
             if (order.Status == OrderStatus.Completed)
             {
                 throw new InvalidOperationException("Completed orders cannot be cancelled.");
             }
-
 
             if (order.Status == OrderStatus.Pending)
             {
@@ -116,13 +123,18 @@ namespace SynthShop.Core.Services.Impl
             await _orderRepository.DeleteOrderAsync(orderId);
         }
 
-        public async Task CompleteOrder(Guid orderId)
+        public async Task CompleteOrder(Guid orderId, Guid customerId)
         {
             var order = await _orderRepository.GetOrderAsync(orderId);
 
             if (order == null)
             {
                 throw new InvalidOperationException("Order not found.");
+            }
+
+            if (order.UserId != customerId)
+            {
+                throw new InvalidOperationException("User can't modify other user's order");
             }
 
             if (order.Status == OrderStatus.Completed)

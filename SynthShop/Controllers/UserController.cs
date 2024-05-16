@@ -5,7 +5,9 @@ using SynthShop.Core.Services.Impl;
 using SynthShop.Domain.Entities;
 using SynthShop.DTO;
 using SynthShop.Core.Services.Interfaces;
+using SynthShop.Domain.Constants;
 using SynthShop.Domain.Extensions;
+using SynthShop.Extensions;
 using SynthShop.Validations;
 using ILogger = Serilog.ILogger;
 using SynthShop.Queries;
@@ -14,12 +16,12 @@ namespace SynthShop.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Roles(RoleConstants.Admin)]
     public class UserController : ControllerBase
     {
         private readonly ICustomerService _customerService;
         private readonly IMapper _mapper;
         private readonly CustomerValidator _customerValidator;
-        private readonly QueryParametersValidator _queryParametersValidator;
         private readonly ILogger _logger;
 
         public UserController(ICustomerService customerService, IMapper mapper, CustomerValidator customerValidator, ILogger logger, QueryParametersValidator queryParametersValidator)

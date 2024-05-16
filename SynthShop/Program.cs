@@ -10,6 +10,7 @@ using SynthShop.Validations;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
+using SynthShop.Core.Services.Interfaces;
 using SynthShop.Domain.Constants;
 using SynthShop.Domain.Settings;
 using SynthShop.Middleware;
@@ -24,6 +25,7 @@ builder.Host.UseSerilog((context, configuration) =>
 
 
 builder.Services.Configure<PagingSettings>(config.GetSection(nameof(PagingSettings)));
+
 
 builder.Services.AddExceptionHandler<CustomExceptionHandler>();
 
@@ -55,6 +57,7 @@ builder.Services.AddAuthentication(x =>
 builder.Services.AddControllers();
 // 
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IUserProvider, UserProvider>();
 builder.Services.AddHeaderPropagation(options => options.Headers.Add(LogConstants.CorrelationHeader));
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -62,7 +65,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
     options.OperationFilter<CorrelationHeaderSwaggerOperationFilter>();
-    options.SwaggerDoc("v1", new OpenApiInfo { Title = "NZ Walk API", Version = "v1" });
+    options.SwaggerDoc("v1", new OpenApiInfo { Title = "Synth Shop API", Version = "v1" });
     options.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -105,7 +108,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
     app.UseSerilogRequestLogging();
-
 }
 
 
@@ -114,7 +116,6 @@ app.UseHsts();
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
-
 app.UseAuthorization();
 
 app.UseHeaderPropagation();
