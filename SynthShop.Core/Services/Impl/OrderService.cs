@@ -12,13 +12,14 @@ namespace SynthShop.Core.Services.Impl
         private readonly IOrderRepository _orderRepository;
         private readonly IBasketRepository _basketRepository;
         private readonly ILogger _logger;
+        private readonly IUnitOfWork _unitOfWork;
 
-
-        public OrderService(IOrderRepository orderRepository, IBasketRepository basketRepository, ILogger logger)
+        public OrderService(IOrderRepository orderRepository, IBasketRepository basketRepository, ILogger logger, IUnitOfWork unitOfWork)
         {
             _orderRepository = orderRepository;
             _basketRepository = basketRepository;
             _logger = logger;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<Order> CreateOrder(Guid basketId, Guid customerId) 
@@ -78,8 +79,9 @@ namespace SynthShop.Core.Services.Impl
                     TotalAmount = basket.Items.Sum(i => i.Product.Price * i.Quantity),
                     CreatedAt = DateTime.UtcNow
                 };
-
-                return await _orderRepository.CreateOrderAsync(order);
+                var result = await _orderRepository.CreateOrderAsync(order);
+                await _unitOfWork.SaveChangesAsync();
+                return result;
 
             }
             catch (DbUpdateConcurrencyException)
@@ -121,6 +123,7 @@ namespace SynthShop.Core.Services.Impl
             order.Status = OrderStatus.Cancelled;
 
             await _orderRepository.DeleteOrderAsync(orderId);
+            await _unitOfWork.SaveChangesAsync();
         }
 
         public async Task CompleteOrder(Guid orderId, Guid customerId)
@@ -150,6 +153,7 @@ namespace SynthShop.Core.Services.Impl
             order.Status = OrderStatus.Completed;
 
             await _orderRepository.UpdateOrderAsync(orderId, order);
+            await _unitOfWork.SaveChangesAsync();
         }
     }
 }

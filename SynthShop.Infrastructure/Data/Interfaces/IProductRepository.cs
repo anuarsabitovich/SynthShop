@@ -1,8 +1,6 @@
-﻿
-using SynthShop.Domain.Entities;
+﻿using SynthShop.Domain.Entities;
 using System.Linq.Expressions;
 using SynthShop.Domain.Extensions;
-
 
 namespace SynthShop.Infrastructure.Data.Interfaces
 {
@@ -15,6 +13,5 @@ namespace SynthShop.Infrastructure.Data.Interfaces
         Task<Product?> GetByIdAsync(Guid id);
         Task<Product?> UpdateAsync(Product product);
         Task<Product?> DeleteAsync(Product product);    
-
     }
 }

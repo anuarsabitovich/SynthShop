@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using SynthShop.Domain.Entities;
 using SynthShop.Infrastructure.Data.Interfaces;
 
@@ -18,11 +13,10 @@ namespace SynthShop.Infrastructure.Data.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task<Guid> CreateBasketItemAsync(BasketItem basketItem)
+        public async Task<BasketItem> CreateBasketItemAsync(BasketItem basketItem)
         {
             await _dbContext.BasketItems.AddAsync(basketItem);
-            await _dbContext.SaveChangesAsync();
-            return basketItem.BasketItemId;
+            return basketItem;
         }
 
         public async Task<List<BasketItem?>> GetBasketItemsAsync()
@@ -37,24 +31,20 @@ namespace SynthShop.Infrastructure.Data.Repositories
 
         public async Task<BasketItem?> UpdateBasketItemAsync(Guid basketItemId, BasketItem updateBasketItem)
         {
-            var existingBasketItem = await _dbContext.BasketItems.FirstOrDefaultAsync(bi => bi.BasketItemId == basketItemId);
+            var existingBasketItem = await _dbContext.BasketItems.FirstAsync(bi => bi.BasketItemId == basketItemId);
 
             existingBasketItem.Quantity = updateBasketItem.Quantity;
 
             _dbContext.BasketItems.Update(existingBasketItem);
-            await _dbContext.SaveChangesAsync();
 
             return existingBasketItem;
         }
 
         public async Task DeleteBasketItem(Guid basketItemId)
         {
-            var basketItem = await _dbContext.BasketItems.FirstOrDefaultAsync(bi => bi.BasketItemId == basketItemId);
+            var basketItem = await _dbContext.BasketItems.FirstAsync(bi => bi.BasketItemId == basketItemId);
 
             _dbContext.BasketItems.Remove(basketItem);
-
-            await _dbContext.SaveChangesAsync();
-            
         }
     }
 }

@@ -1,12 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using NSubstitute;
+﻿using NSubstitute;
 using Serilog;
 using SynthShop.Core.Services.Impl;
 using SynthShop.Domain.Entities;
 using SynthShop.Infrastructure.Data.Interfaces;
-using Xunit;
+
 namespace SynthShop.Tests
 {
     public class BasketServiceTests
@@ -16,31 +13,35 @@ namespace SynthShop.Tests
         private readonly IProductRepository _productRepository;
         private readonly IBasketItemRepository _basketItemRepository;
         private readonly BasketService _sut;
-
+        private readonly IUnitOfWork _unitOfWork;
         public BasketServiceTests()
         {
             _basketRepository = Substitute.For<IBasketRepository>();
             _logger = Substitute.For<ILogger>();
             _productRepository = Substitute.For<IProductRepository>();
             _basketItemRepository = Substitute.For<IBasketItemRepository>();
-
-            _sut = new BasketService(_basketRepository, _logger, _productRepository, _basketItemRepository);
+            _unitOfWork = Substitute.For<IUnitOfWork>();
+            _sut = new BasketService(_basketRepository, _logger, _productRepository, _basketItemRepository, _unitOfWork );
         }
 
         [Fact]
         public async Task CreateBasketAsync_ShouldReturnBasketId()
         {
             // Arrange
-
             var basketId = Guid.NewGuid();
-            _basketRepository.CreateBasketAsync().Returns(Task.FromResult(basketId));
+            var basket = new Basket { BasketId = basketId };
+
+            _basketRepository.When(x => x.CreateBasketAsync(Arg.Any<Basket>()))
+                .Do(x => x.Arg<Basket>().BasketId = basketId);
+            _unitOfWork.SaveChangesAsync().Returns(Task.CompletedTask);
 
             // Act
-
             var result = await _sut.CreateBasketAsync();
 
             // Assert
             Assert.Equal(basketId, result);
+            await _basketRepository.Received(1).CreateBasketAsync(Arg.Is<Basket>(b => b.BasketId == basketId));
+            await _unitOfWork.Received(1).SaveChangesAsync();
         }
 
         [Fact]

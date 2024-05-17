@@ -19,6 +19,7 @@ namespace SynthShop.Tests
         private readonly IProductRepository _productRepository;
         private readonly ILogger _logger;
         private readonly IOptions<PagingSettings> _pagingSettings;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly ProductService _sut;
 
         public ProductServiceTests()
@@ -26,8 +27,9 @@ namespace SynthShop.Tests
             _productRepository = Substitute.For<IProductRepository>();
             _logger = Substitute.For<ILogger>();
             _pagingSettings = Options.Create(new PagingSettings { PageSize = 10 });
+            _unitOfWork = Substitute.For<IUnitOfWork>();
 
-            _sut = new ProductService(_productRepository, _logger, _pagingSettings);
+            _sut = new ProductService(_productRepository, _logger, _pagingSettings, _unitOfWork);
         }
 
         [Fact]

@@ -19,10 +19,12 @@ namespace SynthShop.Core.Services.Impl
         private readonly ICustomerRepository _customerRepository;
         private readonly PagingSettings _pagingSettings;
         private readonly ILogger _logger;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public CustomerService(ICustomerRepository customerRepository, ILogger logger, IOptions<PagingSettings> pagingSettings)
+        public CustomerService(ICustomerRepository customerRepository, ILogger logger, IOptions<PagingSettings> pagingSettings, IUnitOfWork unitOfWork)
         {
             _customerRepository = customerRepository;
+            _unitOfWork = unitOfWork;
             _pagingSettings = pagingSettings.Value;
             _logger = logger.ForContext<CustomerService>();
         }
@@ -30,6 +32,7 @@ namespace SynthShop.Core.Services.Impl
         public async Task CreateAsync(User user)
         {
             await _customerRepository.CreateAsync(user);
+            await _unitOfWork.SaveChangesAsync();
             _logger.Information("Customer created with ID {CustomerId}", user.Id);
         }
 
@@ -61,6 +64,7 @@ namespace SynthShop.Core.Services.Impl
             existingUser.UpdateAt = DateTime.UtcNow;
 
             var updated = await _customerRepository.UpdateAsync(existingUser);
+            await _unitOfWork.SaveChangesAsync();
             _logger.Information("Customer with ID {CustomerId} updated", id);
             return updated;
         }
@@ -75,6 +79,7 @@ namespace SynthShop.Core.Services.Impl
             }
 
             var deletedCustomer = await _customerRepository.DeleteAsync(customer);
+            await _unitOfWork.SaveChangesAsync();
             _logger.Information("Customer with ID {CustomerId} marked as deleted", id);
             return deletedCustomer;
         }

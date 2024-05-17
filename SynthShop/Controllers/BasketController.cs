@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SynthShop.Core.Services.Interfaces;
@@ -16,14 +17,16 @@ namespace SynthShop.Controllers
     {
         private readonly IBasketService _basketService;
         private readonly IMapper _mapper;
-        private readonly BasketItemValidator _basketItemValidator;
+        private readonly AddBasketItemValidator _addBasketItemValidator;
         private readonly ILogger _logger;
+        private readonly UpdateBasketItemValidator _updateBasketItemValidator;
 
-        public BasketController(IBasketService basketService, IMapper mapper, BasketItemValidator basketItemValidator, ILogger logger)
+        public BasketController(IBasketService basketService, IMapper mapper, AddBasketItemValidator addBasketItemValidator, ILogger logger, UpdateBasketItemValidator updateBasketItemValidator)
         {
             _basketService = basketService;
             _mapper = mapper;
-            _basketItemValidator = basketItemValidator;
+            _addBasketItemValidator = addBasketItemValidator;
+            _updateBasketItemValidator = updateBasketItemValidator;
             _logger = logger.ForContext<BasketController>();
         }
         [HttpPost]
@@ -62,7 +65,7 @@ namespace SynthShop.Controllers
         public async Task<IActionResult> AddItemToBasket( [FromRoute] Guid id,[FromBody] AddBasketItemDTO addBasketItemDto)
         {
             _logger.Information("Adding item to basket {BasketId}", id);
-            var validationResult = await _basketItemValidator.ValidateAsync(addBasketItemDto);
+            var validationResult = await _addBasketItemValidator.ValidateAsync(addBasketItemDto);
             if (!validationResult.IsValid)
             {
                 _logger.Error("Validation failed for adding item to basket {BasketId}: {@Errors}", id, validationResult.Errors);
@@ -87,16 +90,16 @@ namespace SynthShop.Controllers
         
         [HttpPut]
         [Route("{id:Guid}")]
-        public async Task<IActionResult> UpdateItemInBasket([FromRoute] Guid id, [FromBody] AddBasketItemDTO updateBaskItemDto)
+        public async Task<IActionResult> UpdateItemInBasket([FromRoute] Guid id, [FromBody] UpdateBaskItemDTO updateBaskItemDto)
         {
             _logger.Information("Updating item in basket {BasketId}", id);
-            var validationResult = await _basketItemValidator.ValidateAsync(updateBaskItemDto);
+            var validationResult = await _updateBasketItemValidator.ValidateAsync(updateBaskItemDto);
             if (!validationResult.IsValid)
             {
                 _logger.Warning("Validation failed for updating item in basket {BasketId}: {Errors}", id, validationResult.Errors);
                 return BadRequest(validationResult.Errors);
             }
-            await _basketService.UpdateItemInBasket(id, updateBaskItemDto.ProductId, updateBaskItemDto.Quantity);
+            await _basketService.UpdateItemInBasket(id, updateBaskItemDto.BasketItemId, updateBaskItemDto.Quantity);
             _logger.Information("Item in basket {BasketId} was updated", id);
             return Ok("Item in the basket was updated");
         }

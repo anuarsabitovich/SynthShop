@@ -22,14 +22,15 @@ namespace SynthShop.Tests
         private readonly ILogger _logger;
         private readonly IOptions<PagingSettings> _pagingSettings;
         private readonly CategoryService _sut;
-
+        private readonly IUnitOfWork _unitOfWork;
         public CategoryServiceTests()
         {
             _categoryRepository = Substitute.For<ICategoryRepository>();
             _logger = Substitute.For<ILogger>();
             _pagingSettings = Options.Create(new PagingSettings { PageSize = 10 });
+            _unitOfWork = Substitute.For<IUnitOfWork>();
 
-            _sut = new CategoryService(_categoryRepository, _logger, _pagingSettings);
+            _sut = new CategoryService(_categoryRepository, _logger, _pagingSettings, _unitOfWork);
         }
 
         [Fact]
@@ -62,6 +63,7 @@ namespace SynthShop.Tests
 
             // Assert
             await _categoryRepository.Received(1).CreateAsync(category);
+            await _unitOfWork.Received(1).SaveChangesAsync();
         }
 
         [Fact]
@@ -140,6 +142,7 @@ namespace SynthShop.Tests
             Assert.Equal(updatedCategory.Name, existingCategory.Name);
             Assert.Equal(updatedCategory.Description, existingCategory.Description);
             await _categoryRepository.Received(1).UpdateAsync(existingCategory);
+            await _unitOfWork.Received(1).SaveChangesAsync();
         }
 
         [Fact]
@@ -171,6 +174,7 @@ namespace SynthShop.Tests
             // Assert
             Assert.Equal(category, result);
             await _categoryRepository.Received(1).DeleteAsync(category);
+            await _unitOfWork.Received(1).SaveChangesAsync();
         }
     }
 }

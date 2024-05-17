@@ -18,11 +18,12 @@ namespace SynthShop.Core.Services.Impl
         private readonly IProductRepository _productRepository;
         private readonly ILogger _logger;
         private readonly PagingSettings _pagingSettings;
+        private readonly IUnitOfWork _unitOfWork;
 
-
-        public ProductService(IProductRepository productRepository, ILogger logger, IOptions<PagingSettings> pagingSettings)
+        public ProductService(IProductRepository productRepository, ILogger logger, IOptions<PagingSettings> pagingSettings, IUnitOfWork unitOfWork)
         {
             _productRepository = productRepository;
+            _unitOfWork = unitOfWork;
             _logger = logger.ForContext<ProductService>();
             _pagingSettings = pagingSettings.Value;
         }
@@ -36,6 +37,7 @@ namespace SynthShop.Core.Services.Impl
             }
 
             await _productRepository.CreateAsync(product);
+            await _unitOfWork.SaveChangesAsync();
             _logger.Information("Product created with ID {ProductId}", product.ProductID);
         }
 
@@ -69,6 +71,7 @@ namespace SynthShop.Core.Services.Impl
             existingProduct.UpdateAt = DateTime.UtcNow;
 
             var updated = await _productRepository.UpdateAsync(existingProduct);
+            await _unitOfWork.SaveChangesAsync();
             _logger.Information("Product with ID {ProductId} updated", id);
             return updated;
         }
@@ -84,6 +87,7 @@ namespace SynthShop.Core.Services.Impl
 
             product.IsDeleted = true;
             var deletedProduct = await _productRepository.DeleteAsync(product);
+            await _unitOfWork.SaveChangesAsync();
             _logger.Information("Product with ID {ProductId} marked as deleted", id);
             return deletedProduct;
         }

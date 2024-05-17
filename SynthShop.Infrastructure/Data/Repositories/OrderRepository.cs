@@ -1,7 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SynthShop.Domain.Entities;
-using SynthShop.Domain.Enums;
-using SynthShop.Infrastructure.Data;
 using SynthShop.Infrastructure.Data.Interfaces;
 
 namespace SynthShop.Infrastructure.Data.Repositories
@@ -30,25 +28,15 @@ namespace SynthShop.Infrastructure.Data.Repositories
         public async Task<Order> CreateOrderAsync(Order order)
         {
             _dbContext.Orders.Add(order);
-            await _dbContext.SaveChangesAsync();
             return order;
         }
-
-
-
-
-
-
-
 
         public async Task DeleteOrderAsync(Guid orderId)
         {
             var order = new Order() { OrderID = orderId, IsDeleted = true };
             _dbContext.Orders.Attach(order);
             _dbContext.Entry(order).Property(e => e.IsDeleted).IsModified = true;
-            await _dbContext.SaveChangesAsync();
         }
-
 
         public async Task<Order?> UpdateOrderAsync(Guid orderId, Order order)
         {
@@ -65,10 +53,7 @@ namespace SynthShop.Infrastructure.Data.Repositories
             existingOrder.OrderItems = order.OrderItems;
             existingOrder.UpdateAt = DateTime.UtcNow;
             existingOrder.IsDeleted = order.IsDeleted;
-            
-            
-            
-            await _dbContext.SaveChangesAsync();
+
             return order;
         }
         

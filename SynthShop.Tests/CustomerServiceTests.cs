@@ -21,14 +21,14 @@ namespace SynthShop.Tests
         private readonly ICustomerService _sut;
         private readonly ICustomerRepository _customerRepository;
         private readonly ILogger _logger;
-
+        private readonly IUnitOfWork _unitOfWork;
         public CustomerServiceTests()
         {
             _customerRepository = Substitute.For<ICustomerRepository>();
             _logger = Substitute.For<ILogger>();
-
+            _unitOfWork = Substitute.For<IUnitOfWork>();
             var pagingSettings = Options.Create(new PagingSettings { PageSize = 10 });
-            _sut = new CustomerService(_customerRepository, _logger, pagingSettings);
+            _sut = new CustomerService(_customerRepository, _logger, pagingSettings, _unitOfWork);
         }
         
         [Fact]
@@ -106,6 +106,7 @@ namespace SynthShop.Tests
             var result = await _sut.UpdateAsync(customerId, updatedUser);
             
             // Assert
+            await _unitOfWork.Received(1).SaveChangesAsync();
             Assert.NotNull(result);
             Assert.Equal("Jane", result.FirstName);
             Assert.Equal("Doe", result.LastName);

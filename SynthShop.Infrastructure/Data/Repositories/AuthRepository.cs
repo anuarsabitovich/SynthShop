@@ -12,6 +12,7 @@ namespace SynthShop.Infrastructure.Data.Repositories
     public class AuthRepository : IAuthRepository
     {
         private readonly MainDbContext _dbContext;
+        
 
         public AuthRepository(MainDbContext dbContext)
         {
@@ -28,14 +29,11 @@ namespace SynthShop.Infrastructure.Data.Repositories
         public async Task UpdateRefreshToken(RefreshToken token)
         {
             _dbContext.RefreshTokens.Update(token);
-            await _dbContext.SaveChangesAsync();
         }
 
-        public async Task<RefreshToken?> AddRefreshToken(RefreshToken token)
+        public async Task AddRefreshToken(RefreshToken token)
         {
             await _dbContext.RefreshTokens.AddAsync(token);
-            await _dbContext.SaveChangesAsync();
-            return token;
         }
     }
 }

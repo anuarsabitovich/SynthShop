@@ -1,5 +1,4 @@
-﻿
-using SynthShop.Domain.Entities;
+﻿using SynthShop.Domain.Entities;
 
 namespace SynthShop.Infrastructure.Data.Interfaces
 {

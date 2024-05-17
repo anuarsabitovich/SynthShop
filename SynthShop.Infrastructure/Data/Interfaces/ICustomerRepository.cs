@@ -1,11 +1,8 @@
-﻿
-using SynthShop.Domain.Entities;
+﻿using SynthShop.Domain.Entities;
 using System.Linq.Expressions;
 using SynthShop.Domain.Extensions;
 
-
 namespace SynthShop.Infrastructure.Data.Interfaces
-
 {
     public interface ICustomerRepository
     {
