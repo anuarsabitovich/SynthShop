@@ -29,9 +29,10 @@ namespace SynthShop.Core.Services.Impl
 
         public async Task CreateAsync(Category category)
         {
+            Expression<Func<Category, bool>> filter = x => x.Name.Contains(category.Name, StringComparison.OrdinalIgnoreCase);
 
-            var existingCategory = await _categoryRepository.GetAllAsync();
-            if (existingCategory.Items.Exists(x => x.Name.Equals(category.Name, StringComparison.OrdinalIgnoreCase)))
+            var existingCategory = await _categoryRepository.GetAllAsync(filter);
+            if (existingCategory.Items.Any())
             {
                 _logger.Warning("Attempted to create a category with a duplicate name: {CategoryName}", category.Name);
                 throw new InvalidOperationException($"Category with name '{category.Name}' already exists.");
