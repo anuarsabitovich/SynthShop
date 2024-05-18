@@ -1,8 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using LanguageExt.Common;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 using SynthShop.Core.Services.Interfaces;
 using SynthShop.Domain.Entities;
 using SynthShop.Domain.Enums;
+using SynthShop.Domain.Exceptions;
 using SynthShop.Infrastructure.Data.Interfaces;
 
 namespace SynthShop.Core.Services.Impl
@@ -22,24 +24,20 @@ namespace SynthShop.Core.Services.Impl
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<Order> CreateOrder(Guid basketId, Guid customerId) 
+        public async Task<Result<Order>> CreateOrder(Guid basketId, Guid customerId) 
         {
             try
             {
                 var basket = await _basketRepository.GetBasketByIdAsync(basketId);
 
-
                 if (basket == null)
-                    throw new InvalidOperationException("Basket not found.");
+                    return new Result<Order>(new OrderFailedException("Basket not found."));
 
-                if (!basket.CustomerId.HasValue)
-                {
-                    basket.CustomerId = customerId;
-                }
+                basket.CustomerId ??= customerId;
 
                 if (!basket.Items.Any())
                 {
-                    throw new InvalidOperationException("Basket is empty");
+                    return new Result<Order>(new OrderFailedException("Basket is empty."));
                 }
 
                 var availabilityIssues = new List<string>();
@@ -58,8 +56,7 @@ namespace SynthShop.Core.Services.Impl
                 if (availabilityIssues.Any())
                 {
                     _logger.Warning("Failed to create order due to concurrency conflicts for basket ID {BasketId}", basketId);
-
-                    throw new InvalidOperationException("There are issues with product availability: " + string.Join(", ", availabilityIssues));
+                    return new Result<Order>(new OrderFailedException(string.Join(", ", availabilityIssues)));
                 }
 
                 var order = new Order
@@ -84,10 +81,10 @@ namespace SynthShop.Core.Services.Impl
                 return result;
 
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException e)
             {
-                _logger.Warning("Failed to create order due to concurrency conflicts customerId: {customer}, basketId: {basket}", customerId, basketId);                
-                throw new InvalidOperationException("Failed to create order due to concurrency conflicts.");
+                _logger.Warning(e, "Failed to create order due to concurrency conflicts customerId: {customer}, basketId: {basket}", customerId, basketId);
+                return new Result<Order>(e);
             }
         }
 
