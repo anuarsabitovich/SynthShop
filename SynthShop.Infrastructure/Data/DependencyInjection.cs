@@ -16,7 +16,7 @@ namespace SynthShop.Infrastructure.Data
             // Dependency injection for Db Context
             services.AddDbContext<MainDbContext>(options =>
             options.UseSqlServer(configuration.GetConnectionString("MainDbConnectionString")));
-
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddIdentity<User,IdentityRole<Guid>>(options =>
             {
                 options.Password.RequiredLength = 12;

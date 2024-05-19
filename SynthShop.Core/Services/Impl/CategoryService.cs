@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using System.Linq.Expressions;
 using Microsoft.Extensions.Options;
 using Serilog;
 using SynthShop.Core.Services.Interfaces;
@@ -19,10 +15,12 @@ namespace SynthShop.Core.Services.Impl
         private readonly ICategoryRepository _categoryRepository;
         private readonly PagingSettings _pagingSettings;
         private readonly ILogger _logger;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public CategoryService(ICategoryRepository categoryRepository, ILogger logger, IOptions<PagingSettings> pagingSettings)
+        public CategoryService(ICategoryRepository categoryRepository, ILogger logger, IOptions<PagingSettings> pagingSettings, IUnitOfWork unitOfWork)
         {
             _categoryRepository = categoryRepository;
+            _unitOfWork = unitOfWork;
             _pagingSettings = pagingSettings.Value;
             _logger = logger.ForContext<CategoryService>();
         }
@@ -39,6 +37,7 @@ namespace SynthShop.Core.Services.Impl
             }
 
             await _categoryRepository.CreateAsync(category);
+            await _unitOfWork.SaveChangesAsync();
             _logger.Information("Category created with ID {CategoryId}", category.CategoryID);
         }
 
@@ -70,6 +69,7 @@ namespace SynthShop.Core.Services.Impl
 
             var updated = await _categoryRepository.UpdateAsync(existingCategory);
             _logger.Information("Category with ID {CategoryId} updated", id);
+            await _unitOfWork.SaveChangesAsync();
             return updated;
         }
 
@@ -84,6 +84,7 @@ namespace SynthShop.Core.Services.Impl
 
             var deletedCategory = await _categoryRepository.DeleteAsync(category);
             _logger.Information("Category with ID {CategoryId} marked as deleted", id);
+            await _unitOfWork.SaveChangesAsync();
             return deletedCategory;
         }
     }

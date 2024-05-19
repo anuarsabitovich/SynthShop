@@ -1,7 +1,5 @@
 using System.Text;
-using Microsoft.EntityFrameworkCore;
 using SynthShop.Infrastructure.Data;
-using AutoMapper;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using SynthShop.Mapper.Profiles;

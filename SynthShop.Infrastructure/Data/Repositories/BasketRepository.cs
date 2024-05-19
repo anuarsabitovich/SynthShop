@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Serilog;
+﻿using Microsoft.EntityFrameworkCore;
 using SynthShop.Domain.Entities;
 using SynthShop.Infrastructure.Data.Interfaces;
 
@@ -13,21 +7,16 @@ namespace SynthShop.Infrastructure.Data.Repositories
     public class BasketRepository : IBasketRepository
     {
         private readonly MainDbContext _dbContext;
-        private readonly ILogger _logger;
 
-        public BasketRepository(MainDbContext dbContext, ILogger logger)
+        public BasketRepository(MainDbContext dbContext)
         {
             _dbContext = dbContext;
-            _logger = logger.ForContext<BasketRepository>();
         }
 
 
-        public async Task<Guid> CreateBasketAsync()
+        public async Task CreateBasketAsync(Basket basket)
         {
-            var basket = new Basket();
             await _dbContext.Baskets.AddAsync(basket);
-            await _dbContext.SaveChangesAsync();
-            return basket.BasketId;
         }
 
         public async Task<Basket?> GetBasketByIdAsync(Guid basketId)
@@ -44,7 +33,6 @@ namespace SynthShop.Infrastructure.Data.Repositories
             
             _dbContext.BasketItems.RemoveRange(basket.Items);
             _dbContext.Baskets.Remove(basket);
-            await _dbContext.SaveChangesAsync();
         }
 
     }

@@ -3,9 +3,9 @@ using SynthShop.DTO;
 
 namespace SynthShop.Validations
 {
-    public class BasketItemValidator : AbstractValidator<AddBasketItemDTO>
+    public class AddBasketItemValidator : AbstractValidator<AddBasketItemDTO>
     {
-        public BasketItemValidator()
+        public AddBasketItemValidator()
         {
             RuleFor(dto => dto.ProductId)
                 .NotEmpty()

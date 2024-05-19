@@ -21,14 +21,16 @@ namespace SynthShop.Core.Services.Impl
         private readonly TokenValidationParameters _tokenValidationParameters;
         private readonly IAuthRepository _authRepository;
         private readonly ILogger _logger;
+        private readonly IUnitOfWork _unitOfWork;
         
-        public AuthService(UserManager<User> userManager, IConfiguration configuration, TokenValidationParameters tokenValidationParameters, IAuthRepository authRepository, ILogger logger)
+        public AuthService(UserManager<User> userManager, IConfiguration configuration, TokenValidationParameters tokenValidationParameters, IAuthRepository authRepository, ILogger logger, IUnitOfWork unitOfWork)
         {
             _userManager = userManager;
             _configuration = configuration;
             _tokenValidationParameters = tokenValidationParameters;
             _authRepository = authRepository;
             _logger = logger;
+            _unitOfWork = unitOfWork;
         }
         public async Task<IdentityResult> RegisterUserAsync(User user, string password)
         {
@@ -65,14 +67,16 @@ namespace SynthShop.Core.Services.Impl
                 return new AuthenticationResult() { Errors = new[] { "Login Failed" } };
             }
 
-            var tokenResult = GenerateAuthenticationResultForUser(user);
+            var claims = await GetClaimListAsync(_userManager, user);
+
+            var tokenResult = await GenerateAuthenticationResultAsync(user, claims);
             _logger.Information("User {Email} signed in successfully", loginRequest.Email);
-            return await tokenResult;
+            return tokenResult;
         }
 
         public async Task<AuthenticationResult> RefreshTokenAsync(string token, Guid refreshToken)
         {
-            var validatedToken =  getPrincipalFromToken(token);
+            var validatedToken =  GetPrincipalFromToken(token);
 
             if (!ValidateAccessToken(validatedToken))
             {
@@ -90,13 +94,15 @@ namespace SynthShop.Core.Services.Impl
 
             storedRefreshToken.Used = true;
             await _authRepository.UpdateRefreshToken(storedRefreshToken);
-
+            await _unitOfWork.SaveChangesAsync();
             var user = await _userManager.FindByIdAsync(validatedToken.Claims.Single(x => x.Type == ClaimTypes.NameIdentifier).Value);
             _logger.Information("Token refreshed successfully for user {UserId}", user.Id);
-            return await GenerateAuthenticationResultForUser(user);
+            var claims = await GetClaimListAsync(_userManager, user);
+
+            return await GenerateAuthenticationResultAsync(user, claims);
         }
 
-        private ClaimsPrincipal getPrincipalFromToken(string token)
+        private ClaimsPrincipal? GetPrincipalFromToken(string token)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
 
@@ -123,22 +129,8 @@ namespace SynthShop.Core.Services.Impl
                        StringComparison.InvariantCultureIgnoreCase);
         }
 
-        private async Task<AuthenticationResult> GenerateAuthenticationResultForUser(User user)
+        private async Task<AuthenticationResult> GenerateAuthenticationResultAsync(User user, List<Claim> claims)
         {
-            var userRoles = await _userManager.GetRolesAsync(user);
-
-            var claims = new List<Claim>
-            {
-                new (ClaimTypes.Name, user.UserName),
-                new (ClaimTypes.Email, user.Email),
-                new (ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new (JwtRegisteredClaimNames.Sub, user.Email),
-                new (JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-            };
-
-            foreach (var userRole in userRoles)
-                claims.Add(new Claim(ClaimTypes.Role, userRole));
-            
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
@@ -150,14 +142,17 @@ namespace SynthShop.Core.Services.Impl
                 signingCredentials: creds
             );
 
-            var refreshToken = await _authRepository.AddRefreshToken(new RefreshToken
+            var refreshToken = new RefreshToken
             {
                 JwtId = token.Id,
                 UserId = user.Id,
                 CreationDate = DateTime.UtcNow,
                 ExpiryDate = DateTime.UtcNow.AddMonths(6)
-            });
+            };
 
+            
+            await _authRepository.AddRefreshToken(refreshToken);
+            await _unitOfWork.SaveChangesAsync();
             return new AuthenticationResult
             {
                 Success = true,
@@ -216,5 +211,25 @@ namespace SynthShop.Core.Services.Impl
 
             return true;
         }
+
+        private async Task<List<Claim>> GetClaimListAsync(UserManager<User> userManager, User user )
+        {
+            var userRoles = await userManager.GetRolesAsync(user);
+
+            var claims = new List<Claim>
+            {
+                new (ClaimTypes.Name, user.UserName),
+                new (ClaimTypes.Email, user.Email),
+                new (ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new (JwtRegisteredClaimNames.Sub, user.Email),
+                new (JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            };
+
+            foreach (var userRole in userRoles)
+                claims.Add(new Claim(ClaimTypes.Role, userRole));
+            
+            return claims;
+        }
+
     }
 }
