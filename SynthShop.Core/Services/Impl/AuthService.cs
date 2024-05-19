@@ -76,7 +76,7 @@ namespace SynthShop.Core.Services.Impl
 
         public async Task<AuthenticationResult> RefreshTokenAsync(string token, Guid refreshToken)
         {
-            var validatedToken =  GetPrincipalFromToken(token);
+            var validatedToken = GetPrincipalFromToken(token);
 
             if (!ValidateAccessToken(validatedToken))
             {
@@ -95,12 +95,27 @@ namespace SynthShop.Core.Services.Impl
             storedRefreshToken.Used = true;
             await _authRepository.UpdateRefreshToken(storedRefreshToken);
             await _unitOfWork.SaveChangesAsync();
-            var user = await _userManager.FindByIdAsync(validatedToken.Claims.Single(x => x.Type == ClaimTypes.NameIdentifier).Value);
+
+            var userIdClaim = validatedToken.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
+            {
+                _logger.Error("Claim {ClaimType} not found in token", ClaimTypes.NameIdentifier);
+                return new AuthenticationResult() { Errors = new[] { "Invalid token" } };
+            }
+
+            var user = await _userManager.FindByIdAsync(userIdClaim.Value);
+            if (user == null)
+            {
+                _logger.Warning("User with ID {UserId} not found", userIdClaim.Value);
+                return new AuthenticationResult() { Errors = new[] { "Invalid token" } };
+            }
+
             _logger.Information("Token refreshed successfully for user {UserId}", user.Id);
             var claims = await GetClaimListAsync(_userManager, user);
 
             return await GenerateAuthenticationResultAsync(user, claims);
         }
+
 
         private ClaimsPrincipal? GetPrincipalFromToken(string token)
         {
@@ -138,7 +153,7 @@ namespace SynthShop.Core.Services.Impl
                 issuer: _configuration["JwtSettings:Issuer"],
                 audience: _configuration["JwtSettings:Audience"],
                 claims: claims,
-                expires: DateTime.Now.AddHours(1),
+                expires: DateTime.Now.AddMinutes(1),
                 signingCredentials: creds
             );
 
