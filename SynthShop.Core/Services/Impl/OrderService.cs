@@ -66,7 +66,7 @@ namespace SynthShop.Core.Services.Impl
                 {
                     OrderID = Guid.NewGuid(),
                     OrderDate = DateTime.UtcNow,
-                    UserId = basket.CustomerId.Value,
+                    UserId = customerId,
                     Status = OrderStatus.Pending,
                     OrderItems = basket.Items.Select(bi => new OrderItem
                     {
