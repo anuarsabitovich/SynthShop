@@ -13,13 +13,15 @@ namespace SynthShop.Core.Services.Impl
         private readonly IBasketRepository _basketRepository;
         private readonly ILogger _logger;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IProductRepository _productRepository;
 
-        public OrderService(IOrderRepository orderRepository, IBasketRepository basketRepository, ILogger logger, IUnitOfWork unitOfWork)
+        public OrderService(IOrderRepository orderRepository, IBasketRepository basketRepository, ILogger logger, IUnitOfWork unitOfWork, IProductRepository productRepository)
         {
             _orderRepository = orderRepository;
             _basketRepository = basketRepository;
             _logger = logger;
             _unitOfWork = unitOfWork;
+            _productRepository = productRepository;
         }
 
         public async Task<Order> CreateOrder(Guid basketId, Guid customerId) 
@@ -116,13 +118,14 @@ namespace SynthShop.Core.Services.Impl
                 {
                     var product = item.Product;
                     product.StockQuantity += item.Quantity;
+                    await _productRepository.UpdateAsync(product);
                 }
             }
 
-
+            order.IsDeleted = true;
             order.Status = OrderStatus.Cancelled;
-
-            await _orderRepository.DeleteOrderAsync(orderId);
+            
+            await _orderRepository.UpdateOrderAsync(orderId, order);
             await _unitOfWork.SaveChangesAsync();
         }
 

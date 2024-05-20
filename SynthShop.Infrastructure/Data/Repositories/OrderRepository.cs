@@ -20,6 +20,7 @@ namespace SynthShop.Infrastructure.Data.Repositories
             var order = await _dbContext.Orders
                 .Include(o => o.OrderItems)
                 .ThenInclude(oi => oi.Product)
+                .AsNoTracking()
                 .SingleOrDefaultAsync(o => o.OrderID == orderId);
             
             return order;
@@ -40,19 +41,15 @@ namespace SynthShop.Infrastructure.Data.Repositories
 
         public async Task<Order?> UpdateOrderAsync(Guid orderId, Order order)
         {
+            
+
             var existingOrder = await _dbContext.Orders.FirstOrDefaultAsync(x => x.OrderID == orderId);
             if (existingOrder == null)
             {
                 return null;
             }
-
-            existingOrder.OrderDate = order.OrderDate;
-            existingOrder.UserId = order.UserId;
-            existingOrder.Status = order.Status;
-            existingOrder.TotalAmount = order.TotalAmount;
-            existingOrder.OrderItems = order.OrderItems;
-            existingOrder.UpdateAt = DateTime.UtcNow;
-            existingOrder.IsDeleted = order.IsDeleted;
+     
+            _dbContext.Entry(existingOrder).CurrentValues.SetValues(order);
 
             return order;
         }

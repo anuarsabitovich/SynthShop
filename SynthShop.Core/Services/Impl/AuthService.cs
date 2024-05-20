@@ -153,7 +153,7 @@ namespace SynthShop.Core.Services.Impl
                 issuer: _configuration["JwtSettings:Issuer"],
                 audience: _configuration["JwtSettings:Audience"],
                 claims: claims,
-                expires: DateTime.Now.AddMinutes(1),
+                expires: DateTime.Now.AddHours(1),
                 signingCredentials: creds
             );
 
