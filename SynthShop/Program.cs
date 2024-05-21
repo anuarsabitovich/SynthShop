@@ -29,6 +29,7 @@ builder.Services.AddExceptionHandler<CustomExceptionHandler>();
 
 var tokenValidationParameters = new TokenValidationParameters()
 {
+    // TODO refactor to use options
     ValidIssuer = config["JwtSettings:Issuer"],
     ValidAudience = config["JwtSettings:Audience"],
     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["JwtSettings:Key"]!)),
@@ -58,7 +59,6 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IUserProvider, UserProvider>();
 builder.Services.AddHeaderPropagation(options => options.Headers.Add(LogConstants.CorrelationHeader));
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {

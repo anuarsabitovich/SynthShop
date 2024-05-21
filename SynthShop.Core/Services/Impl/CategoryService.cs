@@ -1,8 +1,10 @@
 ﻿using System.Linq.Expressions;
+using LanguageExt.Common;
 using Microsoft.Extensions.Options;
 using Serilog;
 using SynthShop.Core.Services.Interfaces;
 using SynthShop.Domain.Entities;
+using SynthShop.Domain.Exceptions;
 using SynthShop.Domain.Extensions;
 using SynthShop.Domain.Settings;
 using SynthShop.Infrastructure.Data.Interfaces;
@@ -25,20 +27,22 @@ namespace SynthShop.Core.Services.Impl
             _logger = logger.ForContext<CategoryService>();
         }
 
-        public async Task CreateAsync(Category category)
+        public async Task<Result<Category>> CreateAsync(Category category)
         {
-            Expression<Func<Category, bool>> filter = x => x.Name.Contains(category.Name, StringComparison.OrdinalIgnoreCase);
+            Expression<Func<Category, bool>> filter = x => x.Name.ToLower().Contains(category.Name.ToLower());
 
             var existingCategory = await _categoryRepository.GetAllAsync(filter);
             if (existingCategory.Items.Any())
             {
                 _logger.Warning("Attempted to create a category with a duplicate name: {CategoryName}", category.Name);
-                throw new InvalidOperationException($"Category with name '{category.Name}' already exists.");
+                return new Result<Category>(
+                    new CategoryCreateFailedException($"Category with name '{category.Name}' already exists."));
             }
 
             await _categoryRepository.CreateAsync(category);
             await _unitOfWork.SaveChangesAsync();
             _logger.Information("Category created with ID {CategoryId}", category.CategoryID);
+            return category;
         }
 
         public async Task<PagedList<Category>> GetAllAsync(int? pageSize, int pageNumber = 1, string? searchTerm = null,

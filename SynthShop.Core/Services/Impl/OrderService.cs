@@ -81,7 +81,6 @@ namespace SynthShop.Core.Services.Impl
                 var result = await _orderRepository.CreateOrderAsync(order);
                 await _unitOfWork.SaveChangesAsync();
                 return result;
-
             }
             catch (DbUpdateConcurrencyException e)
             {
@@ -90,23 +89,24 @@ namespace SynthShop.Core.Services.Impl
             }
         }
 
-        public async Task CancelOrder(Guid orderId, Guid customerId)
+        public async Task<Result<Order>> CancelOrder(Guid orderId, Guid customerId)
         {
             var order = await _orderRepository.GetOrderAsync(orderId);
 
             if (order == null)
             {
-                throw new InvalidOperationException("Order not found.");
+                return new Result<Order>(new InvalidOperationException("Order not found."));
             }
 
             if (order.UserId != customerId)
             {
-                throw new InvalidOperationException("User can't modify other user's order");
+                _logger.Warning("User with id: {customerId} tried to modify other user's order userId: {orderUserId}", customerId, order.UserId);
+                return new Result<Order>(new InvalidOperationException("Failed to cancel order"));
             }
 
             if (order.Status == OrderStatus.Completed)
             {
-                throw new InvalidOperationException("Completed orders cannot be cancelled.");
+                return new Result<Order>(new InvalidOperationException("Completed orders cannot be cancelled."));
             }
 
             if (order.Status == OrderStatus.Pending)
@@ -124,36 +124,38 @@ namespace SynthShop.Core.Services.Impl
             
             await _orderRepository.UpdateOrderAsync(orderId, order);
             await _unitOfWork.SaveChangesAsync();
+            return order;
         }
 
-        public async Task CompleteOrder(Guid orderId, Guid customerId)
+        public async Task<Result<Order>> CompleteOrder(Guid orderId, Guid customerId)
         {
             var order = await _orderRepository.GetOrderAsync(orderId);
 
             if (order == null)
             {
-                throw new InvalidOperationException("Order not found.");
+                return new Result<Order>(new InvalidOperationException("Order not found."));
             }
 
             if (order.UserId != customerId)
             {
-                throw new InvalidOperationException("User can't modify other user's order");
+                return new Result<Order>(new InvalidOperationException("User can't modify other user's order"));
             }
 
             if (order.Status == OrderStatus.Completed)
             {
-                throw new InvalidOperationException("Order is already completed.");
+                return new Result<Order>(new InvalidOperationException("Order is already completed."));
             }
 
             if (order.Status == OrderStatus.Cancelled)
             {
-                throw new InvalidOperationException("Cannot complete a cancelled order.");
+                return new Result<Order>(new InvalidOperationException("Cannot complete a cancelled order."));
             }
 
             order.Status = OrderStatus.Completed;
 
             await _orderRepository.UpdateOrderAsync(orderId, order);
             await _unitOfWork.SaveChangesAsync();
+            return order;
         }
     }
 }

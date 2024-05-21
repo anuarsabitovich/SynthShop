@@ -19,7 +19,7 @@ namespace SynthShop.Extensions
                 Schema = new OpenApiSchema
                 {
                     Type = "string",
-                    Default = new OpenApiString(Guid.NewGuid().ToString())
+                    Default = new OpenApiString("0ebc7df4-7949-4b1d-ab06-7864967eef25")
                 }
             });
         }
