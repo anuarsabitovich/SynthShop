@@ -29,7 +29,6 @@ namespace SynthShop.Tests
         {
             // Arrange
             var basketId = Guid.NewGuid();
-            var basket = new Basket { BasketId = basketId };
 
             _basketRepository.When(x => x.CreateBasketAsync(Arg.Any<Basket>()))
                 .Do(x => x.Arg<Basket>().BasketId = basketId);
