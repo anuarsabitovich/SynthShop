@@ -7,6 +7,7 @@ using Serilog.Core;
 using SynthShop.Core.Services.Interfaces;
 using SynthShop.Domain.Constants;
 using SynthShop.Domain.Entities;
+using SynthShop.Domain.Exceptions;
 using SynthShop.Domain.Extensions;
 using SynthShop.DTO;
 using SynthShop.Extensions;
@@ -53,7 +54,7 @@ namespace SynthShop.Controllers
                {
                    return exception switch
                    {
-                       InvalidOperationException => BadRequest(new { message = exception.Message }),
+                       CategoryCreateFailedException => BadRequest(new { message = exception.Message }),
                        _ => StatusCode(500, "An unexpected error occured.")
                    };
                });
