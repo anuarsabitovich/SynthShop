@@ -30,12 +30,6 @@ namespace SynthShop.Core.Services.Impl
 
         public async Task CreateAsync(Product product)
         {
-            if (product == null)
-            {
-                _logger.Warning("Attempted to create a null product");
-                return;
-            }
-
             await _productRepository.CreateAsync(product);
             await _unitOfWork.SaveChangesAsync();
             _logger.Information("Product created with ID {ProductId}", product.ProductID);

@@ -4,6 +4,7 @@ using SynthShop.Core.Services.Impl;
 using SynthShop.Domain.Entities;
 using SynthShop.Domain.Enums;
 using SynthShop.Infrastructure.Data.Interfaces;
+using SynthShop.Tests.Extensions;
 using Xunit;
 
 namespace SynthShop.Tests
@@ -104,12 +105,13 @@ namespace SynthShop.Tests
 
             // Act
             var result = await _sut.CreateOrder(basketId, customerId);
-
+            var orderResult = ResultObjectExtension.UnwrapResult(result);
             // Assert
-            Assert.Equal(OrderStatus.Pending, result.Status);
-            Assert.Equal(customerId, result.UserId);
-            Assert.Single(result.OrderItems);
-            Assert.Equal(5, result.OrderItems.First().Quantity);
+            Assert.True(result.IsSuccess);
+            Assert.Equal(OrderStatus.Pending, orderResult.Status);
+            Assert.Equal(customerId, orderResult.UserId);
+            Assert.Single(orderResult.OrderItems);
+            Assert.Equal(5, orderResult.OrderItems.First().Quantity);
             await _orderRepository.Received(1).CreateOrderAsync(Arg.Any<Order>());
             await _unitOfWork.Received(1).SaveChangesAsync();
         }

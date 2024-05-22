@@ -7,6 +7,7 @@ using Serilog.Core;
 using SynthShop.Core.Services.Interfaces;
 using SynthShop.Domain.Constants;
 using SynthShop.Domain.Entities;
+using SynthShop.Domain.Exceptions;
 using SynthShop.Domain.Extensions;
 using SynthShop.DTO;
 using SynthShop.Extensions;
@@ -46,9 +47,17 @@ namespace SynthShop.Controllers
             }
             var categoryDomainModel = _mapper.Map<Category>(addCategoryDTO);
             
-            await _categoryService.CreateAsync(categoryDomainModel);
-            _logger.Information("Successfully created a new category {Category}", addCategoryDTO.Name);
-            return Ok(_mapper.Map<AddCategoryDTO>(categoryDomainModel));
+           var createdCategory = await _categoryService.CreateAsync(categoryDomainModel);
+           return createdCategory.Match<IActionResult>(
+               result => Ok(_mapper.Map<AddCategoryDTO>(categoryDomainModel)),
+               exception =>
+               {
+                   return exception switch
+                   {
+                       CategoryCreateFailedException => BadRequest(new { message = exception.Message }),
+                       _ => StatusCode(500, "An unexpected error occured.")
+                   };
+               });
         }
 
         [HttpDelete]

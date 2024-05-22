@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SynthShop.Core.Services.Interfaces;
 using SynthShop.Domain.Constants;
+using SynthShop.Domain.Exceptions;
 using SynthShop.DTO;
 using SynthShop.Extensions;
 using SynthShop.Validations;
@@ -39,29 +41,56 @@ namespace SynthShop.Controllers
                 _logger.Warning("Validation failed for creating order: {@ValidationErrors}", validationResult.Errors);
                 return BadRequest(validationResult.Errors);
             }
-            var order = await _orderService.CreateOrder(createOrderDto.BasketId, _userProvider.GetCurrentUserId()!.Value);
-            _logger.Information("Order created successfully with ID: {OrderId}", order.OrderID);
-            return Ok(_mapper.Map<OrderDTO>(order));
+
+            var orderResult = await _orderService.CreateOrder(createOrderDto.BasketId, _userProvider.GetCurrentUserId()!.Value);
+
+            return orderResult.Match<IActionResult>(
+                result => Ok(_mapper.Map<OrderDTO>(result)),
+                exception =>
+                {
+                    return exception switch
+                    {
+                        OrderFailedException => BadRequest(exception.Message),
+                        DbUpdateConcurrencyException => Conflict(new { message = "Please, try to create order later"}),
+                        _ => StatusCode(500, "An unexpected error occurred.")
+                    };
+                });
         }
 
         [HttpDelete]
         [Route("{id:Guid}")]
         public async Task<IActionResult> DeleteOrder([FromRoute] Guid id)
         {
-            await _orderService.CancelOrder(id, _userProvider.GetCurrentUserId()!.Value);
-            _logger.Information("Order with ID {OrderId} deleted successfully", id);
-            return NoContent();
+            var cancelOrderResult =  await _orderService.CancelOrder(id, _userProvider.GetCurrentUserId()!.Value);
+            return cancelOrderResult.Match<IActionResult>(
+                result => Ok(_mapper.Map<OrderDTO>(result)),
+
+                exception =>
+                {
+                    return exception switch
+                    {
+                        InvalidOperationException => BadRequest(new { message = exception.Message }),
+                        _ => StatusCode(500, "An unexpected error occurred.")
+                    };
+                });
         }
 
         [HttpPost]
         [Route("complete/{id:Guid}")]
         public async Task<IActionResult> CompleteOrder([FromRoute] Guid id)
         {
-            await _orderService.CompleteOrder(id, _userProvider.GetCurrentUserId()!.Value);
-            _logger.Information("Order with ID {OrderId} completed successfully", id);
-            return Ok("Order completed");
+            var completedOrder =  await _orderService.CompleteOrder(id, _userProvider.GetCurrentUserId()!.Value);
+            return completedOrder.Match<IActionResult>(
+                result => Ok(_mapper.Map<OrderDTO>(result)),
+                exception =>
+                {
+                    return exception switch
+                    {
+                        InvalidOperationException => BadRequest(new { message = exception.Message }),
+                        _ => StatusCode(500, "An unexpected error occured")
+                    };
+                }
+            );
         }
-
-
     }
 }
