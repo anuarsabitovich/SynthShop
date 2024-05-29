@@ -1,0 +1,2 @@
+1. Create environment.json similar to config file 
+-Add there 'https://localhost:7281/api/' to use instead of hardcoded route 
