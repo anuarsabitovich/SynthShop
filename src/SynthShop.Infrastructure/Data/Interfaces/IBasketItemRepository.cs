@@ -8,5 +8,6 @@ namespace SynthShop.Infrastructure.Data.Interfaces
         Task<List<BasketItem?>> GetBasketItemsAsync();
         Task<BasketItem?> UpdateBasketItemAsync(Guid basketItemId, BasketItem updateBasketItem);
         Task DeleteBasketItem(Guid basketItemId);
+
     }
 }
