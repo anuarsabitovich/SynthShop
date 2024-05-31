@@ -33,7 +33,9 @@ namespace SynthShop.Controllers
         public async Task<IActionResult> Create()
         {
             var basketId = await _basketService.CreateBasketAsync();
-            return Ok($"Created basket with id {basketId}" );
+            var cookieOptions = new CookieOptions { IsEssential = true, Expires = DateTime.Now.AddDays(30) };
+            Response.Cookies.Append( "basketId",basketId.ToString(), cookieOptions);
+            return Ok(basketId);
         }
 
         [HttpDelete]
@@ -49,6 +51,7 @@ namespace SynthShop.Controllers
         [Route("{id:Guid}")]
         public async Task<IActionResult> GetBaskedById([FromRoute] Guid id)
         {
+          
             _logger.Information("Fetching basket by ID {BasketId}", id);
             var basket = await _basketService.GetBasketByIdAsync(id);
             if (basket == null)
