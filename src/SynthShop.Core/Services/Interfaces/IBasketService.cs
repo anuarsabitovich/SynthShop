@@ -9,9 +9,10 @@ namespace SynthShop.Core.Services.Interfaces
 
         Task AddItemToBasketAsync(Guid basketId, Guid productId, int quantity);
 
-        Task DeleteItemFromBasketAsync(Guid basketId, Guid basketItemId);
+        Task DeleteItemFromBasketAsync( Guid basketItemId);
 
         Task DeleteBasketAsync(Guid basketId);
         Task UpdateItemInBasket(Guid basketId, Guid basketItemId, int quantity);
+        Task RemoveBasketItemByOne(Guid basketItemId);
     }
 }

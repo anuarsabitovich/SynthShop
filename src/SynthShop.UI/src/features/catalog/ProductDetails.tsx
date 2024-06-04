@@ -6,12 +6,15 @@ import { Product } from "../../app/models/product";
 import agent from "../../app/api/agent";
 import NotFound from "../../app/errors/NotFound";
 import LoadingComponent from "../../app/layout/LoadingComponent";
+import { useAppDispatch, useAppSelector } from "../../app/store/configureStore";
 
 type Params = {
     id: string;
 };
 
 export default function ProductDetails() {
+    const {basket} = useAppSelector(state => state.basket);
+    const dispatch = useAppDispatch();
     const { id } = useParams<Params>();
     const [product, setProduct] = useState<Product | null>(null);
     const [loading, setLoading] = useState(true);

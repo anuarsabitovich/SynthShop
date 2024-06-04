@@ -5,7 +5,8 @@ import { useState } from "react";
 import agent from "../../app/api/agent";
 import { LoadingButton } from "@mui/lab";
 import Cookies from "js-cookie";
-import { useStoreContext } from "../../app/context/StoreContext";
+import { useAppDispatch } from "../../app/store/configureStore";
+import { setBasket } from "../basket/basketSlice";
 
 interface Props {
     product: Product;
@@ -13,29 +14,51 @@ interface Props {
 
 export default function ProductCard({ product }: Props) {
     const [loading, setLoading] = useState(false);
-    const { setBasket } = useStoreContext();
+    const dispatch = useAppDispatch();
 
-    async function handleAddItem(productId: string) {
+    function handleAddItem(productId: string) {
         setLoading(true);
-        try {
-            let basketId = Cookies.get('basketId');
+        let basketId = Cookies.get('basketId');
 
-            if (!basketId) {
-                // Create a new basket if it does not exist
-                const newBasketId = await agent.Basket.create();
-                Cookies.set('basketId', newBasketId);
-                basketId = newBasketId;
-            }
-
-            if (basketId) {
-                const basket = await agent.Basket.addItem(basketId, productId, 1);
-                console.log('Basket updated:', basket);
-                setBasket(basket);
-            }
-        } catch (error) {
-            console.error('Error adding item to basket:', error);
-        } finally {
-            setLoading(false);
+        if (!basketId) {
+            agent.Basket?.create()
+                .then(newBasketId => {
+                    Cookies.set('basketId', newBasketId);
+                    basketId = newBasketId;
+                    return agent.Basket.addItem(basketId, productId, 1);
+                })
+                .then(
+                    () => {
+                        return agent.Basket.getById(basketId);
+                    }
+                )
+                .then(basket => {
+                    console.log('Basket updated:', basket);
+                    dispatch(setBasket(basket));
+                })
+                .catch(error => {
+                    console.error('Error adding item to basket:', error);
+                })
+                .finally(() => {
+                    setLoading(false);
+                });
+        } else {
+            agent.Basket.addItem(basketId, productId, 1)
+                .then(
+                    () => {
+                        return agent.Basket.getById(basketId);
+                    }
+                )
+                .then(basket => {
+                    console.log('Basket updated:', basket);
+                    dispatch(setBasket(basket));
+                })
+                .catch(error => {
+                    console.error('Error adding item to basket:', error);
+                })
+                .finally(() => {
+                    setLoading(false);
+                });
         }
     }
 
@@ -69,7 +92,8 @@ export default function ProductCard({ product }: Props) {
                 <LoadingButton
                     loading={loading}
                     onClick={() => handleAddItem(product.productID)}
-                    size="small">Add to cart</LoadingButton>
+                    size="small">Add to cart
+                </LoadingButton>
                 <Button component={Link} to={`/catalog/${product.productID}`} size="small">View</Button>
             </CardActions>
         </Card>

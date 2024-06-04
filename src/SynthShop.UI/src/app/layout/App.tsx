@@ -1,64 +1,69 @@
-import Catalog from "../../features/catalog/Catalog";
 import { Container, CssBaseline, ThemeProvider, createTheme } from "@mui/material";
 import Header from "./Header";
 import { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css'
-import { useStoreContext } from "../context/StoreContext";
+import 'react-toastify/dist/ReactToastify.css';
 import agent from "../api/agent";
-import Cookies from "js-cookie"
+import Cookies from "js-cookie";
 import LoadingComponent from "./LoadingComponent";
+import { useAppDispatch } from "../store/configureStore";
+import { setBasket } from "../../features/basket/basketSlice";
 
 function App() {
-  const {setBasket} = useStoreContext();
+  const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const initializeBasket = async () => {
+    const initializeBasket = () => {
       let basketId = Cookies.get('basketId');
       if (!basketId) {
-        try {
-          // Create a new basket if it does not exist
-          const newBasketId = await agent.Basket.create();
-          Cookies.set('basketId', newBasketId);
-          basketId = newBasketId;
-        } catch (error) {
-          console.error('Error creating basket:', error);
-          setLoading(false);
-          return;
-        }
-      }
-
-      try {
-        const basket = await agent.Basket.getById(basketId);
-        setBasket(basket);
-      } catch (error) {
-        console.error('Error fetching basket:', error);
-      } finally {
-        setLoading(false);
+        agent.Basket.create()
+          .then(newBasketId => {
+            Cookies.set('basketId', newBasketId);
+            basketId = newBasketId;
+            return agent.Basket.getById(basketId);
+          })
+          .then(basket => {
+            dispatch(setBasket(basket));
+            setLoading(false);
+          })
+          .catch(error => {
+            console.error('Error creating basket:', error);
+            setLoading(false);
+          });
+      } else {
+        agent.Basket.getById(basketId)
+          .then(basket => {
+            dispatch(setBasket(basket));
+            setLoading(false);
+          })
+          .catch(error => {
+            console.error('Error fetching basket:', error);
+            setLoading(false);
+          });
       }
     };
 
     initializeBasket();
-  }, [setBasket]);
+  }, [dispatch]);
 
   const [darkMode, setDarkMode] = useState(false);   
   const paletteType = darkMode ? 'dark' : 'light';
   const theme = createTheme({
-    palette:{
+    palette: {
       mode: paletteType,
-      background:{
-        default: paletteType === 'light' ?  '#eaeaea' : '#121212'
+      background: {
+        default: paletteType === 'light' ? '#eaeaea' : '#121212'
       }
     }
-  })
+  });
 
   function handleThemeChange() {
     setDarkMode(!darkMode);
   }
 
-  if (loading) return <LoadingComponent/>
+  if (loading) return <LoadingComponent message='Initialising app...' />;
 
   return (
     <ThemeProvider theme={theme}>
@@ -66,7 +71,7 @@ function App() {
       <CssBaseline />
       <Header darkMode={darkMode} handleThemeChange={handleThemeChange} />
       <Container>
-        <Outlet/>
+        <Outlet />
       </Container>
     </ThemeProvider>
   );

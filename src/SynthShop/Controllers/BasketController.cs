@@ -63,8 +63,7 @@ namespace SynthShop.Controllers
             return Ok(_mapper.Map<BasketDTO>(basket));
         }
 
-        [HttpPost]
-        [Route("{id:Guid}")]
+        [HttpPost("{id:Guid}/items")]
         public async Task<IActionResult> AddItemToBasket( [FromRoute] Guid id,[FromBody] AddBasketItemDTO addBasketItemDto)
         {
             _logger.Information("Adding item to basket {BasketId}", id);
@@ -80,19 +79,25 @@ namespace SynthShop.Controllers
             return Ok("Item added to basket");
         }
 
-        [HttpDelete]
-        [Route("{id:Guid}")]
-        public async Task<IActionResult> DeleteItemFromBasketAsync([FromRoute] Guid id, [FromBody] Guid basketId)
+        [HttpDelete("{id:Guid}")]
+        public async Task<IActionResult> DeleteItemFromBasketAsync([FromRoute] Guid id)
         {
            
-            await _basketService.DeleteItemFromBasketAsync(id, basketId);
+            await _basketService.DeleteItemFromBasketAsync(id);
             
             return NoContent();
         }
-        
-        
-        [HttpPut]
-        [Route("{id:Guid}")]
+
+        [HttpPost("items/{itemId:Guid}/remove")]
+        public async Task<IActionResult> RemoveItemFromBasketByOneAsync([FromRoute] Guid itemId)
+        {
+            await _basketService.RemoveBasketItemByOne(itemId);
+            return Ok();
+        }
+
+
+
+        [HttpPut("{id:Guid}/items/{itemId:Guid}")]
         public async Task<IActionResult> UpdateItemInBasket([FromRoute] Guid id, [FromBody] UpdateBaskItemDTO updateBaskItemDto)
         {
             _logger.Information("Updating item in basket {BasketId}", id);

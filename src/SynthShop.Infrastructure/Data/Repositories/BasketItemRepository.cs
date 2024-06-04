@@ -24,7 +24,7 @@ namespace SynthShop.Infrastructure.Data.Repositories
             return await _dbContext.BasketItems.AsNoTracking().ToListAsync();
         }
 
-        public async Task<BasketItem?> GetBasketItemByIdAsync(Guid basketItemId, BasketItem updateBasketItem)
+        public async Task<BasketItem?> GetBasketItemByIdAsync(Guid basketItemId)
         {
             return await _dbContext.BasketItems.FirstOrDefaultAsync(x => x.BasketItemId == basketItemId);
         }
@@ -46,5 +46,7 @@ namespace SynthShop.Infrastructure.Data.Repositories
 
             _dbContext.BasketItems.Remove(basketItem);
         }
+
+      
     }
 }
