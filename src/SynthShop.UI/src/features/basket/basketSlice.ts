@@ -1,13 +1,27 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Basket, BasketItem } from "../../app/models/basket";
+import agent from "../../app/api/agent";
 
 interface BasketState {
     basket: Basket | null;
+    status: string;
 }
 
 const initialState: BasketState = {
-    basket: null
+    basket: null,
+    status: 'idle'
 };
+
+// export const addBasketItemAsync = createAsyncThunk<Basket, {productId: string, quantity: number }>(
+//     'basket/addBasketItemAsync',
+//     async ({productId, quantity}) => {
+//         try {
+//             return await agent.Basket.addItem(basketid)
+//         } catch (error) {
+//             console.log(error)
+//         }
+//     }
+// )
 
 const basketSlice = createSlice({
     name: 'basket',

@@ -107,7 +107,7 @@ export default function BasketPage() {
                                     <LoadingButton
 
                                         loading={status.loading && status.name === 'add' + item?.productId}
-                                        onClick={() => handleAddItem(item.basketItemId, 'add' + item.productId, item.productId, item.product.name, item.product.price, item.product.pictureUrl)}
+                                        onClick={() =>  handleAddItem(item.basketItemId, 'add' + item.productId, item.productId, item.product.name, item.product.price, item.product.pictureUrl)}
                                         color="secondary"
                                     >
                                         <Add />
