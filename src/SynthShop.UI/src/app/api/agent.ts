@@ -4,7 +4,7 @@ import { router } from "../router/Routes";
 
 const sleep = () => new Promise(resolve => setTimeout(resolve, 500));
 
-axios.defaults.baseURL = 'https://localhost:7281/api/';
+axios.defaults.baseURL = 'https://localhost:7281/api';
 
 const responseBody = (response: AxiosResponse) => response.data;
 
@@ -39,15 +39,18 @@ axios.interceptors.response.use(async response => {
 });
 
 const requests = {
-    get: (url: string) => axios.get(url).then(responseBody),
-    post: (url: string, body?: object) => axios.post(url, body).then(responseBody),
+    get: (url: string, params?: URLSearchParams) => {
+        console.log(`Making GET request to: ${url} with params: ${params}`);
+        return axios.get(url, { params }).then(responseBody);
+    },    post: (url: string, body?: object) => axios.post(url, body).then(responseBody),
     put: (url: string, body: object) => axios.put(url, body).then(responseBody),
     delete: (url: string) => axios.delete(url).then(responseBody)
 };
 
 const Catalog = {
-    list: () => requests.get('product'),
-    details: (ProductID: string) => requests.get(`product/${ProductID}`)
+    list: (params: URLSearchParams) =>
+        requests.get("/Product", params),
+    details: (ProductID: string) => requests.get(`product/${ProductID}`),
 };
 
 const TestErrors = {

@@ -1,3 +1,5 @@
+// ProductDetails.tsx
+
 import { Box, Divider, Grid, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -16,15 +18,13 @@ export default function ProductDetails() {
     const { basket, addItemStatus } = useAppSelector(state => state.basket);
     const dispatch = useAppDispatch();
     const { id } = useParams<Params>();
-    const product = useAppSelector(state => productSelectors.selectById(state, id!));
+    const product = useAppSelector(state => productSelectors.selectById(state, id!))
     const [error, setError] = useState<string | null>(null);
-    const { status: productStatus } = useAppSelector(state => state.catalog);
+    const item = basket?.items.find(i => i.productId === product?.productID);
+    const {status: productStatus} = useAppSelector(state => state.catalog)
 
     useEffect(() => {
-        if (!product) {
-            dispatch(fetchProductAsync(id!)).unwrap()
-                .catch((err) => setError(err.message));
-        }
+      if (!product) dispatch(fetchProductAsync(id!))
     }, [id, dispatch, product]);
 
     const handleAddItem = (productId: string) => {
@@ -34,10 +34,9 @@ export default function ProductDetails() {
     };
 
     if (productStatus.includes('pending')) return <LoadingComponent message="Loading product..." />;
+    
     if (error) return <Typography>{error}</Typography>;
     if (!product) return <NotFound />;
-
-    const item = basket?.items.find(i => i.productId === product.productID);
 
     return (
         <Grid container spacing={6}>
@@ -47,7 +46,7 @@ export default function ProductDetails() {
             <Grid item xs={6}>
                 <Typography variant="h3">{product.name}</Typography>
                 <Divider />
-                <Typography variant="h4" color='secondary' >${product.price}</Typography>
+                <Typography variant="h4" color='secondary' >{product.price}</Typography>
                 <TableContainer>
                     <Table>
                         <TableBody>
@@ -81,7 +80,7 @@ export default function ProductDetails() {
                                 variant="h5"
                                 textAlign="center"
                             >
-                                {item?.quantity || 0}
+                                {item?.quantity}
                             </Typography>
                         </Box>
                     </Grid>
