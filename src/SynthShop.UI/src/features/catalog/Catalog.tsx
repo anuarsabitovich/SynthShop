@@ -50,8 +50,8 @@ const Catalog = () => {
     return (
         <Grid container spacing={2}>
             <Grid item xs={12} sm={3}>
-                <Paper style={{ padding: '16px' }}>
-                    <Typography variant="h6">Search & Filters</Typography>
+                <Paper style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <Typography variant="h6" style={{ marginBottom: '16px' }}>Search & Filters</Typography>
                     <TextField
                         fullWidth
                         placeholder="Search products"
@@ -63,13 +63,13 @@ const Catalog = () => {
                         variant="contained"
                         color="primary"
                         onClick={handleSearch}
-                        style={{ marginTop: '16px' }}
                     >
                         Search
                     </Button>
-                    <FormControl fullWidth style={{ marginTop: '16px' }}>
+                    <FormControl fullWidth variant="outlined">
                         <InputLabel>Sort By</InputLabel>
                         <Select
+                            label="Sort By"
                             value={productParams.orderBy || ''}
                             onChange={handleSortChange}
                         >
@@ -77,9 +77,10 @@ const Catalog = () => {
                             <MenuItem value="price">Price</MenuItem>
                         </Select>
                     </FormControl>
-                    <FormControl fullWidth style={{ marginTop: '16px' }}>
+                    <FormControl fullWidth variant="outlined">
                         <InputLabel>Order</InputLabel>
                         <Select
+                            label="Order"
                             value={productParams.isAscending ? 'ascending' : 'descending'}
                             onChange={handleOrderChange}
                         >
@@ -105,9 +106,10 @@ const Catalog = () => {
                     />
                 </Box>
                 <Box display="flex" justifyContent="center" mt={2}>
-                    <FormControl>
+                    <FormControl variant="outlined">
                         <InputLabel>Page Size</InputLabel>
                         <Select
+                            label="Page Size"
                             value={productParams.pageSize}
                             onChange={handlePageSizeChange}
                         >
