@@ -4,24 +4,43 @@ import agent from "../../app/api/agent";
 
 interface BasketState {
     basket: Basket | null;
-    status: string;
+    addItemStatus: string;
+    removeSingleItemStatus: string;
+    removeAllItemsStatus: string;
 }
 
 const initialState: BasketState = {
     basket: null,
-    status: 'idle'
+    addItemStatus: 'idle',
+    removeSingleItemStatus: 'idle',
+    removeAllItemsStatus: 'idle'
 };
 
-// export const addBasketItemAsync = createAsyncThunk<Basket, {productId: string, quantity: number }>(
-//     'basket/addBasketItemAsync',
-//     async ({productId, quantity}) => {
-//         try {
-//             return await agent.Basket.addItem(basketid)
-//         } catch (error) {
-//             console.log(error)
-//         }
-//     }
-// )
+export const addBasketItemAsync = createAsyncThunk<Basket, { basketId: string, productId: string, quantity?: number }>(
+    'basket/addBasketItemAsync',
+    async ({ basketId, productId, quantity = 1 }) => {
+        try {
+            const response = await agent.Basket.addItem(basketId, productId, quantity);
+            console.log('API response:', response);
+            return response;
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
+);
+
+export const removeBasketItemAsync = createAsyncThunk<void, { basketItemId: string, quantity: number }>(
+    'basket/removeBasketItemAsync',
+    async ({ basketItemId, quantity }) => {
+        try {
+            await agent.Basket.removeItem(basketItemId);
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
+);
 
 const basketSlice = createSlice({
     name: 'basket',
@@ -29,19 +48,31 @@ const basketSlice = createSlice({
     reducers: {
         setBasket: (state, action: PayloadAction<Basket>) => {
             state.basket = action.payload;
-        },
-        addItem: (state, action: PayloadAction<BasketItem>) => {
-            if (state.basket) {
-                const itemIndex = state.basket.items.findIndex(i => i.basketItemId === action.payload.basketItemId);
-                if (itemIndex !== -1) {
-                    state.basket.items[itemIndex].quantity += action.payload.quantity;
-                } else {
-                    state.basket.items.push(action.payload);
-                }
+        }
+    },
+    extraReducers: (builder) => {
+        builder.addCase(addBasketItemAsync.pending, (state, action) => {
+            state.addItemStatus = 'pendingAddItem' + action.meta.arg.productId;
+        });
+        builder.addCase(addBasketItemAsync.fulfilled, (state, action) => {
+            console.log('Fulfilled action:', action);
+            state.basket = action.payload; // Обновляем состояние корзины
+            state.addItemStatus = 'idle';
+        });
+        builder.addCase(addBasketItemAsync.rejected, (state) => {
+            state.addItemStatus = 'idle';
+        });
+
+        builder.addCase(removeBasketItemAsync.pending, (state, action) => {
+            const { quantity } = action.meta.arg;
+            if (quantity === 1) {
+                state.removeSingleItemStatus = 'pendingRemoveItem' + action.meta.arg.basketItemId;
+            } else {
+                state.removeAllItemsStatus = 'pendingRemoveItem' + action.meta.arg.basketItemId;
             }
-        },
-        removeItem: (state, action: PayloadAction<{ basketItemId: string; quantity: number }>) => {
-            const { basketItemId, quantity } = action.payload;
+        });
+        builder.addCase(removeBasketItemAsync.fulfilled, (state, action) => {
+            const { basketItemId, quantity } = action.meta.arg;
             if (state.basket) {
                 const existingItem = state.basket.items.find(i => i.basketItemId === basketItemId);
                 if (existingItem) {
@@ -51,10 +82,23 @@ const basketSlice = createSlice({
                     }
                 }
             }
-        }
+            if (quantity === 1) {
+                state.removeSingleItemStatus = 'idle';
+            } else {
+                state.removeAllItemsStatus = 'idle';
+            }
+        });
+        builder.addCase(removeBasketItemAsync.rejected, (state, action) => {
+            const { quantity } = action.meta.arg;
+            if (quantity === 1) {
+                state.removeSingleItemStatus = 'idle';
+            } else {
+                state.removeAllItemsStatus = 'idle';
+            }
+        });
     }
 });
 
-export const { setBasket, addItem, removeItem } = basketSlice.actions;
+export const { setBasket } = basketSlice.actions;
 
 export default basketSlice.reducer;

@@ -1,40 +1,23 @@
-import { useState, useEffect } from "react";
-import { Product } from "../../app/models/product";
+import { useEffect } from "react";
 import ProductList from "./ProductList";
-import agent from "../../app/api/agent";
 import LoadingComponent from "../../app/layout/LoadingComponent";
+import { useAppDispatch, useAppSelector } from "../../app/store/configureStore";
+import { fetchProductsAsync, productSelectors } from "./catalogSlice";
 
 export default function Catalog() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const products = useAppSelector(productSelectors.selectAll);
+  const { productsLoaded, status } = useAppSelector(state => state.catalog);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
-    agent.Catalog.list()
-      .then(data => {
-        console.log('API response:', data); // Log the response
+    if (!productsLoaded) dispatch(fetchProductsAsync());
+  }, [productsLoaded, dispatch]);
 
-        if (data.items && Array.isArray(data.items)) {
-          setProducts(data.items);
-        } else {
-          throw new Error('API response does not contain a valid items array');
-        }
-      })
-      .catch(error => {
-        console.error('There was a problem with the fetch operation:', error);
-        setError(error.message);
-      })
-      .finally(() => setLoading(false))
-      ;
-  }, []);
-
-  if (loading) return <LoadingComponent/>
+  if (status.includes('pending')) return <LoadingComponent />;
 
   return (
     <>
       <ProductList products={products} />
-      {error && <div>Error: {error}</div>}
     </>
-
-  )
+  );
 }

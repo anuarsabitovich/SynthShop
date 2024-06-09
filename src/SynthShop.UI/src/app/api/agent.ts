@@ -62,8 +62,11 @@ const Basket = {
     create: () => requests.post('basket', {}).then(response => response),
     delete: (basketId: string) => requests.delete(`basket/${basketId}`),
     getById: (id: string) => requests.get(`basket/${id}`),
-    addItem: (basketId: string, productId: string, quantity: number = 1) => requests.post(`basket/${basketId}/items`, { productId, quantity }),
-    deleteItem: (itemId: string) => requests.delete(`basket/${itemId}`), 
+    addItem: async (basketId: string, productId: string, quantity: number = 1) => {
+        await requests.post(`basket/${basketId}/items`, { productId, quantity });
+        return requests.get(`basket/${basketId}`); 
+    },
+    deleteItem: (itemId: string) => requests.delete(`basket/${itemId}`),
     updateItem: (basketId: string, itemId: string, quantity: number) => requests.put(`basket/${basketId}/items/${itemId}`, { quantity }),
     removeItem: (itemId: string) => requests.post(`basket/items/${itemId}/remove`, {})
 };
