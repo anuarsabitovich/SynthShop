@@ -3,11 +3,13 @@ import { counterSlice } from '../../features/contact/counterSlice';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import basketReducer from '../../features/basket/basketSlice';
 import catalogReducer from '../../features/catalog/catalogSlice';
+import authReducer from '../../features/auth/authSlice';
 
 export const store = configureStore({
     reducer: {
         counter: counterSlice.reducer,
         basket: basketReducer,
+        auth: authReducer,
         catalog: catalogReducer
     }
 })
