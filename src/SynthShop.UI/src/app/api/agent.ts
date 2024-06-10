@@ -1,12 +1,22 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { toast } from "react-toastify";
 import { router } from "../router/Routes";
+import { store } from "../store/configureStore";
 
 const sleep = () => new Promise(resolve => setTimeout(resolve, 500));
 
-axios.defaults.baseURL = 'https://localhost:7281/api/';
+axios.defaults.baseURL = 'https://localhost:7281/api';
+axios.defaults.withCredentials = true;
 
 const responseBody = (response: AxiosResponse) => response.data;
+
+axios.interceptors.request.use(config => {
+    const token = localStorage.getItem('token');
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+});
 
 axios.interceptors.response.use(async response => {
     await sleep();
@@ -38,16 +48,40 @@ axios.interceptors.response.use(async response => {
     return Promise.reject(error.response);
 });
 
+const logRequest = (url: string, method: string, params: any, body?: any) => {
+    console.log(`Making ${method} request to: ${url} with params:`, params, 'and body:', body);
+};
+
+const logError = (error: AxiosError) => {
+    console.error('API request error:', error);
+    if (error.response) {
+        console.error('Response data:', error.response.data);
+    }
+};
+
 const requests = {
-    get: (url: string) => axios.get(url).then(responseBody),
-    post: (url: string, body?: object) => axios.post(url, body).then(responseBody),
-    put: (url: string, body: object) => axios.put(url, body).then(responseBody),
-    delete: (url: string) => axios.delete(url).then(responseBody)
+    get: (url: string, params?: URLSearchParams) => {
+        logRequest(url, 'GET', params);
+        return axios.get(url, { params }).then(responseBody).catch(logError);
+    },
+    post: (url: string, body: {}) => {
+        logRequest(url, 'POST', null, body);
+        return axios.post(url, body).then(responseBody).catch(logError);
+    },
+    put: (url: string, body: {}) => {
+        logRequest(url, 'PUT', null, body);
+        return axios.put(url, body).then(responseBody).catch(logError);
+    },
+    delete: (url: string) => {
+        logRequest(url, 'DELETE', null);
+        return axios.delete(url).then(responseBody).catch(logError);
+    },
 };
 
 const Catalog = {
-    list: () => requests.get('product'),
-    details: (ProductID: string) => requests.get(`product/${ProductID}`)
+    list: (params: URLSearchParams) =>
+        requests.get("/Product", params),
+    details: (ProductID: string) => requests.get(`product/${ProductID}`),
 };
 
 const TestErrors = {
@@ -62,16 +96,27 @@ const Basket = {
     create: () => requests.post('basket', {}).then(response => response),
     delete: (basketId: string) => requests.delete(`basket/${basketId}`),
     getById: (id: string) => requests.get(`basket/${id}`),
-    addItem: (basketId: string, productId: string, quantity: number = 1) => requests.post(`basket/${basketId}/items`, { productId, quantity }),
-    deleteItem: (itemId: string) => requests.delete(`basket/${itemId}`), 
+    addItem: async (basketId: string, productId: string, quantity: number = 1) => {
+        await requests.post(`basket/${basketId}/items`, { productId, quantity });
+        return requests.get(`basket/${basketId}`); 
+    },
+    deleteItem: (itemId: string) => requests.delete(`basket/${itemId}`),
     updateItem: (basketId: string, itemId: string, quantity: number) => requests.put(`basket/${basketId}/items/${itemId}`, { quantity }),
     removeItem: (itemId: string) => requests.post(`basket/items/${itemId}/remove`, {})
 };
 
+const Auth = {
+    login: (email: string, password: string) => requests.post('/Auth/sign-in', { email, password }),
+    register: (email: string, firstName: string, lastName: string, address: string, password: string) =>
+        requests.post('/Auth/register', { email, firstName, lastName, address, password }),
+};
+
+
 const agent = {
     Catalog,
     TestErrors,
-    Basket
+    Basket, 
+    Auth
 };
 
 export default agent;
