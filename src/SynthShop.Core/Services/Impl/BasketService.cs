@@ -74,26 +74,13 @@ namespace SynthShop.Core.Services.Impl
         }
      
 
-        public async Task DeleteItemFromBasketAsync(Guid basketId, Guid basketItemId)
+        public async Task DeleteItemFromBasketAsync( Guid basketItemId)
         {
-            var basket = await _basketRepository.GetBasketByIdAsync(basketId);
-            
-            if (basket == null)
-            {
-                _logger.Warning("Basket with ID {BasketId} not found", basketId);
-                return;
-            }
-
-            var itemToRemove = basket.Items.FirstOrDefault(i => i.BasketItemId == basketItemId);
-            if (itemToRemove == null)
-            {
-                _logger.Warning("Item with ID {BasketItemId} not found in basket {BasketId}", basketItemId, basketId);
-                return;
-            }
+           
 
             await _basketItemRepository.DeleteBasketItem(basketItemId);
             await _unitOfWork.SaveChangesAsync();
-            _logger.Information("Removed item {BasketItemId} from basket {BasketId}", basketItemId, basketId);
+            _logger.Information("Removed item {BasketItemId} ", basketItemId);
 
         }
 
@@ -132,6 +119,28 @@ namespace SynthShop.Core.Services.Impl
             await _unitOfWork.SaveChangesAsync();
         }
 
+        public async Task RemoveBasketItemByOne(Guid basketItemId)
+        {
+            var existingBasketItem = await _basketItemRepository.GetBasketItemByIdAsync(basketItemId);
 
+            if (existingBasketItem == null)
+            {
+                _logger.Warning("Item with ID {BasketItemId} not found", basketItemId);
+                return;
+            }
+
+            if (existingBasketItem.Quantity > 1)
+            {
+                existingBasketItem.Quantity -= 1;
+                await _basketItemRepository.UpdateBasketItemAsync(basketItemId, existingBasketItem);
+            }
+            else
+            {
+                await _basketItemRepository.DeleteBasketItem(basketItemId);
+                
+            }
+            await _unitOfWork.SaveChangesAsync();
+
+        }
     }
 }
