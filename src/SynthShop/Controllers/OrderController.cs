@@ -92,5 +92,47 @@ namespace SynthShop.Controllers
                 }
             );
         }
+
+        [HttpGet]
+        [Route("customer-orders")]
+        public async Task<IActionResult> GetOrdersByCustomerId()
+        {
+            var customerId = _userProvider.GetCurrentUserId();
+
+            if (customerId == null)
+            {
+                return Unauthorized("Customer ID not found.");
+            }
+
+            var ordersResult = await _orderService.GetOrdersByCustomerId(customerId.Value);
+
+            return ordersResult.Match<IActionResult>(
+                result => Ok(_mapper.Map<List<OrderDTO>>(result)),
+                exception =>
+                {
+                    return exception switch
+                    {
+                        _ => StatusCode(500, "An unexpected error occurred.")
+                    };
+                });
+        }
+
+        [HttpGet("{id:Guid}")]
+        public async Task<IActionResult> GetOrder([FromRoute] Guid id)
+        {
+            var orderResult = await _orderService.GetOrderByIdAsync(id);
+
+            return orderResult.Match<IActionResult>(
+                result => Ok(_mapper.Map<OrderDTO>(result)),
+                exception =>
+                {
+                    return exception switch
+                    {
+                        InvalidOperationException => BadRequest(new { message = exception.Message }),
+                        _ => StatusCode(500, "An unexpected error occurred.")
+                    };
+                });
+        }
+
     }
 }

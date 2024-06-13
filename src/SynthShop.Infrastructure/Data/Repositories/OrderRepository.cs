@@ -53,6 +53,15 @@ namespace SynthShop.Infrastructure.Data.Repositories
 
             return order;
         }
-        
+        public async Task<List<Order>> GetOrdersByCustomerId(Guid customerId)
+        {
+            return await _dbContext.Orders
+                .Where(o => o.UserId == customerId)
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product)
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
     }
 }

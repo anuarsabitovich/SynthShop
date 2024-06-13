@@ -9,6 +9,7 @@ namespace SynthShop.Infrastructure.Data.Interfaces
         Task<Order> CreateOrderAsync(Order order);
 
         Task DeleteOrderAsync(Guid orderId);
+        Task<List<Order>> GetOrdersByCustomerId(Guid customerId);
 
         Task<Order?> UpdateOrderAsync(Guid id, Order order);
     }

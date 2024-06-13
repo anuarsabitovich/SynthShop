@@ -7,4 +7,5 @@ export interface Product {
     categoryID: string;
     category: string;
     pictureUrl: string;
+    categoryName: string; 
 }

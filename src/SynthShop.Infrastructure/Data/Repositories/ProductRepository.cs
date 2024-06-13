@@ -30,7 +30,7 @@ namespace SynthShop.Infrastructure.Data.Repositories
             int pageNumber = 1, int pageSize = 1000, string? includeProperties = null
             )
         {
-            var products = _dbContext.Products.AsQueryable();
+            var products = _dbContext.Products .AsQueryable();
 
             if (includeProperties is not null)
             {
@@ -39,6 +39,7 @@ namespace SynthShop.Infrastructure.Data.Repositories
                     products = products.Include(includeProperty);
                 }
             }
+
            
             if (filter is not null)
             {
@@ -65,14 +66,14 @@ namespace SynthShop.Infrastructure.Data.Repositories
                         : products.OrderByDescending(x => x.StockQuantity);
                 }
             }
-            
-            
-            return products.ToPagedList(pageNumber,pageSize) ;
+
+
+            return products.ToPagedList(pageNumber, pageSize);
         }
 
         public async Task<Product?> GetByIdAsync(Guid id)
         {
-            return await _dbContext.Products.FirstOrDefaultAsync(x => x.ProductID == id);
+            return await _dbContext.Products.Include(p => p.Category).FirstOrDefaultAsync(x => x.ProductID == id);
         }
 
         public async Task<Product?> UpdateAsync(Product product)

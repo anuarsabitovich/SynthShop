@@ -34,7 +34,7 @@ interface Props {
 
 export default function Header({ darkMode, handleThemeChange }: Props) {
     const { basket } = useAppSelector(state => state.basket);
-    const { username } = useAppSelector(state => state.auth);
+    const { user } = useAppSelector(state => state.auth);
     const itemCount = basket?.items?.reduce((sum, item) => sum + item.quantity, 0) ?? 0;
     const dispatch = useAppDispatch();
 
@@ -62,11 +62,14 @@ export default function Header({ darkMode, handleThemeChange }: Props) {
                             <ShoppingCart />
                         </Badge>
                     </IconButton>
-                    {username ? (
+                    {user ? (
                         <List sx={{ display: 'flex' }}>
                             <Typography variant='h6' sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                {username}
+                                {user.email}
                             </Typography>
+                            <ListItem component={NavLink} to='/orders' sx={navStyles}>
+                                ORDERS
+                            </ListItem>
                             <ListItem
                                 onClick={() => dispatch(logout())}
                                 sx={{ ...navStyles, cursor: 'pointer' }}

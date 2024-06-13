@@ -40,7 +40,7 @@ namespace SynthShop.Core.Services.Impl
         {
             Expression<Func<Product, bool>> filter = searchTerm is not null ?  x => x.Name.Contains(searchTerm) : null  ;
 
-            return await _productRepository.GetAllAsync(filter, sortBy, isAscending ?? true, pageNumber, pageSize ?? _pagingSettings.PageSize);
+            return await _productRepository.GetAllAsync(filter, sortBy, isAscending ?? true, pageNumber, pageSize ?? _pagingSettings.PageSize, includeProperties: "Category");
         }
 
         public async Task<Product?> GetByIdAsync(Guid id)

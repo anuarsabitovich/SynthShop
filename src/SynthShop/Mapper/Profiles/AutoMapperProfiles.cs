@@ -22,7 +22,9 @@ namespace SynthShop.Mapper.Profiles
             CreateMap<UpdateCustomerDTO, User>().ReverseMap();
 
             CreateMap<AddProductDTO, Product>().ReverseMap();
-            CreateMap<ProductDTO, Product>().ReverseMap();
+            CreateMap<Product, ProductDTO>()
+                .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category != null ? src.Category.Name : "No Category"));
+            CreateMap<ProductDTO, Product>();
             CreateMap<UpdateProductDTO, Product>().ReverseMap();
 
             CreateMap<AddOrderItemDTO, OrderItem>().ReverseMap();
