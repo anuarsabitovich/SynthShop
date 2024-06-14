@@ -1,3 +1,4 @@
+import React from "react";
 import { Avatar, Card, CardActions, CardContent, CardMedia, Typography, CardHeader, Button } from "@mui/material";
 import { Product } from "../../app/models/product";
 import { Link } from "react-router-dom";
@@ -17,7 +18,7 @@ export default function ProductCard({ product }: Props) {
         <Card>
             <CardHeader
                 avatar={
-                    <Avatar sx={{ bgcolor: 'secondary.main' }} >
+                    <Avatar sx={{ bgcolor: 'secondary.main' }}>
                         {product.name.charAt(0).toUpperCase()}
                     </Avatar>
                 }
@@ -33,10 +34,15 @@ export default function ProductCard({ product }: Props) {
             />
             <CardContent>
                 <Typography gutterBottom color='secondary' variant="h5">
-                    {product.price}
+                    ${product.price.toFixed(2)}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                    {product.categoryName || 'No Category'} 
+                    <Link to={`/catalog?categoryId=${product.categoryID}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                        {product.categoryName || "Unknown Category"}
+                    </Link>
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                    {`${product.stockQuantity} In Stock`}
                 </Typography>
             </CardContent>
             <CardActions>

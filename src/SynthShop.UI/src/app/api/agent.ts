@@ -26,7 +26,6 @@ axios.interceptors.request.use(
 
 axios.interceptors.response.use(
     async (response) => {
-        await sleep();
         return response;
     },
     (error: AxiosError) => {

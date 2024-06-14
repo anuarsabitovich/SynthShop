@@ -27,7 +27,8 @@ namespace SynthShop.Infrastructure.Data.Repositories
 
         public async Task<PagedList<Product>> GetAllAsync(Expression<Func<Product, bool>> filter = null,
             string? sortBy = null, bool isAscending = true,
-            int pageNumber = 1, int pageSize = 1000, string? includeProperties = null
+            int pageNumber = 1, int pageSize = 1000, string? includeProperties = null,
+            Guid? categoryId = null
             )
         {
             var products = _dbContext.Products .AsQueryable();
@@ -40,7 +41,12 @@ namespace SynthShop.Infrastructure.Data.Repositories
                 }
             }
 
-           
+            if (categoryId.HasValue)
+            {
+                products = products.Where(p => p.CategoryID == categoryId.Value);
+            }
+
+
             if (filter is not null)
             {
                products = products.Where(filter);

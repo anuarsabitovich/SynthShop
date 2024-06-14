@@ -36,11 +36,11 @@ namespace SynthShop.Core.Services.Impl
         }
 
         public async Task<PagedList<Product>> GetAllAsync(int? pageSize, int pageNumber = 1, string? searchTerm = null, 
-            string? sortBy = null, bool? isAscending = true)
+            string? sortBy = null, bool? isAscending = true, Guid? categoryId = null)
         {
             Expression<Func<Product, bool>> filter = searchTerm is not null ?  x => x.Name.Contains(searchTerm) : null  ;
 
-            return await _productRepository.GetAllAsync(filter, sortBy, isAscending ?? true, pageNumber, pageSize ?? _pagingSettings.PageSize, includeProperties: "Category");
+            return await _productRepository.GetAllAsync(filter, sortBy, isAscending ?? true, pageNumber, pageSize ?? _pagingSettings.PageSize, includeProperties: "Category",  categoryId);
         }
 
         public async Task<Product?> GetByIdAsync(Guid id)

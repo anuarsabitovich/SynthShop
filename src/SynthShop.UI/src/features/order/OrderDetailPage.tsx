@@ -1,23 +1,44 @@
 // src/features/order/OrderDetailsPage.tsx
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams, useNavigate } from 'react-router-dom';
 import { fetchOrderDetails, cancelOrder, completeOrder } from './orderSlice';
 import { RootState } from '../../app/store/configureStore';
 import { Container, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button } from '@mui/material';
 import { getOrderStatusString } from '../../app/utils/orderStatus';
+import agent from '../../app/api/agent';
 
 const OrderDetailsPage = () => {
     const { id } = useParams<{ id: string }>();
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { order, status, error } = useSelector((state: RootState) => state.orders);
+    const [productNames, setProductNames] = useState<{ [key: string]: string }>({});
 
     useEffect(() => {
         if (id) {
             dispatch(fetchOrderDetails(id));
         }
     }, [id, dispatch]);
+
+    useEffect(() => {
+        if (order) {
+            const fetchProductNames = async () => {
+                const names: { [key: string]: string } = {};
+                for (const item of order.orderItems) {
+                    try {
+                        const product = await agent.Catalog.details(item.productID);
+                        names[item.productID] = product.name;
+                    } catch (error) {
+                        console.error(`Failed to fetch product name for ${item.productID}`, error);
+                        names[item.productID] = 'Unknown Product';
+                    }
+                }
+                setProductNames(names);
+            };
+            fetchProductNames();
+        }
+    }, [order]);
 
     const handleCancelOrder = () => {
         if (id) {
@@ -76,7 +97,7 @@ const OrderDetailsPage = () => {
                             <TableBody>
                                 {order.orderItems.map((item) => (
                                     <TableRow key={item.orderItemID}>
-                                        <TableCell>{item.productID}</TableCell>
+                                        <TableCell>{productNames[item.productID] || 'Loading...'}</TableCell>
                                         <TableCell>{item.quantity}</TableCell>
                                         <TableCell>{item.price}</TableCell>
                                         <TableCell>{item.price * item.quantity}</TableCell>

@@ -18,6 +18,8 @@ namespace SynthShop.Queries
 
         [FromQuery(Name = "isAscending")]
         public bool? IsAscending { get; set; }
+        [FromQuery(Name = "categoryId")]
+        public Guid? categoryId { get; set; }
     }
 
 }

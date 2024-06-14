@@ -3,9 +3,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Box, Button, TextField, Typography } from '@mui/material';
 import { registerUser } from './authSlice';
 import { RootState } from '../../app/store/configureStore';
+import { unwrapResult } from '@reduxjs/toolkit';
+import { useNavigate } from 'react-router-dom';
 
 const RegisterPage = () => {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const { status, error } = useSelector((state: RootState) => state.auth);
     const [form, setForm] = useState({
         email: '',
@@ -22,9 +25,14 @@ const RegisterPage = () => {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        dispatch(registerUser(form));
+        dispatch(registerUser(form))      
+            .then(() => {
+                navigate('/login');
+            })
+            .catch((error) => {
+                console.error('Registration failed:', error);
+            });
     };
-
     return (
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
             <Typography variant="h4">Register</Typography>
