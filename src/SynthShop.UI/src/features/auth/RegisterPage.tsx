@@ -5,6 +5,7 @@ import { registerUser } from './authSlice';
 import { RootState } from '../../app/store/configureStore';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useNavigate } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
 
 const RegisterPage = () => {
     const dispatch = useDispatch();
@@ -26,9 +27,6 @@ const RegisterPage = () => {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         dispatch(registerUser(form))      
-            .then(() => {
-                navigate('/login');
-            })
             .catch((error) => {
                 console.error('Registration failed:', error);
             });
@@ -93,6 +91,8 @@ const RegisterPage = () => {
             </Button>
             {status === 'loading' && <Typography>Loading...</Typography>}
             {status === 'failed' && <Typography color="error">{error}</Typography>}
+            <ToastContainer />
+
         </Box>
     );
 };
