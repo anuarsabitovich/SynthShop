@@ -19,17 +19,25 @@ namespace SynthShop.Core.Services.Impl
         private readonly ILogger _logger;
         private readonly PagingSettings _pagingSettings;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IStorageService _storageService;
+        private readonly AWSSettings _awsSettings;
 
-        public ProductService(IProductRepository productRepository, ILogger logger, IOptions<PagingSettings> pagingSettings, IUnitOfWork unitOfWork)
+        public ProductService(IProductRepository productRepository, ILogger logger, IOptions<PagingSettings> pagingSettings, IUnitOfWork unitOfWork, IStorageService storageService, IOptions<AWSSettings> awsSettings)
         {
             _productRepository = productRepository;
             _unitOfWork = unitOfWork;
+            _storageService = storageService;
+            _awsSettings = awsSettings.Value;
             _logger = logger.ForContext<ProductService>();
             _pagingSettings = pagingSettings.Value;
+            
         }
 
-        public async Task CreateAsync(Product product)
+        public async Task CreateAsync(Product product, Stream pictureStream, string contentType, string extension)
         {
+            var fileName = $"{Guid.NewGuid()}_{product.Name}.{extension}";
+            await _storageService.UploadAsync(fileName, pictureStream, contentType);
+            product.PictureUrl = $"{_awsSettings.CloudFrontDomainUrl}/{fileName}";
             await _productRepository.CreateAsync(product);
             await _unitOfWork.SaveChangesAsync();
             _logger.Information("Product created with ID {ProductId}", product.ProductID);
@@ -48,7 +56,7 @@ namespace SynthShop.Core.Services.Impl
             return await _productRepository.GetByIdAsync(id);
         }
 
-        public async Task<Product?> UpdateAsync(Guid id, Product updatedProduct)
+        public async Task<Product?> UpdateAsync(Guid id, Product updatedProduct, Stream pictureStream, string contentType, string extension)
         {
             var existingProduct = await _productRepository.GetByIdAsync(id);
             if (existingProduct == null)

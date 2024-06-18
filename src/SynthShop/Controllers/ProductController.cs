@@ -36,7 +36,7 @@ namespace SynthShop.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] AddProductDTO addProductDTO)
+        public async Task<IActionResult> Create([FromForm] AddProductDTO addProductDTO)
         {
             var validationResult = _productValidator.Validate(addProductDTO);
 
@@ -47,7 +47,7 @@ namespace SynthShop.Controllers
             }
             var product = _mapper.Map<Product>(addProductDTO);
 
-            await _productService.CreateAsync(product);
+            await _productService.CreateAsync(product, addProductDTO.Picture.OpenReadStream(), addProductDTO.Picture.ContentType, Path.GetExtension(addProductDTO.Picture.FileName));
             _logger.Information("Successfully created product {@Product}", product);
             return Ok(_mapper.Map<AddProductDTO>(product));
         }
@@ -83,7 +83,7 @@ namespace SynthShop.Controllers
 
         [HttpPut]
         [Route("{id:Guid}")]
-        public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] AddProductDTO updateProductDTO)
+        public async Task<IActionResult> Update([FromRoute] Guid id, [FromForm] AddProductDTO updateProductDTO)
         {
             var validationResult = _productValidator.Validate(updateProductDTO);
 
@@ -95,7 +95,7 @@ namespace SynthShop.Controllers
 
             var product = _mapper.Map<Product>(updateProductDTO);
 
-            product = await _productService.UpdateAsync(id, product);
+            product = await _productService.UpdateAsync(id, product, updateProductDTO.Picture.OpenReadStream(), updateProductDTO.Picture.ContentType, Path.GetExtension(updateProductDTO.Picture.FileName));
 
             if (product == null)
             {
