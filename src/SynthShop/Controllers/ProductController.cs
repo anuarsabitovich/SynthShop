@@ -61,7 +61,7 @@ namespace SynthShop.Controllers
                 return BadRequest(ModelState);
             }
             
-            var products = await _productService.GetAllAsync(searchQueryParameters.PageSize, searchQueryParameters.PageNumber,  searchQueryParameters.SearchTerm, searchQueryParameters.SortBy, searchQueryParameters.IsAscending ?? true);
+            var products = await _productService.GetAllAsync(searchQueryParameters.PageSize, searchQueryParameters.PageNumber,  searchQueryParameters.SearchTerm, searchQueryParameters.SortBy, searchQueryParameters.IsAscending ?? true, searchQueryParameters.categoryId);
             return Ok(_mapper.Map<PagedList<ProductDTO> >(products));
         }
 

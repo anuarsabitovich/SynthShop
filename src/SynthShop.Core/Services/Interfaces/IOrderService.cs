@@ -10,5 +10,8 @@ namespace SynthShop.Core.Services.Interfaces
         Task<Result<Order>> CancelOrder(Guid orderId, Guid customerId);
 
         Task<Result<Order>> CompleteOrder(Guid basketId, Guid customerId);
+        Task<Result<List<Order>>> GetOrdersByCustomerId(Guid customerId);
+        Task<Result<Order>> GetOrderByIdAsync(Guid orderId);
+
     }
 }

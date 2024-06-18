@@ -1,8 +1,7 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { toast } from "react-toastify";
 import { router } from "../router/Routes";
-import { store } from "../store/configureStore";
-
+import { getCookies } from '../utils/utils';
 const sleep = () => new Promise(resolve => setTimeout(resolve, 500));
 
 axios.defaults.baseURL = 'https://localhost:7281/api';
@@ -10,43 +9,54 @@ axios.defaults.withCredentials = true;
 
 const responseBody = (response: AxiosResponse) => response.data;
 
-axios.interceptors.request.use(config => {
-    const token = localStorage.getItem('token');
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+axios.interceptors.request.use(
+    (config) => {
+        const token = getCookies('token');
+        if (token) {
+            config.headers['Authorization'] = `Bearer ${token}`;
+        } else {
+            console.warn("No token found in localStorage");
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
     }
-    return config;
-});
+);
 
-axios.interceptors.response.use(async response => {
-    await sleep();
-    return response;
-}, (error: AxiosError) => {
-    const { data, status } = error.response as AxiosResponse;
-    switch (status) {
-        case 400:
-            if (data.errors) {
-                const modelStateErrors: string[] = [];
-                for (const key in data.errors) {
-                    if (data.errors[key]) {
-                        modelStateErrors.push(data.errors[key]);
+axios.interceptors.response.use(
+    async (response) => {
+        return response;
+    },
+    (error: AxiosError) => {
+        const { data, status } = error.response as AxiosResponse;
+        console.error("API request error:", error);
+        switch (status) {
+            case 400:
+                if (data.errors) {
+                    const modelStateErrors: string[] = [];
+                    for (const key in data.errors) {
+                        if (data.errors[key]) {
+                            modelStateErrors.push(data.errors[key]);
+                        }
                     }
+                    throw modelStateErrors.flat();
                 }
-                throw modelStateErrors.flat();
-            }
-            toast.error(data.title);
-            break;
-        case 401:
-            toast.error(data.title);
-            break;
-        case 500:
-            router.navigate('/server-error', { state: { error: data } });
-            break;
-        default:
-            break;
+                toast.error(data.title || 'Bad Request');
+                break;
+            case 401:
+                toast.error(data.title || 'Unauthorized');
+                break;
+            case 500:
+                router.navigate('/server-error', { state: { error: data } });
+                break;
+            default:
+                toast.error('An unexpected error occurred');
+                break;
+        }
+        return Promise.reject(error.response);
     }
-    return Promise.reject(error.response);
-});
+);
 
 const logRequest = (url: string, method: string, params: any, body?: any) => {
     console.log(`Making ${method} request to: ${url} with params:`, params, 'and body:', body);
@@ -98,11 +108,19 @@ const Basket = {
     getById: (id: string) => requests.get(`basket/${id}`),
     addItem: async (basketId: string, productId: string, quantity: number = 1) => {
         await requests.post(`basket/${basketId}/items`, { productId, quantity });
-        return requests.get(`basket/${basketId}`); 
+        return requests.get(`basket/${basketId}`);
     },
     deleteItem: (itemId: string) => requests.delete(`basket/${itemId}`),
     updateItem: (basketId: string, itemId: string, quantity: number) => requests.put(`basket/${basketId}/items/${itemId}`, { quantity }),
     removeItem: (itemId: string) => requests.post(`basket/items/${itemId}/remove`, {})
+};
+
+const Orders = {
+    list: () => requests.get('/order/customer-orders'),
+    details: (id: string) => requests.get(`/order/${id}`),
+    create: (order: { basketId: string }) => requests.post('/order', order),
+    cancel: (id: string) => requests.delete(`/order/${id}`),
+    complete: (id: string) => requests.post(`/order/complete/${id}`, {}),
 };
 
 const Auth = {
@@ -111,12 +129,15 @@ const Auth = {
         requests.post('/Auth/register', { email, firstName, lastName, address, password }),
 };
 
-
 const agent = {
     Catalog,
     TestErrors,
-    Basket, 
-    Auth
+    Basket,
+    Auth,
+    Orders
 };
 
+export { axios };
 export default agent;
+
+

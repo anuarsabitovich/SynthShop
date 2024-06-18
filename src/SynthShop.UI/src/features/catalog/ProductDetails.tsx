@@ -1,6 +1,4 @@
-// ProductDetails.tsx
-
-import { Box, Divider, Grid, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from "@mui/material";
+import { Box, Divider, Grid, Table, TableBody, TableCell, TableContainer, TableRow, Typography, Button } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import NotFound from "../../app/errors/NotFound";
@@ -18,13 +16,13 @@ export default function ProductDetails() {
     const { basket, addItemStatus } = useAppSelector(state => state.basket);
     const dispatch = useAppDispatch();
     const { id } = useParams<Params>();
-    const product = useAppSelector(state => productSelectors.selectById(state, id!))
+    const product = useAppSelector(state => productSelectors.selectById(state, id!));
     const [error, setError] = useState<string | null>(null);
     const item = basket?.items.find(i => i.productId === product?.productID);
-    const {status: productStatus} = useAppSelector(state => state.catalog)
+    const { status: productStatus } = useAppSelector(state => state.catalog);
 
     useEffect(() => {
-      if (!product) dispatch(fetchProductAsync(id!))
+        if (!product) dispatch(fetchProductAsync(id!));
     }, [id, dispatch, product]);
 
     const handleAddItem = (productId: string) => {
@@ -34,7 +32,7 @@ export default function ProductDetails() {
     };
 
     if (productStatus.includes('pending')) return <LoadingComponent message="Loading product..." />;
-    
+
     if (error) return <Typography>{error}</Typography>;
     if (!product) return <NotFound />;
 
@@ -57,6 +55,10 @@ export default function ProductDetails() {
                             <TableRow>
                                 <TableCell>Description</TableCell>
                                 <TableCell>{product.description}</TableCell>
+                            </TableRow>
+                            <TableRow>
+                                <TableCell>Category</TableCell>
+                                <TableCell>{product.categoryName || 'No Category'}</TableCell> // Handle null category name
                             </TableRow>
                             <TableRow>
                                 <TableCell>Quantity in stock</TableCell>
@@ -85,16 +87,20 @@ export default function ProductDetails() {
                         </Box>
                     </Grid>
                     <Grid item xs={6}>
-                        <LoadingButton
-                            sx={{ height: '55px' }}
-                            size={'large'}
-                            variant={'contained'}
-                            loading={addItemStatus === 'pendingAddItem' + product.productID}
-                            onClick={() => handleAddItem(product.productID)}
-                            color="secondary"
-                        >
-                            Add Product
-                        </LoadingButton>
+                        {product.stockQuantity > 0 ? (
+                            <LoadingButton
+                                sx={{ height: '55px' }}
+                                size={'large'}
+                                variant={'contained'}
+                                loading={addItemStatus === 'pendingAddItem' + product.productID}
+                                onClick={() => handleAddItem(product.productID)}
+                                color="secondary"
+                            >
+                                Add Product
+                            </LoadingButton>
+                        ) : (
+                            <Button disabled size="small">Out of stock</Button>
+                        )}
                     </Grid>
                 </Grid>
             </Grid>

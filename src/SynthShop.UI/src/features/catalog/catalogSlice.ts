@@ -31,6 +31,7 @@ export interface ProductParams {
     pageNumber: number;
     pageSize: number;
     isAscending: boolean;
+    categoryId?: string;
 }
 
 const initialState: CatalogState = {
@@ -41,7 +42,8 @@ const initialState: CatalogState = {
         searchTerm: '',
         pageNumber: 1,
         pageSize: 6,
-        isAscending: true
+        isAscending: true,
+        categoryId: ''
     },
     metaData: null
 };
@@ -53,32 +55,29 @@ const getAxiosParams = (productParams: ProductParams) => {
     params.append('sortBy', productParams.orderBy);
     params.append('isAscending', productParams.isAscending.toString());
     if (productParams.searchTerm) params.append('searchTerm', productParams.searchTerm);
+    if (productParams.categoryId) params.append('categoryId', productParams.categoryId);
     return params;
 };
 
-export const fetchProductsAsync = createAsyncThunk<any, void, { state: RootState }>(
+export const fetchProductsAsync = createAsyncThunk<Product[], void, { state: RootState }>(
     'catalog/fetchProductsAsync',
     async (_, thunkAPI) => {
         const params = getAxiosParams(thunkAPI.getState().catalog.productParams);
         try {
-            console.log('Fetching products with params:', params.toString());
             const response = await agent.Catalog.list(params);
-            console.log('API response:', response);
             thunkAPI.dispatch(setMetaData({
                 currentPage: response.page,
                 totalPages: Math.ceil(response.totalItems / response.pageSize),
                 pageSize: response.pageSize,
                 totalCount: response.totalItems
             }));
-            const validProducts = validateProducts(response.items);
-            console.log('Validated products:', validProducts);
-            return validProducts;
+            return validateProducts(response.items);
         } catch (error: any) {
-            console.error('Error fetching products:', error);
             return thunkAPI.rejectWithValue({ error: error.response.data });
         }
     }
 );
+
 
 export const fetchProductAsync = createAsyncThunk<Product, string>(
     'catalog/fetchProductAsync',

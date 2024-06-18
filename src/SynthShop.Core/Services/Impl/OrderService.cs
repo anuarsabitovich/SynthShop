@@ -1,4 +1,5 @@
-﻿using LanguageExt.Common;
+﻿using System.Security.Claims;
+using LanguageExt.Common;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using SynthShop.Core.Services.Interfaces;
@@ -146,6 +147,7 @@ namespace SynthShop.Core.Services.Impl
                 return new Result<Order>(new InvalidOperationException("Order is already completed."));
             }
 
+
             if (order.Status == OrderStatus.Cancelled)
             {
                 return new Result<Order>(new InvalidOperationException("Cannot complete a cancelled order."));
@@ -156,6 +158,25 @@ namespace SynthShop.Core.Services.Impl
             await _orderRepository.UpdateOrderAsync(orderId, order);
             await _unitOfWork.SaveChangesAsync();
             return order;
+        }
+
+        public async Task<Result<List<Order>>> GetOrdersByCustomerId(Guid customerId)
+        {
+            try
+            {
+                var orders = await _orderRepository.GetOrdersByCustomerId(customerId);
+                return orders;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Error retrieving orders for customer ID: {CustomerId}", customerId);
+                return new Result<List<Order>>(ex);
+            }
+        }
+        public async Task<Result<Order>> GetOrderByIdAsync(Guid orderId)
+        {
+            var order = await _orderRepository.GetOrderAsync(orderId);
+            return order != null ? new Result<Order>(order) : new Result<Order>(new InvalidOperationException("Order not found."));
         }
     }
 }

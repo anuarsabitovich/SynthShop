@@ -9,5 +9,6 @@
         public int StockQuantity { get; set; }
         public string PictureUrl { get; set; }
         public Guid CategoryID { get; set; }
+        public string CategoryName { get; set; } 
     }
 }

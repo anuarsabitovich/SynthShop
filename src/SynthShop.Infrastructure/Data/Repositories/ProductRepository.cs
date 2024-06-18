@@ -27,10 +27,11 @@ namespace SynthShop.Infrastructure.Data.Repositories
 
         public async Task<PagedList<Product>> GetAllAsync(Expression<Func<Product, bool>> filter = null,
             string? sortBy = null, bool isAscending = true,
-            int pageNumber = 1, int pageSize = 1000, string? includeProperties = null
+            int pageNumber = 1, int pageSize = 1000, string? includeProperties = null,
+            Guid? categoryId = null
             )
         {
-            var products = _dbContext.Products.AsQueryable();
+            var products = _dbContext.Products .AsQueryable();
 
             if (includeProperties is not null)
             {
@@ -39,7 +40,13 @@ namespace SynthShop.Infrastructure.Data.Repositories
                     products = products.Include(includeProperty);
                 }
             }
-           
+
+            if (categoryId.HasValue)
+            {
+                products = products.Where(p => p.CategoryID == categoryId.Value);
+            }
+
+
             if (filter is not null)
             {
                products = products.Where(filter);
@@ -65,14 +72,14 @@ namespace SynthShop.Infrastructure.Data.Repositories
                         : products.OrderByDescending(x => x.StockQuantity);
                 }
             }
-            
-            
-            return products.ToPagedList(pageNumber,pageSize) ;
+
+
+            return products.ToPagedList(pageNumber, pageSize);
         }
 
         public async Task<Product?> GetByIdAsync(Guid id)
         {
-            return await _dbContext.Products.FirstOrDefaultAsync(x => x.ProductID == id);
+            return await _dbContext.Products.Include(p => p.Category).FirstOrDefaultAsync(x => x.ProductID == id);
         }
 
         public async Task<Product?> UpdateAsync(Product product)

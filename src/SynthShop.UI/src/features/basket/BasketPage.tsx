@@ -1,13 +1,31 @@
-import { Box, Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
+// src/features/basket/BasketPage.tsx
+import { Box, Button, Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 import { Add, Delete, Remove } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 import BasketSummary from "./BasketSummary";
 import { useAppDispatch, useAppSelector } from "../../app/store/configureStore";
 import { addBasketItemAsync, removeBasketItemAsync } from "./basketSlice";
 
+import { useNavigate } from 'react-router-dom';
+import { createOrder } from "../order/orderSlice";
+
 export default function BasketPage() {
     const { basket, addItemStatus, removeSingleItemStatus, removeAllItemsStatus } = useAppSelector(state => state.basket);
+    const { user } = useAppSelector(state => state.auth);
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
+    const handleCreateOrder = async () => {
+        if (!user) {
+            navigate('/login');
+        } else {
+            const resultAction = await dispatch(createOrder({ basketId: basket.basketId }));
+            if (createOrder.fulfilled.match(resultAction)) {
+                navigate('/orders');
+            } else {
+                console.log(resultAction.payload);
+            }
+        }
+    };
 
     if (!basket || !basket.items) return <Typography variant='h3'>Your basket is empty</Typography>;
 
@@ -51,8 +69,8 @@ export default function BasketPage() {
                                                 justifyContent: 'center',
                                                 textAlign: 'center',
                                                 width: '40px',
-                                                fontSize: '1rem', // Adjust font size to match other cells
-                                                lineHeight: '1.5' // Adjust line height if needed
+                                                fontSize: '1rem', 
+                                                lineHeight: '1.5' 
                                             }}
                                             color="textPrimary"
                                         >
@@ -88,6 +106,9 @@ export default function BasketPage() {
                 <Grid item xs={6} />
                 <Grid item xs={6}>
                     <BasketSummary />
+                    <Button variant="contained" color="primary" onClick={handleCreateOrder}>
+                        Create Order
+                    </Button>
                 </Grid>
             </Grid>
         </>
