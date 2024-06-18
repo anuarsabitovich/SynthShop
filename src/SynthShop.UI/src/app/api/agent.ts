@@ -28,7 +28,7 @@ axios.interceptors.response.use(
     async (response) => {
         return response;
     },
-    (error: AxiosError) => {
+    (error:   Error) => {
         const { data, status } = error.response as AxiosResponse;
         console.error("API request error:", error);
         switch (status) {

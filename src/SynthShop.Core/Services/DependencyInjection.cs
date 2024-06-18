@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Amazon.S3;
+using SynthShop.Domain.Settings;
 
 namespace SynthShop.Core.Services
 {
@@ -21,6 +23,16 @@ namespace SynthShop.Core.Services
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IBasketService, BasketService>();
             services.AddScoped<IAuthService, AuthService>();
+            services.AddAWSServices(configuration);
+
+            return services;
+        }
+
+        public static IServiceCollection AddAWSServices(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.Configure<AWSSettings>(options => configuration.GetSection("AWS").Bind(options));
+            services.AddAWSService<IAmazonS3>();
+            services.AddScoped<IStorageService, StorageService>();
 
             return services;
         }
