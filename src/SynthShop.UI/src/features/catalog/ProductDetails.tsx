@@ -58,7 +58,7 @@ export default function ProductDetails() {
                             </TableRow>
                             <TableRow>
                                 <TableCell>Category</TableCell>
-                                <TableCell>{product.categoryName || 'No Category'}</TableCell> // Handle null category name
+                                <TableCell>{product.categoryName || 'No Category'}</TableCell> 
                             </TableRow>
                             <TableRow>
                                 <TableCell>Quantity in stock</TableCell>

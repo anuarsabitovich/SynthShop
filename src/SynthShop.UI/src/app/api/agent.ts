@@ -15,7 +15,7 @@ axios.interceptors.request.use(
         if (token) {
             config.headers['Authorization'] = `Bearer ${token}`;
         } else {
-            console.warn("No token found in localStorage");
+            console.warn("No token found in Cookies");
         }
         return config;
     },
@@ -26,9 +26,10 @@ axios.interceptors.request.use(
 
 axios.interceptors.response.use(
     async (response) => {
+        await sleep();
         return response;
     },
-    (error:   Error) => {
+    (error: Error) => {
         const { data, status } = error.response as AxiosResponse;
         console.error("API request error:", error);
         switch (status) {

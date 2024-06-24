@@ -4,7 +4,6 @@ import { useAppSelector } from '../../app/store/configureStore';
 export default function BasketSummary() {
     const { basket } = useAppSelector(state => state.basket);
     const subtotal = basket?.items.reduce((sum, item) => sum + (item.quantity * item.product.price), 0) ?? 0;
-   // const deliveryFee = subtotal > 10000 ? 0 : 500;
 
     return (
         <>
@@ -13,21 +12,8 @@ export default function BasketSummary() {
                     <TableBody>
                         <TableRow>
                             <TableCell colSpan={2}>Total</TableCell>
-                            <TableCell align="right">{(subtotal)}</TableCell>
+                            <TableCell align="right">{(subtotal.toFixed(2))}</TableCell>
                         </TableRow>
-                        {/* <TableRow>
-                            <TableCell colSpan={2}>Delivery fee*</TableCell>
-                            <TableCell align="right">{(deliveryFee)}</TableCell>
-                        </TableRow>
-                        <TableRow>
-                            <TableCell colSpan={2}>Total</TableCell>
-                            <TableCell align="right">{(subtotal + deliveryFee)}</TableCell>
-                        </TableRow>
-                        <TableRow>
-                            <TableCell>
-                                <span style={{fontStyle: 'italic'}}>*Orders over $100 qualify for free delivery</span>
-                            </TableCell>
-                        </TableRow> */}
                     </TableBody>
                 </Table>
             </TableContainer>

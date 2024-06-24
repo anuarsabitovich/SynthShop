@@ -14,7 +14,7 @@ const OrderListPage = () => {
         if (status === 'idle') {
             dispatch(fetchOrders());
         }
-    }, [status, dispatch]);
+    }, [ dispatch]);
 
     return (
         <Container>
@@ -39,7 +39,7 @@ const OrderListPage = () => {
                                 order && order.orderID ? (
                                     <TableRow key={order.orderID}>
                                         <TableCell>
-                                            <Link to={`/orders/${order.orderID}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                                            <Link to={`/orders/${order.orderID}`} style={{ textDecoration: 'none', color: '#1976d2', fontWeight: 'bold' }}>
                                                 {order.orderID}
                                             </Link>
                                         </TableCell>

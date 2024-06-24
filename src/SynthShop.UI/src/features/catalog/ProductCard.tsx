@@ -41,9 +41,6 @@ export default function ProductCard({ product }: Props) {
                         {product.categoryName || "Unknown Category"}
                     </Link>
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
-                    {`${product.stockQuantity} In Stock`}
-                </Typography>
             </CardContent>
             <CardActions>
                 {product.stockQuantity > 0 ? (

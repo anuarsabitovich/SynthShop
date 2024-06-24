@@ -86,7 +86,7 @@ export default function BasketPage() {
                                         </LoadingButton>
                                     </Box>
                                 </TableCell>
-                                <TableCell align="right">{item?.product?.price * item?.quantity}</TableCell>
+                                <TableCell align="right">{(item?.product?.price * item?.quantity).toFixed(2)}</TableCell>
                                 <TableCell align="right">
                                     <LoadingButton
                                         loading={removeAllItemsStatus === 'pendingRemoveItem' + item.basketItemId}

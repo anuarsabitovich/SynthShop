@@ -43,11 +43,12 @@ const LoginPage = () => {
                 />
                 {error && (
                     <Typography color="error" variant="body2">
-                        {error}
+                        Password or email is incorrect!
                     </Typography>
                 )}
                 <Button type="submit" variant="contained" color="primary" fullWidth disabled={status === 'loading'}>
                     {status === 'loading' ? 'Logging in...' : 'Login'}
+
                 </Button>
             </form>
         </Container>

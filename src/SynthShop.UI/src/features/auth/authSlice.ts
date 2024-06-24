@@ -23,7 +23,7 @@ const initialState: AuthState = {
 
 
 
-export const loginUser = createAsyncThunk<AuthResponse, { email: string; password: string }>(
+export const loginUser = createAsyncThunk<AuthResponse, { email: string; password: string }, {rejectValue: string}>(
     'auth/loginUser',
     async (credentials, thunkAPI) => {
         try {
@@ -34,25 +34,23 @@ export const loginUser = createAsyncThunk<AuthResponse, { email: string; passwor
                 id: decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"],
                 email: decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"],
                 role: decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"],
-                firstName: "", // Populate if available
-                lastName: "", // Populate if available
-                address: "", // Populate if available
-                createdAt: new Date(decodedToken.exp * 1000), // Example: using exp as createdAt
-                updateAt: new Date(decodedToken.exp * 1000) // Example: using exp as updateAt
+                firstName: "",
+                lastName: "", 
+                address: "", 
+                createdAt: new Date(decodedToken.exp * 1000).toISOString(), 
+                updateAt: new Date(decodedToken.exp * 1000).toISOString() 
             };
-            console.log(user)
-
-            Cookies.set('token', response.token, { expires: 1 }); // Expires in 1 day
-            Cookies.set('refreshToken', response.refreshToken, { expires: 1 }); // Expires in 1 day
-            Cookies.set('user', encodeURIComponent(JSON.stringify(user)), { expires: 1 }); // Expires in 1 day
+            Cookies.set('token', response.token, { expires: 1 }); 
+            Cookies.set('refreshToken', response.refreshToken, { expires: 1 }); 
+            Cookies.set('user', encodeURIComponent(JSON.stringify(user)), { expires: 1 }); 
             return { ...response, user };
         } catch (error: any) {
-            return thunkAPI.rejectWithValue(error.response.data);
+            return thunkAPI.rejectWithValue(error.response.data.message || 'Login failed');
         }
     }
 );
 
-export const registerUser = createAsyncThunk<AuthResponse, { email: string; password: string; firstName: string; lastName: string; address: string }>(
+export const registerUser = createAsyncThunk<AuthResponse, { email: string; password: string; firstName: string; lastName: string; address: string }, {rejectValue: string}>(
     'auth/registerUser',
     async (registrationData, thunkAPI) => {
         try {

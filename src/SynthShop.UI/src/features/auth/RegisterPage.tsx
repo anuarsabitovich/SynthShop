@@ -26,8 +26,7 @@ const RegisterPage = () => {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        dispatch(registerUser(form))      
-            .catch((error) => {
+        dispatch(registerUser(form)).catch((error) => {
                 console.error('Registration failed:', error);
             });
     };

@@ -56,7 +56,7 @@ const basketSlice = createSlice({
         });
         builder.addCase(addBasketItemAsync.fulfilled, (state, action) => {
             console.log('Fulfilled action:', action);
-            state.basket = action.payload; // Обновляем состояние корзины
+            state.basket = action.payload; 
             state.addItemStatus = 'idle';
         });
         builder.addCase(addBasketItemAsync.rejected, (state) => {
