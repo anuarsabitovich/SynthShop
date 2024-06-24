@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Amazon.S3;
 using SynthShop.Domain.Settings;
+using Amazon.SimpleEmail;
 
 namespace SynthShop.Core.Services
 {
@@ -24,6 +25,11 @@ namespace SynthShop.Core.Services
             services.AddScoped<IBasketService, BasketService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddAWSServices(configuration);
+            services.AddSingleton<EmailProducer>();
+            services.AddHostedService<EmailConsumerService>();
+            services.AddSingleton<EmailService>();
+            
+
 
             return services;
         }
@@ -33,6 +39,7 @@ namespace SynthShop.Core.Services
             services.Configure<AWSSettings>(options => configuration.GetSection("AWS").Bind(options));
             services.AddAWSService<IAmazonS3>();
             services.AddScoped<IStorageService, StorageService>();
+            services.AddAWSService<IAmazonSimpleEmailService>();
 
             return services;
         }

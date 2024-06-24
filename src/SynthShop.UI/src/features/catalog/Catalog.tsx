@@ -143,10 +143,11 @@ const Catalog = () => {
                         onChange={handlePageChange}
                     />
                 </Box>
-                <Box display="flex" justifyContent="center" mt={2}>
-                    <FormControl variant="outlined">
-                        <InputLabel>Page Size</InputLabel>
+                <Box display="flex" justifyContent="center" mt={4}  >
+                    <FormControl  variant="outlined">
+                        <InputLabel >Page Size</InputLabel>
                         <Select
+                        
                             label="Page Size"
                             value={productParams.pageSize}
                             onChange={handlePageSizeChange}

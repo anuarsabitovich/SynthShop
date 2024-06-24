@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using LanguageExt.ClassInstances;
 using Microsoft.Extensions.Options;
 using Serilog;
 using SynthShop.Core.Services.Interfaces;
@@ -71,8 +72,11 @@ namespace SynthShop.Core.Services.Impl
             existingProduct.StockQuantity = updatedProduct.StockQuantity;
             existingProduct.CategoryID = updatedProduct.CategoryID;
             existingProduct.UpdateAt = DateTime.UtcNow;
-
+            var fileName = $"{Guid.NewGuid()}_{existingProduct.Name}.{extension}";
+            await _storageService.UploadAsync(fileName, pictureStream, contentType);
+            existingProduct.PictureUrl = $"{_awsSettings.CloudFrontDomainUrl}/{fileName}";
             var updated = await _productRepository.UpdateAsync(existingProduct);
+
             await _unitOfWork.SaveChangesAsync();
             _logger.Information("Product with ID {ProductId} updated", id);
             return updated;

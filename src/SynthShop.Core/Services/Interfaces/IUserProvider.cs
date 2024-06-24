@@ -2,6 +2,8 @@
 {
     public interface IUserProvider
     {
-        public Guid? GetCurrentUserId();
+        Guid? GetCurrentUserId();
+        string? GetCurrentUserEmail();
+        string? GetFullName();
     }
 }
