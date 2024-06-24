@@ -6,6 +6,7 @@ using SynthShop.Core.Services.Interfaces;
 using SynthShop.Domain.Entities;
 using SynthShop.Domain.Enums;
 using SynthShop.Domain.Exceptions;
+using SynthShop.Domain.Models;
 using SynthShop.Infrastructure.Data.Interfaces;
 
 namespace SynthShop.Core.Services.Impl
@@ -17,14 +18,17 @@ namespace SynthShop.Core.Services.Impl
         private readonly ILogger _logger;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IProductRepository _productRepository;
-
-        public OrderService(IOrderRepository orderRepository, IBasketRepository basketRepository, ILogger logger, IUnitOfWork unitOfWork, IProductRepository productRepository)
+        private readonly EmailProducer _emailProducer;
+        private readonly IUserProvider _userProvider;
+        public OrderService(IOrderRepository orderRepository, IBasketRepository basketRepository, ILogger logger, IUnitOfWork unitOfWork, IProductRepository productRepository, EmailProducer emailProducer, IUserProvider userProvider)
         {
             _orderRepository = orderRepository;
             _basketRepository = basketRepository;
             _logger = logger;
             _unitOfWork = unitOfWork;
             _productRepository = productRepository;
+            _emailProducer = emailProducer;
+            _userProvider = userProvider;
         }
 
         public async Task<Result<Order>> CreateOrder(Guid basketId, Guid customerId) 
@@ -48,7 +52,8 @@ namespace SynthShop.Core.Services.Impl
                 {
                     if (item.Product.StockQuantity < item.Quantity)
                     {
-                        availabilityIssues.Add($"Not enough stock for {item.Product.Name}. Requested: {item.Quantity}, Available: {item.Product.StockQuantity}");
+                        availabilityIssues.Add(
+                            $"Not enough stock for {item.Product.Name}. Requested: {item.Quantity}, Available: {item.Product.StockQuantity}");
                     }
                     else
                     {
@@ -58,7 +63,8 @@ namespace SynthShop.Core.Services.Impl
 
                 if (availabilityIssues.Any())
                 {
-                    _logger.Warning("Failed to create order due to concurrency conflicts for basket ID {BasketId}", basketId);
+                    _logger.Warning("Failed to create order due to concurrency conflicts for basket ID {BasketId}",
+                        basketId);
                     return new Result<Order>(new OrderFailedException(string.Join(", ", availabilityIssues)));
                 }
 
@@ -81,6 +87,11 @@ namespace SynthShop.Core.Services.Impl
                 };
                 var result = await _orderRepository.CreateOrderAsync(order);
                 await _unitOfWork.SaveChangesAsync();
+
+                var sendTo = _userProvider.GetCurrentUserEmail();
+                var message = $"Hi {_userProvider.GetFullName()} your order with id: {order.OrderID} has been created";
+                var subject = "SynthShop Order Creation";
+                _emailProducer.SendMessage(new SendEmailMessage(subject, message, sendTo));
                 return result;
             }
             catch (DbUpdateConcurrencyException e)
@@ -122,7 +133,12 @@ namespace SynthShop.Core.Services.Impl
 
             order.IsDeleted = true;
             order.Status = OrderStatus.Cancelled;
-            
+
+            var sendTo = _userProvider.GetCurrentUserEmail();
+            var message = $"Hi {_userProvider.GetFullName()} your order with id: {order.OrderID} has been cancelled";
+            var subject = "SynthShop Order Cancellation";
+            _emailProducer.SendMessage(new SendEmailMessage(subject, message, sendTo));
+
             await _orderRepository.UpdateOrderAsync(orderId, order);
             await _unitOfWork.SaveChangesAsync();
             return order;
@@ -157,6 +173,13 @@ namespace SynthShop.Core.Services.Impl
 
             await _orderRepository.UpdateOrderAsync(orderId, order);
             await _unitOfWork.SaveChangesAsync();
+
+            var sendTo = _userProvider.GetCurrentUserEmail();
+            var message = $"Hi {_userProvider.GetFullName()} your order with id: {order.OrderID} has been completed";
+            var subject = "SynthShop Order Completed";
+            _emailProducer.SendMessage(new SendEmailMessage(subject, message, sendTo));
+
+
             return order;
         }
 

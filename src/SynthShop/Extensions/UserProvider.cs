@@ -15,5 +15,14 @@ namespace SynthShop.Extensions
             var userIdClaim = _httpContextAccessor?.HttpContext?.User?.Claims?.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
             return Guid.TryParse(userIdClaim, out var userId) ? userId : null;
         }
+
+        public string? GetCurrentUserEmail()
+        {
+            return _httpContextAccessor?.HttpContext?.User?.Claims?.FirstOrDefault(x => x.Type == ClaimTypes.Email)?.Value;
+        }
+        public string? GetFullName()
+        {
+            return _httpContextAccessor?.HttpContext?.User?.Claims?.FirstOrDefault(x => x.Type == ClaimTypes.GivenName)?.Value;
+        }
     }
 }

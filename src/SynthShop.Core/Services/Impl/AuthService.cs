@@ -9,6 +9,7 @@ using Serilog;
 using SynthShop.Core.Services.Interfaces;
 using SynthShop.Domain.Constants;
 using SynthShop.Domain.Entities;
+using SynthShop.Domain.Models;
 using SynthShop.Infrastructure.Data.Interfaces;
 using AuthenticationResult = SynthShop.Domain.Results.AuthenticationResult;
 
@@ -22,8 +23,8 @@ namespace SynthShop.Core.Services.Impl
         private readonly IAuthRepository _authRepository;
         private readonly ILogger _logger;
         private readonly IUnitOfWork _unitOfWork;
-        
-        public AuthService(UserManager<User> userManager, IConfiguration configuration, TokenValidationParameters tokenValidationParameters, IAuthRepository authRepository, ILogger logger, IUnitOfWork unitOfWork)
+        private readonly EmailProducer _emailProducer;
+        public AuthService(UserManager<User> userManager, IConfiguration configuration, TokenValidationParameters tokenValidationParameters, IAuthRepository authRepository, ILogger logger, IUnitOfWork unitOfWork, EmailProducer emailProducer)
         {
             _userManager = userManager;
             _configuration = configuration;
@@ -31,6 +32,7 @@ namespace SynthShop.Core.Services.Impl
             _authRepository = authRepository;
             _logger = logger;
             _unitOfWork = unitOfWork;
+            _emailProducer = emailProducer;
         }
         public async Task<IdentityResult> RegisterUserAsync(User user, string password)
         {
@@ -44,6 +46,11 @@ namespace SynthShop.Core.Services.Impl
             {
                 _logger.Error("User registration failed for {Email}. Errors: {@Errors}", user.Email, result.Errors);
             }
+
+            var message = $"Hi {user.FirstName} {user.LastName} you've been successfully registered at SynthShop";
+            var subject = "Welcome to SynthShop";
+            _emailProducer.SendMessage(new SendEmailMessage(user.Email, message, subject));
+
             return result;
         }
 
@@ -236,6 +243,7 @@ namespace SynthShop.Core.Services.Impl
                 new (ClaimTypes.Name, user.UserName),
                 new (ClaimTypes.Email, user.Email),
                 new (ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new (ClaimTypes.GivenName, user.FirstName + " " + user.LastName),
                 new (JwtRegisteredClaimNames.Sub, user.Email),
                 new (JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
