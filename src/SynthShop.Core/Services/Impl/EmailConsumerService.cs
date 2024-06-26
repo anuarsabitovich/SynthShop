@@ -1,38 +1,39 @@
-﻿// Services/EmailConsumerService.cs
+﻿using System.Text;
+using System.Text.Json;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using System.Text;
-using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
 using Serilog;
 using SynthShop.Domain.Models;
+using SynthShop.Domain.Settings;
+
+namespace SynthShop.Core.Services.Impl;
 
 public class EmailConsumerService : BackgroundService
 {
-    private readonly IConfiguration _configuration;
+    private readonly RabbitMQSettings _rabbitmqSettings;
     private readonly EmailService _emailService;
     private readonly ILogger _logger;
     private IConnection _connection;
     private IModel _channel;
 
-
-    public EmailConsumerService(IConfiguration configuration, EmailService emailService, ILogger logger)
+    public EmailConsumerService(IOptions<RabbitMQSettings> rabbitMQOptions, EmailService emailService, ILogger logger)
     {
-        _configuration = configuration;
+        _rabbitmqSettings = rabbitMQOptions.Value;
         _emailService = emailService;
         _logger = logger;
     }
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        //TODO use IOptions to retrieve RabbitMQ Configuration 
+
         var factory = new ConnectionFactory
         {
-            HostName = _configuration["RabbitMQ:Host"],
-            UserName = _configuration["RabbitMQ:UserName"],
-            Password = _configuration["RabbitMQ:Password"]
+            HostName = _rabbitmqSettings.Host,
+            UserName = _rabbitmqSettings.UserName,
+            Password = _rabbitmqSettings.Password
         }; 
         _connection = factory.CreateConnection();
         _channel = _connection.CreateModel();

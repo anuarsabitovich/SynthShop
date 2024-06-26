@@ -1,4 +1,3 @@
-// src/features/order/orderSlice.ts
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import agent from '../../app/api/agent';
 import { Order } from '../../app/models/order';

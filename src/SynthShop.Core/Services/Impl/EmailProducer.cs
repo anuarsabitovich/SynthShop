@@ -1,27 +1,23 @@
-﻿using RabbitMQ.Client;
-using System.Text;
+﻿using System.Text;
 using System.Text.Json;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
+using RabbitMQ.Client;
 using SynthShop.Domain.Models;
+using SynthShop.Domain.Settings;
+
+namespace SynthShop.Core.Services.Impl;
 
 public class EmailProducer
 {
-    private readonly IConfiguration _configuration;
-    private readonly string _hostName;
-    private readonly string _userName;
-    private readonly string _password;
-
-    public EmailProducer(IConfiguration configuration)
+    private readonly RabbitMQSettings _rabbitmqSettings;
+    public EmailProducer(IOptions<RabbitMQSettings> rabbitMQOptions)
     {
-        _configuration = configuration;
-        _hostName = _configuration["RabbitMQ:Host"];
-        _userName = _configuration["RabbitMQ:UserName"];
-        _password = _configuration["RabbitMQ:Password"];
+        _rabbitmqSettings = rabbitMQOptions.Value;
     }
 
     public void SendMessage(SendEmailMessage sendEmailMessage)
     {
-        var factory = new ConnectionFactory() { HostName = _hostName, UserName = _userName, Password = _password };
+        var factory = new ConnectionFactory() { HostName = _rabbitmqSettings.Host, UserName = _rabbitmqSettings.UserName, Password = _rabbitmqSettings.Password };
         using var connection = factory.CreateConnection();
         using var channel = connection.CreateModel();
         channel.QueueDeclare(queue: "emailQueue", durable: false, exclusive: false, autoDelete: false, arguments: null);

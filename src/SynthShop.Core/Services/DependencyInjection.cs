@@ -25,12 +25,10 @@ namespace SynthShop.Core.Services
             services.AddScoped<IBasketService, BasketService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddAWSServices(configuration);
+            services.Configure<RabbitMQSettings>(options => configuration.GetSection("RabbitMQ").Bind(options));
             services.AddSingleton<EmailProducer>();
             services.AddHostedService<EmailConsumerService>();
             services.AddSingleton<EmailService>();
-            
-
-
             return services;
         }
 
