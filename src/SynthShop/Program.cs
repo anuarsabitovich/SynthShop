@@ -119,7 +119,7 @@ app.UseCors(opt =>
     opt.AllowAnyHeader()
         .AllowAnyMethod()
         .WithOrigins("http://localhost:3001")
-        .AllowCredentials(); // Ensure credentials are allowed
+        .AllowCredentials(); 
 });
 app.UseAuthentication();
 app.UseAuthorization();

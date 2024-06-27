@@ -97,6 +97,7 @@ const authSlice = createSlice({
             Cookies.remove('user');
             Cookies.remove('token');
             Cookies.remove('refreshToken');
+            Cookies.remove('basketId')
         },
     },
     extraReducers: (builder) => {
