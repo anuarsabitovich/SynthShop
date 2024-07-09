@@ -1,25 +1,26 @@
-// src/features/basket/BasketPage.tsx
 import { Box, Button, Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 import { Add, Delete, Remove } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 import BasketSummary from "./BasketSummary";
 import { useAppDispatch, useAppSelector } from "../../app/store/configureStore";
 import { addBasketItemAsync, removeBasketItemAsync } from "./basketSlice";
-
 import { useNavigate } from 'react-router-dom';
 import { createOrder } from "../order/orderSlice";
+import Cookies from 'js-cookie';
 
 export default function BasketPage() {
     const { basket, addItemStatus, removeSingleItemStatus, removeAllItemsStatus } = useAppSelector(state => state.basket);
     const { user } = useAppSelector(state => state.auth);
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
+    
     const handleCreateOrder = async () => {
         if (!user) {
             navigate('/login');
         } else {
             const resultAction = await dispatch(createOrder({ basketId: basket.basketId }));
             if (createOrder.fulfilled.match(resultAction)) {
+                Cookies.remove('basketId'); 
                 navigate('/orders');
             } else {
                 console.log(resultAction.payload);
@@ -27,7 +28,14 @@ export default function BasketPage() {
         }
     };
 
-    if (!basket || !basket.items) return <Typography variant='h3'>Your basket is empty</Typography>;
+    if (!basket || !basket.items.length) return (
+        <Box textAlign="center" mt={5}>
+            <Typography variant='h4'>Your basket is empty</Typography>
+            <Button variant="contained" color="primary" onClick={() => navigate('/catalog')}>
+                Go to Catalog
+            </Button>
+        </Box>
+    );
 
     return (
         <>

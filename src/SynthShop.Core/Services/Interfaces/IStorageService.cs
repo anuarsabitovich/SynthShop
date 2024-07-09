@@ -1,9 +1,6 @@
-﻿namespace SynthShop.Core.Services.Interfaces
+﻿namespace SynthShop.Core.Services.Interfaces;
+
+public interface IStorageService
 {
-    public interface IStorageService
-    {
-        Task UploadAsync(string fileName, Stream stream, string contentType);
-
-
-    }
+    Task UploadAsync(string fileName, Stream stream, string contentType);
 }

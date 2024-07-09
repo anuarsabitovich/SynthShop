@@ -1,8 +1,7 @@
-﻿namespace SynthShop.DTO
+﻿namespace SynthShop.DTO;
+
+public class UpdateBasketItemDTO
 {
-    public class UpdateBasketItemDTO
-    {
-        public Guid BasketItemId { get; set; }
-        public int Quantity { get; set; }
-    }
+    public Guid BasketItemId { get; set; }
+    public int Quantity { get; set; }
 }

@@ -1,16 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace SynthShop.Domain.Results;
 
-namespace SynthShop.Domain.Results
+public class AuthenticationResult
 {
-    public class AuthenticationResult
-    {
-        public string Token { get; set; }
-        public string RefreshToken { get; set; }
-        public bool Success { get; set; }
-        public IEnumerable<string> Errors { get; set; } = Enumerable.Empty<string>();
-    }
+    public string Token { get; set; }
+    public string RefreshToken { get; set; }
+    public bool Success { get; set; }
+    public IEnumerable<string> Errors { get; set; } = Enumerable.Empty<string>();
 }

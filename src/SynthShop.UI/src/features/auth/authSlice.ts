@@ -97,7 +97,8 @@ const authSlice = createSlice({
             Cookies.remove('user');
             Cookies.remove('token');
             Cookies.remove('refreshToken');
-            Cookies.remove('basketId')
+            Cookies.remove('basketId');
+            window.location.href = '/';
         },
     },
     extraReducers: (builder) => {

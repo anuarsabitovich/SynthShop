@@ -1,16 +1,15 @@
 ﻿using SynthShop.Domain.Entities;
 
-namespace SynthShop.Infrastructure.Data.Interfaces
+namespace SynthShop.Infrastructure.Data.Interfaces;
+
+public interface IOrderRepository
 {
-    public interface IOrderRepository 
-    {
-        Task<Order?> GetOrderAsync(Guid orderId);
-        
-        Task<Order> CreateOrderAsync(Order order);
+    Task<Order?> GetOrderAsync(Guid orderId);
 
-        Task DeleteOrderAsync(Guid orderId);
-        Task<List<Order>> GetOrdersByCustomerId(Guid customerId);
+    Task<Order> CreateOrderAsync(Order order);
 
-        Task<Order?> UpdateOrderAsync(Guid id, Order order);
-    }
+    Task DeleteOrderAsync(Guid orderId);
+    Task<List<Order>> GetOrdersByCustomerId(Guid customerId);
+
+    Task<Order?> UpdateOrderAsync(Guid id, Order order);
 }

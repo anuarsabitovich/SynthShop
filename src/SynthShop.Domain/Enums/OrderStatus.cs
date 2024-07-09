@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace SynthShop.Domain.Enums;
 
-namespace SynthShop.Domain.Enums
+public enum OrderStatus
 {
-    public enum OrderStatus
-    {
-        Pending,
-        Completed, 
-        Cancelled 
-    }
+    Pending,
+    Completed,
+    Cancelled
 }

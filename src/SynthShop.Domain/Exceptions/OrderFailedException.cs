@@ -1,16 +1,18 @@
-﻿namespace SynthShop.Domain.Exceptions
+﻿namespace SynthShop.Domain.Exceptions;
+
+public class OrderFailedException : Exception
 {
-    public class OrderFailedException : Exception
+    public OrderFailedException()
     {
-        public OrderFailedException()
-        { }
+    }
 
-        public OrderFailedException(string message)
-            : base(message)
-        { }
+    public OrderFailedException(string message)
+        : base(message)
+    {
+    }
 
-        public OrderFailedException(string message, Exception innerException)
-            : base(message, innerException)
-        { }
+    public OrderFailedException(string message, Exception innerException)
+        : base(message, innerException)
+    {
     }
 }

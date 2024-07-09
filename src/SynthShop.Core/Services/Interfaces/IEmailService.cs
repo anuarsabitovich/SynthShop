@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SynthShop.Domain.Models;
+﻿using SynthShop.Domain.Models;
 
-namespace SynthShop.Core.Services.Interfaces
+namespace SynthShop.Core.Services.Interfaces;
+
+public interface IEmailService
 {
-    public interface IEmailService
-    {
-        Task SendEmailAsync(SendEmailMessage sendEmailMessage);
-    }
+    Task SendEmailAsync(SendEmailMessage sendEmailMessage);
 }

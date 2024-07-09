@@ -1,18 +1,17 @@
 ﻿using SynthShop.Domain.Entities;
 
-namespace SynthShop.Core.Services.Interfaces
+namespace SynthShop.Core.Services.Interfaces;
+
+public interface IBasketService
 {
-    public interface IBasketService
-    {
-        Task<Guid> CreateBasketAsync();
-        Task<Basket?> GetBasketByIdAsync(Guid basketId);
+    Task<Guid> CreateBasketAsync();
+    Task<Basket?> GetBasketByIdAsync(Guid basketId);
 
-        Task AddItemToBasketAsync(Guid basketId, Guid productId, int quantity);
+    Task AddItemToBasketAsync(Guid basketId, Guid productId, int quantity);
 
-        Task DeleteItemFromBasketAsync( Guid basketItemId);
+    Task DeleteItemFromBasketAsync(Guid basketItemId);
 
-        Task DeleteBasketAsync(Guid basketId);
-        Task UpdateItemInBasket(Guid basketId, Guid basketItemId, int quantity);
-        Task RemoveBasketItemByOne(Guid basketItemId);
-    }
+    Task DeleteBasketAsync(Guid basketId);
+    Task UpdateItemInBasket(Guid basketId, Guid basketItemId, int quantity);
+    Task RemoveBasketItemByOne(Guid basketItemId);
 }

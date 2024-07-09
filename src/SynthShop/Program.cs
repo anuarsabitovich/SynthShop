@@ -46,16 +46,10 @@ builder.Services.AddAuthentication(x =>
     x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(x =>
-{
-
-    x.TokenValidationParameters = tokenValidationParameters;
-});
+}).AddJwtBearer(x => { x.TokenValidationParameters = tokenValidationParameters; });
 
 // Add services to the container.
 
-builder.Services.AddControllers();
-// 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IUserProvider, UserProvider>();
 builder.Services.AddHeaderPropagation(options => options.Headers.Add(LogConstants.CorrelationHeader));
@@ -81,7 +75,7 @@ builder.Services.AddSwaggerGen(options =>
                 Reference = new OpenApiReference
                 {
                     Type = ReferenceType.SecurityScheme,
-                    Id = JwtBearerDefaults.AuthenticationScheme,
+                    Id = JwtBearerDefaults.AuthenticationScheme
                 },
                 Scheme = "Oauth2",
                 Name = JwtBearerDefaults.AuthenticationScheme,
@@ -96,7 +90,8 @@ builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddCoreServices(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
 
-builder.Services.AddControllers().AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<CategoryValidator>());
+builder.Services.AddControllers()
+    .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<CategoryValidator>());
 
 
 var app = builder.Build();
@@ -110,19 +105,20 @@ if (app.Environment.IsDevelopment())
 }
 
 
-
 app.UseExceptionHandler("/Error");
-app.UseHsts();
 app.UseHttpsRedirection();
+
+app.UseHsts();
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseCors(opt =>
 {
     opt.AllowAnyHeader()
         .AllowAnyMethod()
         .WithOrigins("http://localhost:3001")
-        .AllowCredentials(); 
+        .AllowCredentials();
 });
-app.UseAuthentication();
-app.UseAuthorization();
+
 
 app.UseHeaderPropagation();
 

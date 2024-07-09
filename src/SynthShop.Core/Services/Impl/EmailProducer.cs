@@ -10,6 +10,7 @@ namespace SynthShop.Core.Services.Impl;
 public class EmailProducer
 {
     private readonly RabbitMQSettings _rabbitmqSettings;
+
     public EmailProducer(IOptions<RabbitMQSettings> rabbitMQOptions)
     {
         _rabbitmqSettings = rabbitMQOptions.Value;
@@ -17,12 +18,16 @@ public class EmailProducer
 
     public void SendMessage(SendEmailMessage sendEmailMessage)
     {
-        var factory = new ConnectionFactory() { HostName = _rabbitmqSettings.Host, UserName = _rabbitmqSettings.UserName, Password = _rabbitmqSettings.Password };
+        var factory = new ConnectionFactory()
+        {
+            HostName = _rabbitmqSettings.Host, UserName = _rabbitmqSettings.UserName,
+            Password = _rabbitmqSettings.Password
+        };
         using var connection = factory.CreateConnection();
         using var channel = connection.CreateModel();
-        channel.QueueDeclare(queue: "emailQueue", durable: false, exclusive: false, autoDelete: false, arguments: null);
+        channel.QueueDeclare("emailQueue", false, false, false, null);
 
         var body = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(sendEmailMessage));
-        channel.BasicPublish(exchange: "", routingKey: "emailQueue", basicProperties: null, body: body);
+        channel.BasicPublish("", "emailQueue", null, body);
     }
 }

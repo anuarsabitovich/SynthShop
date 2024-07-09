@@ -1,7 +1,6 @@
-﻿namespace SynthShop.Domain.Constants
+﻿namespace SynthShop.Domain.Constants;
+
+public static class LogConstants
 {
-    public static class LogConstants
-    {
-        public const string CorrelationHeader = "x-correlation-id";
-    }
+    public const string CorrelationHeader = "x-correlation-id";
 }

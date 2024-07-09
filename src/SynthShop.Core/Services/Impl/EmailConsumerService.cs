@@ -34,10 +34,10 @@ public class EmailConsumerService : BackgroundService
             HostName = _rabbitmqSettings.Host,
             UserName = _rabbitmqSettings.UserName,
             Password = _rabbitmqSettings.Password
-        }; 
+        };
         _connection = factory.CreateConnection();
         _channel = _connection.CreateModel();
-        _channel.QueueDeclare(queue: "emailQueue", durable: false, exclusive: false, autoDelete: false, arguments: null);
+        _channel.QueueDeclare("emailQueue", false, false, false, null);
 
         var consumer = new EventingBasicConsumer(_channel);
         consumer.Received += async (model, ea) =>
@@ -52,9 +52,9 @@ public class EmailConsumerService : BackgroundService
             catch (Exception e)
             {
                 _logger.Error(e, e.Message);
-            } 
+            }
         };
-        _channel.BasicConsume(queue: "emailQueue", autoAck: true, consumer: consumer);
+        _channel.BasicConsume("emailQueue", true, consumer);
         stoppingToken.Register(() =>
         {
             _channel?.Close();

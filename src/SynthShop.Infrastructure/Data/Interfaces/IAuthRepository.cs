@@ -1,11 +1,10 @@
 ﻿using SynthShop.Domain.Entities;
 
-namespace SynthShop.Infrastructure.Data.Interfaces
+namespace SynthShop.Infrastructure.Data.Interfaces;
+
+public interface IAuthRepository
 {
-    public interface IAuthRepository
-    { 
-        Task<RefreshToken?> GetRefreshTokenById(Guid token);
-        Task UpdateRefreshToken(RefreshToken token);
-        Task AddRefreshToken(RefreshToken token);
-    }
+    Task<RefreshToken?> GetRefreshTokenById(Guid token);
+    Task UpdateRefreshToken(RefreshToken token);
+    Task AddRefreshToken(RefreshToken token);
 }

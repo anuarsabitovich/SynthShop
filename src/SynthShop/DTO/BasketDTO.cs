@@ -1,11 +1,10 @@
 ﻿using SynthShop.Domain.Entities;
 
-namespace SynthShop.DTO
-{
-    public class BasketDTO
-    {
-        public Guid BasketId { get; set; }
+namespace SynthShop.DTO;
 
-        public List<BasketItem>? Items { get; set; }
-    }
+public class BasketDTO
+{
+    public Guid BasketId { get; set; }
+
+    public List<BasketItem>? Items { get; set; }
 }

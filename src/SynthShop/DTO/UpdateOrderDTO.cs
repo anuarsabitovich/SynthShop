@@ -1,9 +1,8 @@
-﻿namespace SynthShop.DTO
+﻿namespace SynthShop.DTO;
+
+public class UpdateOrderDTO
 {
-    public class UpdateOrderDTO
-    {
-        public DateTime OrderDate { get; set; }
-        public Guid CustomerID { get; set; }
-        public decimal TotalAmount { get; set; }
-    }
+    public DateTime OrderDate { get; set; }
+    public Guid CustomerID { get; set; }
+    public decimal TotalAmount { get; set; }
 }

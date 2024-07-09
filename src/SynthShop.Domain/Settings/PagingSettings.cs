@@ -1,7 +1,6 @@
-﻿namespace SynthShop.Domain.Settings
+﻿namespace SynthShop.Domain.Settings;
+
+public sealed class PagingSettings
 {
-    public sealed class PagingSettings
-    {
-        public required int PageSize { get; init; }
-    }
+    public required int PageSize { get; init; }
 }

@@ -11,14 +11,15 @@ public class EmailService : IEmailService
     private readonly IAmazonSimpleEmailService _amazonSimpleEmailService;
     private readonly IConfiguration _configuration;
 
-    public EmailService(ILogger<EmailService> logger, IAmazonSimpleEmailService amazonSimpleEmailService, IConfiguration configuration)
+    public EmailService(ILogger<EmailService> logger, IAmazonSimpleEmailService amazonSimpleEmailService,
+        IConfiguration configuration)
     {
         _logger = logger;
         _amazonSimpleEmailService = amazonSimpleEmailService;
         _configuration = configuration;
     }
 
-    public async Task  SendEmailAsync(SendEmailMessage sendEmailMessage)
+    public async Task SendEmailAsync(SendEmailMessage sendEmailMessage)
     {
         try
         {
@@ -55,7 +56,5 @@ public class EmailService : IEmailService
         {
             _logger.LogError("SendEmailAsync failed with exception: {ExceptionMessage}", ex.Message);
         }
-
-
     }
 }
