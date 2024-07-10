@@ -113,7 +113,7 @@ const Basket = {
     },
     deleteItem: (itemId: string) => requests.delete(`basket/${itemId}`),
     updateItem: (basketId: string, itemId: string, quantity: number) => requests.put(`basket/${basketId}/items/${itemId}`, { quantity }),
-    removeItem: (itemId: string) => requests.post(`basket/items/${itemId}/remove`, {})
+    removeItem: (itemId: string) => requests.delete(`basket/items/${itemId}/remove`)
 };
 
 const Orders = {

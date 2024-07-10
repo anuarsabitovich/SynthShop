@@ -48,7 +48,6 @@ const LoginPage = () => {
                 )}
                 <Button type="submit" variant="contained" color="primary" fullWidth disabled={status === 'loading'}>
                     {status === 'loading' ? 'Logging in...' : 'Login'}
-
                 </Button>
             </form>
         </Container>

@@ -85,8 +85,8 @@ public class BasketController : ControllerBase
 
         return NoContent();
     }
-    // TODO change to delete
-    [HttpPost("items/{itemId:Guid}/remove")]
+
+    [HttpDelete("items/{itemId:Guid}/remove")]
     public async Task<IActionResult> RemoveItemFromBasketByOneAsync([FromRoute] Guid itemId)
     {
         await _basketService.RemoveBasketItemByOne(itemId);
