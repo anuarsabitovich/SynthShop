@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import agent from '../../app/api/agent';
 import { Order } from '../../app/models/order';
-import Cookies from 'js-cookie';
 
 interface OrderState {
     orders: Order[];
@@ -46,7 +45,7 @@ export const createOrder = createAsyncThunk<Order, { basketId: string }, { rejec
     async (order, thunkAPI) => {
         try {
             const response = await agent.Orders.create(order);
-            Cookies.remove('basketId');
+            localStorage.removeItem('basketId');
             return response;
         } catch (error: any) {
             return thunkAPI.rejectWithValue(error.response?.data || error.message);

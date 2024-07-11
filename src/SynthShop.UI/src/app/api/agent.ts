@@ -1,7 +1,6 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { toast } from "react-toastify";
 import { router } from "../router/Routes";
-import { getCookies } from '../utils/utils';
 const sleep = () => new Promise(resolve => setTimeout(resolve, 500));
 
 axios.defaults.baseURL = 'https://localhost:7281/api';
@@ -11,13 +10,15 @@ const responseBody = (response: AxiosResponse) => response.data;
 
 axios.interceptors.request.use(
     (config) => {
-        const token = getCookies('token');
+        const token = localStorage.getItem('token');
         if (token) {
             config.headers['Authorization'] = `Bearer ${token}`;
-        } else {
-            console.warn("No token found in Cookies");
         }
-        return config;
+        const correlationId = localStorage.getItem('correlationId');
+        if (correlationId){
+            config.headers['x-correlation-id'] = correlationId;
+        }
+      return config;
     },
     (error) => {
         return Promise.reject(error);
@@ -26,7 +27,7 @@ axios.interceptors.request.use(
 
 axios.interceptors.response.use(
     async (response) => {
-        await sleep();
+        //await sleep();
         return response;
     },
     (error: Error) => {

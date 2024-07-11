@@ -3,8 +3,8 @@ import agent from '../../app/api/agent';
 import { User } from '../../app/models/user';
 import { DecodedToken } from '../../app/models/decodedToken';
 import { AuthResponse } from '../../app/models/authResponse';
-import Cookies from 'js-cookie';
 import jwt_decode, { jwtDecode } from 'jwt-decode';
+import { generateCorrelationId } from '../../app/utils/correlationIdGenerator';
 
 
 interface AuthState {
@@ -15,10 +15,11 @@ interface AuthState {
 }
 
 const initialState: AuthState = {
-    user: Cookies.get('user') ? JSON.parse(decodeURIComponent(Cookies.get('user')!)) : null,
-    token: Cookies.get('token') || null,
+    user: localStorage.getItem('user') ? JSON.parse(decodeURIComponent(localStorage.getItem('user')!)) : null,
+    token: localStorage.getItem('token') || null,
     status: 'idle',
     error: null,
+    
 };
 
 
@@ -40,9 +41,10 @@ export const loginUser = createAsyncThunk<AuthResponse, { email: string; passwor
                 createdAt: new Date(decodedToken.exp * 1000).toISOString(), 
                 updateAt: new Date(decodedToken.exp * 1000).toISOString() 
             };
-            Cookies.set('token', response.token, { expires: 1 }); 
-            Cookies.set('refreshToken', response.refreshToken, { expires: 1 }); 
-            Cookies.set('user', encodeURIComponent(JSON.stringify(user)), { expires: 1 }); 
+            localStorage.setItem('token', response.token)
+            localStorage.setItem('refreshToken', response.refreshToken)
+            localStorage.setItem('user', encodeURIComponent(JSON.stringify(user)))
+            localStorage.setItem('correlationId', generateCorrelationId())
             return { ...response, user };
         } catch (error: any) {
             return thunkAPI.rejectWithValue(error.response.data.message || 'Login failed');
@@ -50,7 +52,7 @@ export const loginUser = createAsyncThunk<AuthResponse, { email: string; passwor
     }
 );
 
-export const registerUser = createAsyncThunk<AuthResponse, { email: string; password: string; firstName: string; lastName: string; address: string }, {rejectValue: string}>(
+export const registerUser = createAsyncThunk<void, { email: string; password: string; firstName: string; lastName: string; address: string }, { rejectValue: string }>(
     'auth/registerUser',
     async (registrationData, thunkAPI) => {
         try {
@@ -61,21 +63,8 @@ export const registerUser = createAsyncThunk<AuthResponse, { email: string; pass
                 registrationData.address,
                 registrationData.password
             );
-            const decodedToken: DecodedToken = jwtDecode(response.token);
-
-            const user: User = {
-                id: decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"],
-                email: decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"],
-                role: decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"],
-                firstName: registrationData.firstName,
-                lastName: registrationData.lastName,
-                address: registrationData.address,
-            };
-
-            Cookies.set('token', response.token, { expires: 1 }); // Expires in 1 day
-            Cookies.set('refreshToken', response.refreshToken, { expires: 1 }); // Expires in 1 day
-            Cookies.set('user', encodeURIComponent(JSON.stringify(user)), { expires: 1 }); // Expires in 1 day
-            return { ...response, user };
+            const loginResponse = await thunkAPI.dispatch(loginUser({ email: registrationData.email, password: registrationData.password })).unwrap();
+            return loginResponse;
         } catch (error: any) {
             if (error.response && error.response.data) {
                 return thunkAPI.rejectWithValue(error.response.data);
@@ -94,10 +83,11 @@ const authSlice = createSlice({
         logout: (state) => {
             state.user = null;
             state.token = null;
-            Cookies.remove('user');
-            Cookies.remove('token');
-            Cookies.remove('refreshToken');
-            Cookies.remove('basketId');
+            localStorage.removeItem('user')
+            localStorage.removeItem('token')
+            localStorage.removeItem('refreshToken')
+            localStorage.removeItem('basketId')
+            localStorage.removeItem('correlationId')
             window.location.href = '/';
         },
     },
@@ -112,7 +102,7 @@ const authSlice = createSlice({
         });
         builder.addCase(loginUser.rejected, (state, action) => {
             state.status = 'failed';
-            state.error = action.error.message ?? 'Login failed';
+            state.error = action.error.message || 'Login failed';
         });
         builder.addCase(registerUser.pending, (state) => {
             state.status = 'loading';
@@ -124,7 +114,7 @@ const authSlice = createSlice({
         });
         builder.addCase(registerUser.rejected, (state, action) => {
             state.status = 'failed';
-            state.error = action.error.message ?? 'Registration failed';
+            state.error = action.error.message || 'Registration failed';
         });
     },
 });

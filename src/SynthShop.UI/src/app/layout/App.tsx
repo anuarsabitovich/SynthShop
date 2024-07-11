@@ -5,7 +5,6 @@ import { Outlet } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import agent from "../api/agent";
-import Cookies from "js-cookie";
 import LoadingComponent from "./LoadingComponent";
 import { useAppDispatch } from "../store/configureStore";
 import { setBasket } from "../../features/basket/basketSlice";
@@ -16,11 +15,11 @@ function App() {
 
   useEffect(() => {
     const initializeBasket = () => {
-      let basketId = Cookies.get('basketId');
+      let basketId = localStorage.getItem('basketId');
       if (!basketId) {
         agent.Basket.create()
           .then(newBasketId => {
-            Cookies.set('basketId', newBasketId);
+            localStorage.setItem('basketId', newBasketId)
             basketId = newBasketId;
             return agent.Basket.getById(basketId);
           })

@@ -6,7 +6,6 @@ import { useAppDispatch, useAppSelector } from "../../app/store/configureStore";
 import { addBasketItemAsync, clearBasket, removeBasketItemAsync } from "./basketSlice";
 import { useNavigate } from 'react-router-dom';
 import { createOrder } from "../order/orderSlice";
-import Cookies from 'js-cookie';
 
 export default function BasketPage() {
     const { basket, addItemStatus, removeSingleItemStatus, removeAllItemsStatus } = useAppSelector(state => state.basket);
@@ -21,7 +20,7 @@ export default function BasketPage() {
             const resultAction = await dispatch(createOrder({ basketId: basket.basketId }));
             if (createOrder.fulfilled.match(resultAction)) {
                 dispatch(clearBasket());
-                Cookies.remove('basketId'); 
+                localStorage.removeItem('basketId');
                 navigate('/orders');
             } else {
                 console.log(resultAction.payload);

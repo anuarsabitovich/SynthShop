@@ -31,8 +31,6 @@ public class BasketController : ControllerBase
     public async Task<IActionResult> Create()
     {
         var basketId = await _basketService.CreateBasketAsync();
-        var cookieOptions = new CookieOptions { IsEssential = true, Expires = DateTime.Now.AddDays(30) };
-        Response.Cookies.Append("basketId", basketId.ToString(), cookieOptions);
         return Ok(basketId);
     }
 
@@ -111,4 +109,5 @@ public class BasketController : ControllerBase
         _logger.Information("Item in basket {BasketId} was updated", id);
         return Ok("Item in the basket was updated");
     }
+    
 }
