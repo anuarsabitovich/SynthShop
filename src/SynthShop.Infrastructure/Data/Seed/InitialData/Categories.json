@@ -1,0 +1,22 @@
+[
+  {
+    "CategoryID": "C322A30B-7E37-46FC-9CA5-22BC0FB96D6E",
+    "Name": "ANALOG",
+    "Description": "Analog synthesizers use electronic circuits to generate and manipulate sound waves."
+  },
+  {
+    "CategoryID": "D6DC84B5-EA5C-4366-8CE3-9E1B3444AFEB",
+    "Name": "MIDI",
+    "Description": "MIDI synthesizers use Musical Instrument Digital Interface (MIDI) technology to communicate between instruments and computers."
+  },
+  {
+    "CategoryID": "E46616A9-A02F-4C47-91B8-AD7E0EA4C535",
+    "Name": "DIGITAL",
+    "Description": "Digital synthesizers use digital signal processing to create and modify sounds."
+  },
+  {
+    "CategoryID": "CEF242C3-AFDC-4C4A-87FE-E71B6AE4C64E",
+    "Name": "VIRTUAL",
+    "Description": "Virtual synthesizers emulate the sound and functionality of hardware synthesizers using software."
+  }
+]

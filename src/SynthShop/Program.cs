@@ -13,9 +13,11 @@ using SynthShop.Domain.Constants;
 using SynthShop.Domain.Settings;
 using SynthShop.Middleware;
 using SynthShop.Extensions;
+using SynthShop.Infrastructure.Data.Seed;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
+var allowedOrigins = config["CorsSettings:AllowedOrigins"];
 
 builder.Host.UseSerilog((context, configuration) =>
     configuration.ReadFrom.Configuration(context.Configuration)
@@ -96,6 +98,7 @@ builder.Services.AddControllers()
 
 var app = builder.Build();
 
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -115,7 +118,7 @@ app.UseCors(opt =>
 {
     opt.AllowAnyHeader()
         .AllowAnyMethod()
-        .WithOrigins("http://localhost:3001")
+        .WithOrigins(allowedOrigins)
         .AllowCredentials();
 });
 
@@ -123,5 +126,9 @@ app.UseCors(opt =>
 app.UseHeaderPropagation();
 
 app.MapControllers();
+
+using var serviceScope = app.Services.CreateScope();
+var seeder = serviceScope.ServiceProvider.GetRequiredService<Runner>();
+seeder.SeedAsync().GetAwaiter().GetResult();
 
 app.Run();

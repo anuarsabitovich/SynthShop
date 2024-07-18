@@ -5,6 +5,20 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Data\Seed\InitialData\Categories.json" />
+    <None Remove="Data\Seed\InitialData\Products.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Data\Seed\InitialData\Categories.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\Seed\InitialData\Products.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="AutoMapper" Version="13.0.1" />
 		<PackageReference Include="LanguageExt.Core" Version="4.4.8" />
@@ -21,6 +35,9 @@
 	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\SynthShop.Domain\SynthShop.Domain.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Data\Migrations\" />
 	</ItemGroup>
 
 

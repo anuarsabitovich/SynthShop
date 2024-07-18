@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SynthShop.Domain.Entities;
 using SynthShop.Infrastructure.Data.Interfaces;
 using SynthShop.Infrastructure.Data.Repositories;
+using SynthShop.Infrastructure.Data.Seed;
 
 namespace SynthShop.Infrastructure.Data;
 
@@ -37,6 +38,11 @@ public static class DependencyInjection
         services.AddScoped<IAuthRepository, AuthRepository>();
         services.AddScoped<IBasketItemRepository, BasketItemRepository>();
 
+        services.AddScoped<ISeeder, CategorySeeder>();
+        services.AddScoped<ISeeder, ProductSeeder>();
+        services.AddScoped<ISeeder, UserSeeder>();
+
+        services.AddScoped<Runner>();
         return services;
     }
 }

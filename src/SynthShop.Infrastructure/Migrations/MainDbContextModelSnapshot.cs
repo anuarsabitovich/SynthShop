@@ -8,7 +8,7 @@ using SynthShop.Infrastructure.Data;
 
 #nullable disable
 
-namespace SynthShop.Infrastructure.Data.Migrations
+namespace SynthShop.Infrastructure.Migrations
 {
     [DbContext(typeof(MainDbContext))]
     partial class MainDbContextModelSnapshot : ModelSnapshot

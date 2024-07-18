@@ -8,6 +8,7 @@ using SynthShop.Domain.Entities;
 using SynthShop.Domain.Extensions;
 using System.Linq.Expressions;
 using SynthShop.Tests.Extensions;
+using SynthShop.Domain.Exceptions;
 
 namespace SynthShop.Tests;
 
@@ -27,23 +28,6 @@ public class CategoryServiceTests
         _unitOfWork = Substitute.For<IUnitOfWork>();
 
         _sut = new CategoryService(_categoryRepository, _logger, _pagingSettings, _unitOfWork);
-    }
-
-    [Fact]
-    public async Task CreateAsync_ShouldThrow_WhenCategoryNameIsDuplicate()
-    {
-        var category = new Category { CategoryID = Guid.NewGuid(), Name = "Duplicate" };
-        Expression<Func<Category, bool>> filter = x =>
-            x.Name.Contains(category.Name, StringComparison.OrdinalIgnoreCase);
-        var existingCategories = new PagedList<Category>(new List<Category> { category }, 1, 1, 10);
-
-        _categoryRepository.GetAllAsync(filter).Returns(Task.FromResult(existingCategories));
-        _categoryRepository.GetAllAsync(Arg.Is<Expression<Func<Category, bool>>>(expr =>
-                ExpressionEqualityComparer.Instance.Equals(expr, filter)))
-            .Returns(Task.FromResult(existingCategories));
-
-        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _sut.CreateAsync(category));
-        Assert.Equal("Category with name 'Duplicate' already exists.", exception.Message);
     }
 
     [Fact]

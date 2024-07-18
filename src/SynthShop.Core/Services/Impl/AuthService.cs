@@ -23,11 +23,10 @@ public class AuthService : IAuthService
     private readonly IAuthRepository _authRepository;
     private readonly ILogger _logger;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly EmailProducer _emailProducer;
-
+    private readonly IEmailProducer _emailProducer;
     public AuthService(UserManager<User> userManager, IConfiguration configuration,
         TokenValidationParameters tokenValidationParameters, IAuthRepository authRepository, ILogger logger,
-        IUnitOfWork unitOfWork, EmailProducer emailProducer)
+        IUnitOfWork unitOfWork, IEmailProducer emailProducer)
     {
         _userManager = userManager;
         _configuration = configuration;
@@ -47,8 +46,9 @@ public class AuthService : IAuthService
             await _userManager.AddToRoleAsync(user, RoleConstants.User);
         }
         else
-        {
+        {   
             _logger.Error("User registration failed for {Email}. Errors: {@Errors}", user.Email, result.Errors);
+            return IdentityResult.Failed(result.Errors.ToArray());
         }
 
         var message = $"Hi {user.FirstName} {user.LastName} you've been successfully registered at SynthShop";

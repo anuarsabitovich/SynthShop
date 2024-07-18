@@ -19,11 +19,11 @@ public static class DependencyInjection
         services.AddScoped<IProductService, ProductService>();
         services.AddScoped<IBasketService, BasketService>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddSingleton<IEmailProducer, EmailProducer>();
         services.AddAWSServices(configuration);
         services.Configure<RabbitMQSettings>(options => configuration.GetSection("RabbitMQ").Bind(options));
-        services.AddSingleton<EmailProducer>();
         services.AddHostedService<EmailConsumerService>();
-        services.AddSingleton<EmailService>();
+        services.AddSingleton<IEmailService, EmailService>();
         return services;
     }
 

@@ -75,6 +75,41 @@ export const registerUser = createAsyncThunk<void, { email: string; password: st
     }
 );
 
+export const refreshToken = createAsyncThunk<AuthResponse, void, { rejectValue: string }>(
+    'auth/refreshToken',
+    async (_, thunkAPI) => {
+        try {
+            const token = localStorage.getItem('token');
+            const refreshToken = localStorage.getItem('refreshToken');
+            if (!token || !refreshToken) {
+                throw new Error('No token or refresh token found');
+            }
+
+            const response = await agent.Auth.refreshToken(token, refreshToken);
+            const decodedToken: DecodedToken = jwtDecode(response.token);
+
+            const user: User = {
+                id: decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"],
+                email: decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"],
+                role: decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"],
+                firstName: "",
+                lastName: "", 
+                address: "", 
+                createdAt: new Date(decodedToken.exp * 1000).toISOString(), 
+                updateAt: new Date(decodedToken.exp * 1000).toISOString() 
+            };
+
+            localStorage.setItem('token', response.token);
+            localStorage.setItem('refreshToken', response.refreshToken);
+            localStorage.setItem('user', encodeURIComponent(JSON.stringify(user)));
+
+            return { ...response, user };
+        } catch (error: any) {
+            return thunkAPI.rejectWithValue(error.response.data.message || 'Token refresh failed');
+        }
+    }
+);
+
 
 const authSlice = createSlice({
     name: 'auth',
@@ -115,6 +150,18 @@ const authSlice = createSlice({
         builder.addCase(registerUser.rejected, (state, action) => {
             state.status = 'failed';
             state.error = action.error.message || 'Registration failed';
+        });
+        builder.addCase(refreshToken.pending, (state) => {
+            state.status = 'loading';
+        });
+        builder.addCase(refreshToken.fulfilled, (state, action) => {
+            state.status = 'succeeded';
+            state.user = action.payload.user;
+            state.token = action.payload.token;
+        });
+        builder.addCase(refreshToken.rejected, (state, action) => {
+            state.status = 'failed';
+            state.error = action.error.message || 'Token refresh failed';
         });
     },
 });

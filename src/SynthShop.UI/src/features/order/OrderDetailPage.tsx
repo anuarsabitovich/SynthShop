@@ -6,6 +6,7 @@ import { RootState } from '../../app/store/configureStore';
 import { Container, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button } from '@mui/material';
 import { getOrderStatusString } from '../../app/utils/orderStatus';
 import agent from '../../app/api/agent';
+import { toast } from 'react-toastify';
 
 const OrderDetailsPage = () => {
     const { id } = useParams<{ id: string }>();
@@ -47,7 +48,8 @@ const OrderDetailsPage = () => {
 
     const handleCompleteOrder = () => {
         if (id) {
-            dispatch(completeOrder(id)).then(() => navigate('/orders'));
+            dispatch(completeOrder(id)).then(() => navigate('/orders'))
+            .catch((error) => toast.error(`Order completion failed: ${error}`));
         }
     };
 

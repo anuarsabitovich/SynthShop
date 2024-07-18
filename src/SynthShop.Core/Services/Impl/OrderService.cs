@@ -17,21 +17,22 @@ public class OrderService : IOrderService
     private readonly ILogger _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IProductRepository _productRepository;
-    private readonly EmailProducer _emailProducer;
+    private readonly IEmailProducer _emailProducer;
     private readonly IUserProvider _userProvider;
 
-    public OrderService(IOrderRepository orderRepository, IBasketRepository basketRepository, ILogger logger,
-        IUnitOfWork unitOfWork, IProductRepository productRepository, EmailProducer emailProducer,
-        IUserProvider userProvider)
-    {
-        _orderRepository = orderRepository;
-        _basketRepository = basketRepository;
-        _logger = logger;
-        _unitOfWork = unitOfWork;
-        _productRepository = productRepository;
-        _emailProducer = emailProducer;
-        _userProvider = userProvider;
-    }
+   public OrderService(IOrderRepository orderRepository, IBasketRepository basketRepository, ILogger logger,
+            IUnitOfWork unitOfWork, IProductRepository productRepository, IEmailProducer emailProducer,
+            IUserProvider userProvider)
+        {
+            _orderRepository = orderRepository;
+            _basketRepository = basketRepository;
+            _logger = logger;
+            _unitOfWork = unitOfWork;
+            _productRepository = productRepository;
+            _emailProducer = emailProducer;
+            _userProvider = userProvider;
+        }
+
 
     public async Task<Result<Order>> CreateOrder(Guid basketId, Guid customerId)
     {

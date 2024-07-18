@@ -7,44 +7,23 @@ import 'react-toastify/dist/ReactToastify.css';
 import agent from "../api/agent";
 import LoadingComponent from "./LoadingComponent";
 import { useAppDispatch } from "../store/configureStore";
-import { setBasket } from "../../features/basket/basketSlice";
+import { initializeBasket, setBasket } from "../../features/basket/basketSlice";
 
 function App() {
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const initializeBasket = () => {
-      let basketId = localStorage.getItem('basketId');
-      if (!basketId) {
-        agent.Basket.create()
-          .then(newBasketId => {
-            localStorage.setItem('basketId', newBasketId)
-            basketId = newBasketId;
-            return agent.Basket.getById(basketId);
-          })
-          .then(basket => {
-            dispatch(setBasket(basket));
-            setLoading(false);
-          })
-          .catch(error => {
-            console.error('Error creating basket:', error);
-            setLoading(false);
-          });
-      } else {
-        agent.Basket.getById(basketId)
-          .then(basket => {
-            dispatch(setBasket(basket));
-            setLoading(false);
-          })
-          .catch(error => {
-            console.error('Error fetching basket:', error);
-            setLoading(false);
-          });
-      }
-    };
-
-    initializeBasket();
+    dispatch(initializeBasket())
+      .unwrap()
+      .then((basket) => {
+        dispatch(setBasket(basket));
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error('Error initializing basket:', error);
+        setLoading(false);
+      });
   }, [dispatch]);
 
   const [darkMode, setDarkMode] = useState(false);   
@@ -66,7 +45,6 @@ function App() {
 
   return (
     <ThemeProvider theme={theme}>
-      <ToastContainer position="bottom-right" hideProgressBar theme="colored" />
       <CssBaseline />
       <Header darkMode={darkMode} handleThemeChange={handleThemeChange} />
       <Container>

@@ -40,8 +40,16 @@ public class AuthController : ControllerBase
 
         var result = _authService.RegisterUserAsync(user, registerRequest.Password);
 
+        if (result.Result.Succeeded)
+        {
+            return Ok(result.Result);
+        }
+        else
+        {
+            return BadRequest(result.Result.Errors);
 
-        return Ok(result.Result);
+        }
+
     }
 
 

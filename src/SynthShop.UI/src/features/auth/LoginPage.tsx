@@ -4,6 +4,8 @@ import { useForm, Controller } from 'react-hook-form';
 import { useAppDispatch, useAppSelector } from '../../app/store/configureStore';
 import { loginUser } from './authSlice';
 import { useNavigate } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface LoginFormInputs {
     email: string;
@@ -20,6 +22,8 @@ const LoginPage = () => {
         const resultAction = await dispatch(loginUser(data));
         if (loginUser.fulfilled.match(resultAction)) {
             navigate('/catalog');
+        } else {
+            toast.error('Password or email is incorrect!');
         }
     };
 
@@ -41,15 +45,11 @@ const LoginPage = () => {
                     defaultValue=""
                     render={({ field }) => <TextField {...field} label="Password" type="password" fullWidth margin="normal" />}
                 />
-                {error && (
-                    <Typography color="error" variant="body2">
-                        Password or email is incorrect!
-                    </Typography>
-                )}
                 <Button type="submit" variant="contained" color="primary" fullWidth disabled={status === 'loading'}>
                     {status === 'loading' ? 'Logging in...' : 'Login'}
                 </Button>
             </form>
+            <ToastContainer position="bottom-right" hideProgressBar />
         </Container>
     );
 };

@@ -16,6 +16,25 @@ const initialState: BasketState = {
     removeAllItemsStatus: 'idle'
 };
 
+export const initializeBasket = createAsyncThunk<Basket, void, { rejectValue: string }>(
+    'basket/initializeBasket',
+    async (_, thunkAPI) => {
+        try {
+            let basketId = localStorage.getItem('basketId');
+            if (!basketId) {
+                const newBasketId = await agent.Basket.create();
+                localStorage.setItem('basketId', newBasketId);
+                basketId = newBasketId;
+            }
+            const basket = await agent.Basket.getById(basketId);
+            return basket;
+        } catch (error) {
+            console.error('Error initializing basket:', error);
+            return thunkAPI.rejectWithValue('Failed to initialize basket');
+        }
+    }
+);
+
 export const addBasketItemAsync = createAsyncThunk<Basket, { basketId: string, productId: string, quantity?: number }>(
     'basket/addBasketItemAsync',
     async ({ basketId, productId, quantity = 1 }) => {
@@ -54,6 +73,12 @@ const basketSlice = createSlice({
         }
     },
     extraReducers: (builder) => {
+         builder.addCase(initializeBasket.fulfilled, (state, action) => {
+            state.basket = action.payload;
+        });
+        builder.addCase(initializeBasket.rejected, (state, action) => {
+            console.error(action.payload);
+        });
         builder.addCase(addBasketItemAsync.pending, (state, action) => {
             state.addItemStatus = 'pendingAddItem' + action.meta.arg.productId;
         });

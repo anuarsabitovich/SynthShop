@@ -3,9 +3,12 @@ import { Add, Delete, Remove } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 import BasketSummary from "./BasketSummary";
 import { useAppDispatch, useAppSelector } from "../../app/store/configureStore";
-import { addBasketItemAsync, clearBasket, removeBasketItemAsync } from "./basketSlice";
+import { addBasketItemAsync, clearBasket, initializeBasket, removeBasketItemAsync } from "./basketSlice";
 import { useNavigate } from 'react-router-dom';
 import { createOrder } from "../order/orderSlice";
+import { refreshToken } from "../auth/authSlice";
+import { jwtDecode } from 'jwt-decode';
+import { ToastContainer } from "react-toastify";
 
 export default function BasketPage() {
     const { basket, addItemStatus, removeSingleItemStatus, removeAllItemsStatus } = useAppSelector(state => state.basket);
@@ -16,17 +19,32 @@ export default function BasketPage() {
     const handleCreateOrder = async () => {
         if (!user) {
             navigate('/login');
-        } else {
-            const resultAction = await dispatch(createOrder({ basketId: basket.basketId }));
-            if (createOrder.fulfilled.match(resultAction)) {
-                dispatch(clearBasket());
-                localStorage.removeItem('basketId');
-                navigate('/orders');
-            } else {
-                console.log(resultAction.payload);
+            return;
+        }
+    
+        const token = localStorage.getItem('token');
+        const tokenExpiration = new Date(jwtDecode(token).exp * 1000);
+    
+        if (tokenExpiration <= new Date()) {
+            try {
+                await dispatch(refreshToken()).unwrap();
+            } catch {
+                navigate('/login');
+                return;
             }
         }
+    
+        const resultAction = await dispatch(createOrder({ basketId: basket.basketId }));
+        if (createOrder.fulfilled.match(resultAction)) {
+            dispatch(clearBasket());
+            localStorage.removeItem('basketId');
+            dispatch(initializeBasket());
+            navigate('/orders');
+        } else {
+            console.log(resultAction.payload);
+        }
     };
+    
 
     if (!basket || !basket.items.length) return (
         <Box textAlign="center" mt={5}>
@@ -119,6 +137,8 @@ export default function BasketPage() {
                     </Button>
                 </Grid>
             </Grid>
+            <ToastContainer />
         </>
     );
 }
+

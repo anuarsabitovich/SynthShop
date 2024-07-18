@@ -1,9 +1,11 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { toast } from "react-toastify";
 import { router } from "../router/Routes";
-const sleep = () => new Promise(resolve => setTimeout(resolve, 500));
+import store from "../store/configureStore";
+import { logout, refreshToken } from "../../features/auth/authSlice";
 
-axios.defaults.baseURL = 'https://localhost:7281/api';
+axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL;
+
 axios.defaults.withCredentials = true;
 
 const responseBody = (response: AxiosResponse) => response.data;
@@ -15,78 +17,101 @@ axios.interceptors.request.use(
             config.headers['Authorization'] = `Bearer ${token}`;
         }
         const correlationId = localStorage.getItem('correlationId');
-        if (correlationId){
+        if (correlationId) {
             config.headers['x-correlation-id'] = correlationId;
         }
-      return config;
+        return config;
     },
-    (error) => {
-        return Promise.reject(error);
-    }
+    (error) => Promise.reject(error)
 );
 
-axios.interceptors.response.use(
-    async (response) => {
-        //await sleep();
-        return response;
-    },
-    (error: Error) => {
-        const { data, status } = error.response as AxiosResponse;
-        console.error("API request error:", error);
-        switch (status) {
-            case 400:
-                if (data.errors) {
-                    const modelStateErrors: string[] = [];
-                    for (const key in data.errors) {
-                        if (data.errors[key]) {
-                            modelStateErrors.push(data.errors[key]);
-                        }
-                    }
-                    throw modelStateErrors.flat();
-                }
-                toast.error(data.title || 'Bad Request');
-                break;
-            case 401:
-                toast.error(data.title || 'Unauthorized');
-                break;
-            case 500:
-                router.navigate('/server-error', { state: { error: data } });
-                break;
-            default:
-                toast.error('An unexpected error occurred');
-                break;
-        }
-        return Promise.reject(error.response);
+const handleError = async (error: AxiosError) => {
+    console.error("API request error:", error);
+
+    if (!error.response) {
+        // Handle network error
+        console.error('Network error:', error);
+        toast.error('Network error. Please check your connection or server status.');
+        return Promise.reject(error);
     }
+
+    const { status, config, data } = error.response;
+
+    if (status === 401) {
+        
+        try {
+            const resultAction = await store.dispatch(refreshToken()).unwrap();
+            const newToken = resultAction.token;
+
+            localStorage.setItem('token', newToken);
+            axios.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
+            config.headers['Authorization'] = `Bearer ${newToken}`;
+
+            return axios(config);
+        } catch (refreshError) {
+            toast.error('Unauthorized, please log in');
+            store.dispatch(logout());
+            window.location.href = '/login';
+            return Promise.reject(refreshError);
+        }
+    }
+
+    switch (status) {
+        case 400:
+            if (data.errors) {
+                const modelStateErrors: string[] = [];
+                for (const key in data.errors) {
+                    if (data.errors[key]) {
+                        modelStateErrors.push(...data.errors[key]);
+                    }
+                }
+                toast.error(modelStateErrors.flat().join(', ') || 'Bad Request');
+            } else if (Array.isArray(data)) {
+                const errorMessages = data.map((err: any) => err.description).join(', ');
+                toast.error(errorMessages || 'Bad Request');
+            } else {
+                toast.error(data.title || 'Bad Request');
+            }
+            break;
+        case 409:
+            toast.error(data.message);
+            break;
+        case 500:
+            router.navigate('/server-error', { state: { error: data } });
+            break;
+        default:
+            toast.error('An unexpected error occurred');
+            break;
+    }
+
+    return Promise.reject(error);
+};
+
+axios.interceptors.response.use(
+    (response) => response,
+    (error: AxiosError) => handleError(error)
 );
 
 const logRequest = (url: string, method: string, params: any, body?: any) => {
     console.log(`Making ${method} request to: ${url} with params:`, params, 'and body:', body);
 };
 
-const logError = (error: AxiosError) => {
-    console.error('API request error:', error);
-    if (error.response) {
-        console.error('Response data:', error.response.data);
-    }
-};
-
 const requests = {
     get: (url: string, params?: URLSearchParams) => {
         logRequest(url, 'GET', params);
-        return axios.get(url, { params }).then(responseBody).catch(logError);
+        return axios.get(url, { params }).then(responseBody)
     },
     post: (url: string, body: {}) => {
         logRequest(url, 'POST', null, body);
-        return axios.post(url, body).then(responseBody).catch(logError);
+        return axios.post(url, body).then(responseBody)
     },
     put: (url: string, body: {}) => {
         logRequest(url, 'PUT', null, body);
-        return axios.put(url, body).then(responseBody).catch(logError);
+        return axios.put(url, body).then(responseBody)
     },
     delete: (url: string) => {
         logRequest(url, 'DELETE', null);
-        return axios.delete(url).then(responseBody).catch(logError);
+        return axios.delete(url).then(responseBody)
     },
 };
 
@@ -96,13 +121,6 @@ const Catalog = {
     details: (ProductID: string) => requests.get(`product/${ProductID}`),
 };
 
-const TestErrors = {
-    get400Error: () => requests.get('Buggy/bad-request'),
-    get401Error: () => requests.get('Buggy/unauthorised'),
-    get404Error: () => requests.get('Buggy/not-found'),
-    get500Error: () => requests.get('Buggy/server-error'),
-    getValidationError: () => requests.get('Buggy/validation-error')
-};
 
 const Basket = {
     create: () => requests.post('basket', {}).then(response => response),
@@ -129,11 +147,11 @@ const Auth = {
     login: (email: string, password: string) => requests.post('/Auth/sign-in', { email, password }),
     register: (email: string, firstName: string, lastName: string, address: string, password: string) =>
         requests.post('/Auth/register', { email, firstName, lastName, address, password }),
+    refreshToken: (token: string, refreshToken: string) => requests.post('/Auth/refresh', { token, refreshToken }),
 };
 
 const agent = {
     Catalog,
-    TestErrors,
     Basket,
     Auth,
     Orders

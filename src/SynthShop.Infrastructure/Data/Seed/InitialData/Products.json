@@ -1,0 +1,425 @@
+[
+  {
+    "Name": "Roland JV-1080",
+    "Description": "Rackmount MIDI synthesizer with extensive patch library",
+    "Price": 499.99,
+    "StockQuantity": 14,
+    "ProductID": "E80B9FAE-9B0B-4B47-9B7A-010CC80C5AB7",
+    "CategoryID": "D6DC84B5-EA5C-4366-8CE3-9E1B3444AFEB",
+    "PictureUrl": "https://rvb-img.reverb.com/image/upload/s--wG0__Boe--/f_auto,t_supersize/v1556295889/erolsqdr7snlxkn75sdw.png"
+  },
+  {
+    "Name": "u-he Diva",
+    "Description": "Virtual analog synthesizer with realistic sound",
+    "Price": 179.99,
+    "StockQuantity": 29,
+    "ProductID": "2EDBE494-3347-45FA-8D24-0490D4BB03F9",
+    "CategoryID": "CEF242C3-AFDC-4C4A-87FE-E71B6AE4C64E",
+    "PictureUrl": "https://d3ktx7ph7eloju.cloudfront.net/c425a544-94a3-4062-a9e7-d9665be62fc4_u-he Diva..jpg"
+  },
+  {
+    "Name": "Serumv2",
+    "Description": "Digital standard for modern music",
+    "Price": 299.00,
+    "StockQuantity": 7,
+    "ProductID": "E12B2B03-34A8-4AC4-C940-08DC782583DA",
+    "CategoryID": "E46616A9-A02F-4C47-91B8-AD7E0EA4C535",
+    "PictureUrl": "https://d3ktx7ph7eloju.cloudfront.net/59a54726-f228-4a9e-9ea9-09b86476a42b_Serumv2..png"
+  },
+  {
+    "Name": "Artirua Microfreak",
+    "Description": "Digital Synth",
+    "Price": 350.00,
+    "StockQuantity": 42,
+    "ProductID": "F1FE76B5-3CEE-4DA0-D76F-08DC8F75ACD6",
+    "CategoryID": "E46616A9-A02F-4C47-91B8-AD7E0EA4C535",
+    "PictureUrl": "https://d3ktx7ph7eloju.cloudfront.net/ee67205e-2328-4256-94cd-a220f7043375_Artirua Microfreak..jpg"
+  },
+  {
+    "Name": "Korg MS-20",
+    "Description": "Vintage analog synthesizer with patch cables",
+    "Price": 1599.99,
+    "StockQuantity": 15,
+    "ProductID": "F5956E46-E7F5-4764-80B9-21ED0F809C66",
+    "CategoryID": "C322A30B-7E37-46FC-9CA5-22BC0FB96D6E",
+    "PictureUrl": "https://d3ktx7ph7eloju.cloudfront.net/b1774942-b82e-4963-a31a-010acc1f79e3_Korg MS-20..png"
+  },
+  {
+    "Name": "Native Instruments Massive",
+    "Description": "Popular virtual synthesizer plugin for electronic music",
+    "Price": 149.99,
+    "StockQuantity": 50,
+    "ProductID": "3DDCA5E7-BAF1-4245-8D41-2381381D8AA7",
+    "CategoryID": "CEF242C3-AFDC-4C4A-87FE-E71B6AE4C64E",
+    "PictureUrl": "https://d3ktx7ph7eloju.cloudfront.net/fc6d8fcc-cbfc-4b25-b674-a4413ae60bef_Native Instruments Massive..jpg"
+  },
+  {
+    "Name": "Kurzweil K2000",
+    "Description": "Advanced MIDI synthesizer with extensive sound library",
+    "Price": 1299.99,
+    "StockQuantity": 10,
+    "ProductID": "6DA31526-F21A-4AE9-847E-24EBD8E64568",
+    "CategoryID": "D6DC84B5-EA5C-4366-8CE3-9E1B3444AFEB",
+    "PictureUrl": "https://d3ktx7ph7eloju.cloudfront.net/a7ecd22b-982d-4338-8552-53e83ca0042b_Kurzweil K2000..jpg"
+  },
+  {
+    "Name": "Yamaha Montage 8",
+    "Description": "88-key synthesizer with Yamaha's Motion Control Synthesis Engine, extensive sound library, and intuitive workflow.",
+    "Price": 3999.00,
+    "StockQuantity": 8,
+    "ProductID": "3EEA26F7-D4AB-44AE-AC76-2FB14AA77111",
+    "CategoryID": "CEF242C3-AFDC-4C4A-87FE-E71B6AE4C64E",
+    "PictureUrl": "https://d3ktx7ph7eloju.cloudfront.net/59d09a15-9dcc-44cf-bc6f-3ee58c767243_Yamaha Montage 8..jpg"
+  },
+  {
+    "Name": "Roland SH-101",
+    "Description": "Compact analog synthesizer with sequencer",
+    "Price": 1299.99,
+    "StockQuantity": 12,
+    "ProductID": "9CDDE3ED-85D2-41A8-A1A0-3025B4E47466",
+    "CategoryID": "C322A30B-7E37-46FC-9CA5-22BC0FB96D6E",
+    "PictureUrl": "https://d3ktx7ph7eloju.cloudfront.net/13f0b642-af27-4a14-8736-bbdca79fbee3_Roland SH-101..jpg"
+  },
+  {
+    "Name": "Arturia V Collection 8",
+    "Description": "Virtual instrument collection featuring emulations of classic synthesizers, keyboards, and organs.",
+    "Price": 499.99,
+    "StockQuantity": 31,
+    "ProductID": "DB0B015A-05F7-41C4-8447-3289892ACD6A",
+    "CategoryID": "CEF242C3-AFDC-4C4A-87FE-E71B6AE4C64E",
+    "PictureUrl": "https://d3ktx7ph7eloju.cloudfront.net/2d7c5f03-570b-403b-ab74-c72b05d92031_Arturia V Collection 8..jpg"
+  },
+  {
+    "Name": "Yamaha Montage",
+    "Description": "High-end digital synthesizer with advanced control options",
+    "Price": 2999.99,
+    "StockQuantity": 8,
+    "ProductID": "7B2751AA-E3B3-411A-9869-410BE4B0E1BF",
+    "CategoryID": "E46616A9-A02F-4C47-91B8-AD7E0EA4C535",
+    "PictureUrl": "https://d3ktx7ph7eloju.cloudfront.net/01149496-7754-4a31-a7c3-36bee915b510_Yamaha Montage..jpg"
+  },
+  {
+    "Name": "Moog Sub 37",
+    "Description": "Modern analog synthesizer with versatile modulation options",
+    "Price": 1499.99,
+    "StockQuantity": 10,
+    "ProductID": "7B0A258F-E1EB-4834-A62C-42724357C85C",
+    "CategoryID": "C322A30B-7E37-46FC-9CA5-22BC0FB96D6E",
+    "PictureUrl": "https://d3ktx7ph7eloju.cloudfront.net/529886a3-6ab2-4c37-a69d-5f445282b3cb_Moog Sub 37..webp"
+  },
+  {
+    "Name": "Sequential Circuits Prophet-5",
+    "Description": "Legendary analog synthesizer with iconic sound",
+    "Price": 3199.99,
+    "StockQuantity": 7,
+    "ProductID": "C3255C5D-5350-43A0-9AD5-56CA346D30DA",
+    "CategoryID": "C322A30B-7E37-46FC-9CA5-22BC0FB96D6E",
+    "PictureUrl": "https://d3ktx7ph7eloju.cloudfront.net/8632e95a-e0c8-478e-b37e-e8684185bc52_Sequential Circuits Prophet-5..webp"
+  },
+  {
+    "Name": "Roland XP-80",
+    "Description": "Workstation synthesizer with extensive MIDI capabilities",
+    "Price": 1499.99,
+    "StockQuantity": 12,
+    "ProductID": "F716B433-35D4-461A-81F1-57DBB3C3CB00",
+    "CategoryID": "D6DC84B5-EA5C-4366-8CE3-9E1B3444AFEB",
+    "PictureUrl": "https://d3ktx7ph7eloju.cloudfront.net/b7a251a0-7e35-431d-9c8d-83d536a7fe09_Roland XP-80..jpg"
+  },
+  {
+    "Name": "Yamaha Reface DX",
+    "Description": "Compact digital synthesizer with FM synthesis",
+    "Price": 399.00,
+    "StockQuantity": 14,
+    "ProductID": "99949DA4-F6CE-4484-8022-66A4A553419A",
+    "CategoryID": "E46616A9-A02F-4C47-91B8-AD7E0EA4C535",
+    "PictureUrl": "https://d3ktx7ph7eloju.cloudfront.net/66422eda-ff45-4d13-afa5-fb8f1168bbad_Yamaha Reface DX..jpg"
+  },
+  {
+    "Name": "Elektron Digitone",
+    "Description": "Eight-voice digital synthesizer with intuitive interface",
+    "Price": 899.99,
+    "StockQuantity": 17,
+    "ProductID": "3B3DBC3B-9CED-412F-9B3E-68D085405DE0",
+    "CategoryID": "E46616A9-A02F-4C47-91B8-AD7E0EA4C535",
+    "PictureUrl": "https://d3ktx7ph7eloju.cloudfront.net/368243bf-dfce-4198-863b-c97880b4a807_Elektron Digitone..jpg"
+  },
+  {
+    "Name": "LennarDigital Sylenth1",
+    "Description": "Popular virtual analog synthesizer plugin",
+    "Price": 139.99,
+    "StockQuantity": 38,
+    "ProductID": "4332CBDD-389F-4124-B239-7283E1C0F932",
+    "CategoryID": "CEF242C3-AFDC-4C4A-87FE-E71B6AE4C64E",
+    "PictureUrl": "https://d3ktx7ph7eloju.cloudfront.net/d108f71e-5edb-4c42-bbc7-50fb70babccc_LennarDigital Sylenth1..webp"
+  },
+  {
+    "Name": "Casio XW-P1",
+    "Description": "Performance digital synthesizer with step sequencer",
+    "Price": 499.99,
+    "StockQuantity": 18,
+    "ProductID": "17DCC7D3-9E31-46B7-99B0-7758D58F0914",
+    "CategoryID": "E46616A9-A02F-4C47-91B8-AD7E0EA4C535",
+    "PictureUrl": "https://d3ktx7ph7eloju.cloudfront.net/e1d1d200-3ca1-4a6b-8327-46f3024d4255_Casio XW-P1..png"
+  },
+  {
+    "Name": "Waldorf Blofeld",
+    "Description": "Compact digital synthesizer with powerful sound engine",
+    "Price": 699.99,
+    "StockQuantity": 22,
+    "ProductID": "7C996786-4C6A-46EC-A639-781D9A60022E",
+    "CategoryID": "E46616A9-A02F-4C47-91B8-AD7E0EA4C535",
+    "PictureUrl": "https://d3ktx7ph7eloju.cloudfront.net/2893793c-700b-4964-93ef-63894d37da81_Waldorf Blofeld..jpg"
+  },
+  {
+    "Name": "E-mu Proteus 2000",
+    "Description": "Versatile MIDI synthesizer module",
+    "Price": 599.99,
+    "StockQuantity": 17,
+    "ProductID": "36A0833E-CFF1-4530-A4DF-7ECD46D57D0F",
+    "CategoryID": "D6DC84B5-EA5C-4366-8CE3-9E1B3444AFEB",
+    "PictureUrl": "https://d3ktx7ph7eloju.cloudfront.net/4348c5ca-dfe9-4910-92ff-9977ef93a906_E-mu Proteus 2000..jpg"
+  },
+  {
+    "Name": "Access Virus TI2",
+    "Description": "Advanced digital synthesizer with rich sound design capabilities",
+    "Price": 2499.99,
+    "StockQuantity": 0,
+    "ProductID": "51AA2B32-060E-4DC4-AF00-81EC0D54D648",
+    "CategoryID": "E46616A9-A02F-4C47-91B8-AD7E0EA4C535",
+    "PictureUrl": "https://d3ktx7ph7eloju.cloudfront.net/5c678dea-eb2e-4f39-87eb-33651ec37360_Access Virus TI2..jpg"
+  },
+  {
+    "Name": "Arturia Analog Lab V",
+    "Description": "Software synthesizer featuring a curated selection of presets from Arturia's V Collection.",
+    "Price": 149.99,
+    "StockQuantity": 21,
+    "ProductID": "CDB6EF5D-3A65-4F7D-BC99-83FDE56DB33D",
+    "CategoryID": "CEF242C3-AFDC-4C4A-87FE-E71B6AE4C64E",
+    "PictureUrl": "https://d3ktx7ph7eloju.cloudfront.net/43346964-5504-49c2-88ff-ad0eef68f807_Arturia Analog Lab V..png"
+  },
+  {
+    "Name": "Roland Cloud",
+    "Description": "Subscription-based platform offering access to a wide range of virtual synthesizers and sound libraries.",
+    "Price": 19.99,
+    "StockQuantity": 13,
+    "ProductID": "4E60077E-AD6E-4978-BCFA-8D67E46E07FF",
+    "CategoryID": "CEF242C3-AFDC-4C4A-87FE-E71B6AE4C64E",
+    "PictureUrl": "https://d3ktx7ph7eloju.cloudfront.net/3cc441d9-fe4c-4f16-b79e-8aa022909bd7_Roland Cloud..webp"
+  },
+  {
+    "Name": "Nord Lead A1",
+    "Description": "Digital synthesizer with hands-on control",
+    "Price": 1999.99,
+    "StockQuantity": 14,
+    "ProductID": "5E8F66AA-C022-4502-A702-90BC19AF6072",
+    "CategoryID": "E46616A9-A02F-4C47-91B8-AD7E0EA4C535",
+    "PictureUrl": "https://d3ktx7ph7eloju.cloudfront.net/82f3fabe-3c17-40a5-89d7-f03cc889e9da_Nord Lead A1..jpg"
+  },
+  {
+    "Name": "Arturia Pigments",
+    "Description": "Versatile virtual synthesizer with multiple synthesis engines",
+    "Price": 199.99,
+    "StockQuantity": 36,
+    "ProductID": "CC2030E5-68E2-4D3C-8EE5-90F8A91CFADE",
+    "CategoryID": "CEF242C3-AFDC-4C4A-87FE-E71B6AE4C64E",
+    "PictureUrl": "https://d3ktx7ph7eloju.cloudfront.net/2b78a738-e00f-4b9f-af40-e5fd0a3a5f0e_Arturia Pigments..jpg"
+  },
+  {
+    "Name": "Roland Juno-60",
+    "Description": "Analog polyphonic synthesizer from the 80s",
+    "Price": 899.99,
+    "StockQuantity": 8,
+    "ProductID": "1968D2AE-DD69-403A-B266-958DC25FD5F7",
+    "CategoryID": "C322A30B-7E37-46FC-9CA5-22BC0FB96D6E",
+    "PictureUrl": "https://d3ktx7ph7eloju.cloudfront.net/e3391f83-3a12-434f-9900-4bead7004e85_Roland Juno-60..jpg"
+  },
+  {
+    "Name": "Arturia V Collection",
+    "Description": "Collection of virtual synthesizers emulating classic hardware",
+    "Price": 499.99,
+    "StockQuantity": 21,
+    "ProductID": "52312719-A5BF-41FF-9FE6-9CB5309671FC",
+    "CategoryID": "CEF242C3-AFDC-4C4A-87FE-E71B6AE4C64E",
+    "PictureUrl": "https://d3ktx7ph7eloju.cloudfront.net/b5c2b286-0ce6-4c88-a1fb-378703836d83_Arturia V Collection..jpg"
+  },
+  {
+    "Name": "Roland JUPITER-X Synthesizer",
+    "Description": "Virtual analog synthesizer with Roland's Zen-Core sound engine, modeled after the iconic JUPITER series.",
+    "Price": 2499.99,
+    "StockQuantity": 8,
+    "ProductID": "6BAAD327-D6C3-4CF3-8FDE-A8FA1907D0A3",
+    "CategoryID": "CEF242C3-AFDC-4C4A-87FE-E71B6AE4C64E",
+    "PictureUrl": "https://d3ktx7ph7eloju.cloudfront.net/cb07dba8-30b7-4c24-9e5e-460274c13bc0_Roland JUPITER-X Synthesizer..jpg"
+  },
+  {
+    "Name": "Korg Triton",
+    "Description": "Music workstation and MIDI synthesizer",
+    "Price": 1699.99,
+    "StockQuantity": 11,
+    "ProductID": "A7778E47-279E-4952-81D6-AA3EBEC618DF",
+    "CategoryID": "D6DC84B5-EA5C-4366-8CE3-9E1B3444AFEB",
+    "PictureUrl": "https://d3ktx7ph7eloju.cloudfront.net/3d894b64-1fb1-4977-bbcb-c70348cbaaca_Korg Triton..jpeg"
+  },
+  {
+    "Name": "Yamaha DX7",
+    "Description": "MIDI synthesizer with FM synthesis",
+    "Price": 899.99,
+    "StockQuantity": 45,
+    "ProductID": "F3E75E60-0A8C-443E-B139-AC1FA9FD6EC9",
+    "CategoryID": "D6DC84B5-EA5C-4366-8CE3-9E1B3444AFEB",
+    "PictureUrl": "https://d3ktx7ph7eloju.cloudfront.net/a873156b-dd0f-4328-84fb-2b977b05b778_Yamaha DX7..jpg"
+  },
+  {
+    "Name": "Behringer Model D",
+    "Description": "Affordable analog synthesizer with classic sounds",
+    "Price": 299.99,
+    "StockQuantity": 20,
+    "ProductID": "C1AC6EA5-4678-4DE5-8EAE-ACC6B7553B5F",
+    "CategoryID": "C322A30B-7E37-46FC-9CA5-22BC0FB96D6E",
+    "PictureUrl": "https://d3ktx7ph7eloju.cloudfront.net/acac9e0e-5569-4b71-806b-a0fc1c014168_Behringer Model D..png"
+  },
+  {
+    "Name": "Roland System-8",
+    "Description": "Versatile digital synthesizer with plug-out capabilities",
+    "Price": 1499.99,
+    "StockQuantity": 10,
+    "ProductID": "BF89E871-1F90-4CF7-9238-B9920A3C028A",
+    "CategoryID": "E46616A9-A02F-4C47-91B8-AD7E0EA4C535",
+    "PictureUrl": "https://d3ktx7ph7eloju.cloudfront.net/689ebab5-dc12-479c-8897-31b1c8ef7951_Roland System-8..jpg"
+  },
+  {
+    "Name": "Moog Minimoog",
+    "Description": "Classic analog monophonic synthesizer",
+    "Price": 2999.99,
+    "StockQuantity": 10,
+    "ProductID": "429A0341-53BF-4E39-8A8A-BE62DB4A4DE1",
+    "CategoryID": "C322A30B-7E37-46FC-9CA5-22BC0FB96D6E",
+    "PictureUrl": "https://d3ktx7ph7eloju.cloudfront.net/0a2eae65-3b3f-4a08-a791-25d7a4e660e3_Moog Minimoog..jpg"
+  },
+  {
+    "Name": "Korg ARP 2600",
+    "Description": "Recreation of the classic semi-modular analog synthesizer",
+    "Price": 3899.99,
+    "StockQuantity": 3,
+    "ProductID": "10A3A0E3-E3C1-42DC-B6AE-C310DDAA20F6",
+    "CategoryID": "C322A30B-7E37-46FC-9CA5-22BC0FB96D6E",
+    "PictureUrl": "https://d3ktx7ph7eloju.cloudfront.net/c00ecb62-4665-4010-8673-de11a424f05d_Korg ARP 2600..jpg"
+  },
+  {
+    "Name": "Korg Kronos",
+    "Description": "Flagship digital synthesizer workstation",
+    "Price": 3499.99,
+    "StockQuantity": 0,
+    "ProductID": "7AF9FC33-C241-4EB8-8C61-C8BD2614C700",
+    "CategoryID": "E46616A9-A02F-4C47-91B8-AD7E0EA4C535",
+    "PictureUrl": "https://d3ktx7ph7eloju.cloudfront.net/cd06ed49-a3c7-4600-a9ba-22b73773bea2_Korg Kronos..jpg"
+  },
+  {
+    "Name": "Korg Legacy Collection",
+    "Description": "Collection of virtual synthesizers emulating classic Korg synths",
+    "Price": 299.99,
+    "StockQuantity": 33,
+    "ProductID": "06D6D78F-DA69-47A8-A4C1-D36F8B062684",
+    "CategoryID": "CEF242C3-AFDC-4C4A-87FE-E71B6AE4C64E",
+    "PictureUrl": "https://d3ktx7ph7eloju.cloudfront.net/1032940a-915f-4566-9212-c357e78daa81_Korg Legacy Collection..png"
+  },
+  {
+    "Name": "Native Instruments FM8",
+    "Description": "Virtual synthesizer with FM synthesis capabilities",
+    "Price": 149.99,
+    "StockQuantity": 42,
+    "ProductID": "BB718B32-0B24-453E-9635-D5F58E743CB8",
+    "CategoryID": "CEF242C3-AFDC-4C4A-87FE-E71B6AE4C64E",
+    "PictureUrl": "https://d3ktx7ph7eloju.cloudfront.net/48175ce3-916a-42b2-993f-68362a0be2e0_Native Instruments FM8..jpeg"
+  },
+  {
+    "Name": "Korg M1",
+    "Description": "Popular MIDI synthesizer and music workstation",
+    "Price": 799.99,
+    "StockQuantity": 18,
+    "ProductID": "DBB3B0D7-F081-4EDB-B4B9-DFCFC98756F3",
+    "CategoryID": "D6DC84B5-EA5C-4366-8CE3-9E1B3444AFEB",
+    "PictureUrl": "https://d3ktx7ph7eloju.cloudfront.net/e798f323-d4f8-4197-a4b2-b74718dfbd72_Korg M1..jpg"
+  },
+  {
+    "Name": "Oberheim OB-Xa",
+    "Description": "Powerful analog synthesizer with polyphonic capabilities",
+    "Price": 3499.99,
+    "StockQuantity": 6,
+    "ProductID": "3854482F-ADBE-4BF5-A6C9-E2359F148B54",
+    "CategoryID": "C322A30B-7E37-46FC-9CA5-22BC0FB96D6E",
+    "PictureUrl": "https://d3ktx7ph7eloju.cloudfront.net/ff4b4a57-cbad-4543-83f7-50bd913e415b_Oberheim OB-Xa..jpg"
+  },
+  {
+    "Name": "Spectrasonics Omnisphere",
+    "Description": "Powerful virtual synthesizer with extensive sound library",
+    "Price": 499.99,
+    "StockQuantity": 35,
+    "ProductID": "6E11CCA1-3AA8-4C79-B799-E47D4945F5F3",
+    "CategoryID": "CEF242C3-AFDC-4C4A-87FE-E71B6AE4C64E",
+    "PictureUrl": "https://d3ktx7ph7eloju.cloudfront.net/8641715d-dc1b-41e3-ad47-ba766cd4a342_Spectrasonics Omnisphere..webp"
+  },
+  {
+    "Name": "Roland D-50",
+    "Description": "Classic MIDI synthesizer with Linear Arithmetic synthesis",
+    "Price": 699.99,
+    "StockQuantity": 16,
+    "ProductID": "32EB0E42-25AA-4B76-8F72-E9B1890FE6A8",
+    "CategoryID": "D6DC84B5-EA5C-4366-8CE3-9E1B3444AFEB",
+    "PictureUrl": "https://d3ktx7ph7eloju.cloudfront.net/0e7036f8-c61b-49bc-a6c2-8840a234f7d1_Roland D-50..jpg"
+  },
+  {
+    "Name": "ARP Odyssey",
+    "Description": "Classic analog synthesizer with rich tonal options",
+    "Price": 1799.99,
+    "StockQuantity": 2,
+    "ProductID": "83B3F676-3F84-495E-A74D-EFEC68DBB9B2",
+    "CategoryID": "C322A30B-7E37-46FC-9CA5-22BC0FB96D6E",
+    "PictureUrl": "https://d3ktx7ph7eloju.cloudfront.net/d296d9b1-a8ed-43a5-bd7a-86303116a275_ARP Odyssey..png"
+  },
+  {
+    "Name": "Yamaha Motif XS",
+    "Description": "Workstation synthesizer with comprehensive MIDI features",
+    "Price": 1999.00,
+    "StockQuantity": 8,
+    "ProductID": "B94C5FB6-B853-4A23-A979-F103C7CECD17",
+    "CategoryID": "D6DC84B5-EA5C-4366-8CE3-9E1B3444AFEB",
+    "PictureUrl": "https://d3ktx7ph7eloju.cloudfront.net/8ae310b4-2236-40a1-a134-658c1975ec6d_Yamaha Motif XS..webp"
+  },
+  {
+    "Name": "Xfer Serum",
+    "Description": "Advanced wavetable synthesizer plugin",
+    "Price": 189.99,
+    "StockQuantity": 45,
+    "ProductID": "E17AA5B1-011F-47BD-8849-F19546D01488",
+    "CategoryID": "CEF242C3-AFDC-4C4A-87FE-E71B6AE4C64E",
+    "PictureUrl": "https://d3ktx7ph7eloju.cloudfront.net/2861aed2-fcdd-438a-808d-7309020f7f21_Xfer Serum..jpg"
+  },
+  {
+    "Name": "Novation Bass Station II",
+    "Description": "Compact MIDI synthesizer with analog sound engine",
+    "Price": 99.99,
+    "StockQuantity": 19,
+    "ProductID": "4450F248-AE2A-47A0-B4C2-F2526694D4D8",
+    "CategoryID": "D6DC84B5-EA5C-4366-8CE3-9E1B3444AFEB",
+    "PictureUrl": "https://d3ktx7ph7eloju.cloudfront.net/550b3cd8-7206-4dd9-b7a6-2ba358e434ba_Novation Bass Station II..jpg"
+  },
+  {
+    "Name": "Roland Fantom",
+    "Description": "Powerful digital synthesizer with advanced features",
+    "Price": 3199.99,
+    "StockQuantity": 7,
+    "ProductID": "2A29F078-D941-4E33-8582-F2DC9DE09FF7",
+    "CategoryID": "E46616A9-A02F-4C47-91B8-AD7E0EA4C535",
+    "PictureUrl": "https://d3ktx7ph7eloju.cloudfront.net/fcab8c34-6c6a-42fa-954e-277d4480c961_Roland Fantom..jpg"
+  },
+  {
+    "Name": "KV331 SynthMaster",
+    "Description": "Versatile virtual synthesizer with extensive modulation options",
+    "Price": 129.99,
+    "StockQuantity": 44,
+    "ProductID": "A5AA53DD-AD7C-46E0-9778-FAA0711DFB92",
+    "CategoryID": "CEF242C3-AFDC-4C4A-87FE-E71B6AE4C64E",
+    "PictureUrl": "https://d3ktx7ph7eloju.cloudfront.net/b72dedeb-5f60-4a66-a4ed-7160afdd0f56_KV331 SynthMaster..jpg"
+  }
+]

@@ -9,11 +9,11 @@ using SynthShop.Infrastructure.Data;
 
 #nullable disable
 
-namespace SynthShop.Infrastructure.Data.Migrations
+namespace SynthShop.Infrastructure.Migrations
 {
     [DbContext(typeof(MainDbContext))]
-    [Migration("20240501110415_AddRefreshToken")]
-    partial class AddRefreshToken
+    [Migration("20240717152139_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -334,6 +334,10 @@ namespace SynthShop.Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("PictureUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
