@@ -21,6 +21,7 @@ namespace SynthShop.Core
                 UserName = userName,
                 Password = password
             };
+            factory.Ssl.Enabled = true;
 #endif
             return factory;
         }
