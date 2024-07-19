@@ -34,4 +34,28 @@ public class BasketRepository : IBasketRepository
         _dbContext.BasketItems.RemoveRange(basket.Items);
         _dbContext.Baskets.Remove(basket);
     }
+
+    public async Task<Basket?> UpdateBasketAsync(Guid basketId, Guid? customerId)
+    {
+        var basket = await _dbContext.Baskets.Include(b => b.Items).ThenInclude(bi => bi.Product)
+            .FirstOrDefaultAsync(b => b.BasketId == basketId);
+
+        if (basket == null) return null;
+
+        basket.CustomerId = customerId;
+
+        _dbContext.Baskets.Update(basket);
+        await _dbContext.SaveChangesAsync();
+
+        return basket;
+    }
+
+    public async Task<Basket?> GetLastBasketByCustomerIdAsync(Guid customerId) 
+    {
+        return await _dbContext.Baskets
+            .Include(b => b.Items).ThenInclude(bi => bi.Product)
+            .Where(b => b.CustomerId == customerId)
+            .OrderByDescending(b => b.BasketId) 
+            .FirstOrDefaultAsync();
+    }
 }

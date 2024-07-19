@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Paper, TextField, Button, FormControl, InputLabel, Select, MenuItem, Typography } from '@mui/material';
+import { Paper, TextField, Button, FormControl, InputLabel, Select, MenuItem, Typography, SelectChangeEvent } from '@mui/material';
 import { useAppDispatch, useAppSelector } from '../../app/store/configureStore';
 import { setProductParams, fetchProductsAsync } from './catalogSlice';
 import { useNavigate } from 'react-router-dom';
@@ -20,18 +20,18 @@ const SearchAndFilters = () => {
         dispatch(fetchProductsAsync());
     };
 
-    const handleSortChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-        dispatch(setProductParams({ orderBy: event.target.value as string }));
+    const handleSortChange = (event: SelectChangeEvent<string>) => {
+        dispatch(setProductParams({ orderBy: event.target.value }));
         dispatch(fetchProductsAsync());
     };
 
-    const handleOrderChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    const handleOrderChange = (event: SelectChangeEvent<string>) => {
         dispatch(setProductParams({ isAscending: event.target.value === 'ascending' }));
         dispatch(fetchProductsAsync());
     };
 
-    const handleCategoryFilter = (event: React.ChangeEvent<{ value: unknown }>) => {
-        const selectedCategoryId = event.target.value as string;
+    const handleCategoryFilter = (event: SelectChangeEvent<string>) => {
+        const selectedCategoryId = event.target.value;
         setSelectedCategoryId(selectedCategoryId);
         navigate(`?categoryId=${selectedCategoryId}`);
         dispatch(setProductParams({ categoryId: selectedCategoryId }));

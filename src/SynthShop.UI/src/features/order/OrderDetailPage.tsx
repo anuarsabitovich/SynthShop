@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams, useNavigate } from 'react-router-dom';
 import { fetchOrderDetails, cancelOrder, completeOrder } from './orderSlice';
-import { RootState } from '../../app/store/configureStore';
+import { AppDispatch, RootState } from '../../app/store/configureStore';
 import { Container, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button } from '@mui/material';
 import { getOrderStatusString } from '../../app/utils/orderStatus';
 import agent from '../../app/api/agent';
@@ -10,9 +10,9 @@ import { toast } from 'react-toastify';
 
 const OrderDetailsPage = () => {
     const { id } = useParams<{ id: string }>();
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
-    const { order, status, error } = useSelector((state: RootState) => state.orders);
+    const { order, statusState, error } = useSelector((state: RootState) => state.orders);
     const [productNames, setProductNames] = useState<{ [key: string]: string }>({});
 
     useEffect(() => {
@@ -58,9 +58,9 @@ const OrderDetailsPage = () => {
             <Typography variant="h4" gutterBottom>
                 Order Details
             </Typography>
-            {status === 'loading' && <Typography>Loading...</Typography>}
-            {status === 'failed' && <Typography color="error">{error}</Typography>}
-            {status === 'succeeded' && order && (
+            {statusState === 'loading' && <Typography>Loading...</Typography>}
+            {statusState === 'failed' && <Typography color="error">{error}</Typography>}
+            {statusState === 'succeeded' && order && (
                 <>
                     <TableContainer component={Paper}>
                         <Table>

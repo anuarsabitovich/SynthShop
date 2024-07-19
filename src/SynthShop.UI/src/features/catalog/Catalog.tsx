@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { Grid, Box, Pagination, Paper, Typography, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
+import React, { useEffect } from 'react';
+import { Grid, Box, Pagination, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent } from '@mui/material';
 import { useAppDispatch, useAppSelector } from '../../app/store/configureStore';
-import { fetchProductsAsync, productSelectors, setProductParams, resetProductParams } from './catalogSlice';
+import { fetchProductsAsync, productSelectors, setProductParams } from './catalogSlice';
 import ProductCard from './ProductCard';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import SearchAndFilters from './SearchAndFilters';
 
 function useQuery() {
@@ -13,10 +13,8 @@ function useQuery() {
 const Catalog = () => {
     const dispatch = useAppDispatch();
     const products = useAppSelector(productSelectors.selectAll);
-    const { productsLoaded, metaData, status, productParams } = useAppSelector(state => state.catalog);
-    const [searchTerm, setSearchTerm] = useState(productParams.searchTerm || '');
+    const { productsLoaded, metaData,  productParams } = useAppSelector(state => state.catalog);
     const query = useQuery();
-    const navigate = useNavigate();
     const categoryId = query.get('categoryId');
 
     useEffect(() => {
@@ -28,12 +26,12 @@ const Catalog = () => {
         }
     }, [productsLoaded, categoryId, productParams.categoryId, dispatch]);
 
-    const handlePageChange = (event: React.ChangeEvent<unknown>, page: number) => {
+    const handlePageChange = (_: React.ChangeEvent<unknown>, page: number) => {
         dispatch(setProductParams({ pageNumber: page }));
         dispatch(fetchProductsAsync());
     };
 
-    const handlePageSizeChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    const handlePageSizeChange = (event: SelectChangeEvent<number>) => {
         dispatch(setProductParams({ pageSize: event.target.value as number }));
         dispatch(fetchProductsAsync());
     };

@@ -1,20 +1,37 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Basket, BasketItem } from "../../app/models/basket";
+import { Basket } from "../../app/models/basket";
 import agent from "../../app/api/agent";
 
 interface BasketState {
     basket: Basket | null;
     addItemStatus: string;
+    status: 'idle' | 'loading' | 'succeeded' | 'failed';
     removeSingleItemStatus: string;
     removeAllItemsStatus: string;
+    error: string | null;
 }
 
 const initialState: BasketState = {
     basket: null,
     addItemStatus: 'idle',
     removeSingleItemStatus: 'idle',
-    removeAllItemsStatus: 'idle'
+    removeAllItemsStatus: 'idle',
+    status: 'idle',
+    error: null,
 };
+
+export const fetchBasketById = createAsyncThunk<Basket, string, { rejectValue: string }>(
+    'basket/fetchBasketById',
+    async (basketId, thunkAPI) => {
+        try {
+            const response = await agent.Basket.getById(basketId);
+            return response;
+        } catch (error: any) {
+            return thunkAPI.rejectWithValue(error.response.data.message || 'Failed to fetch basket');
+        }
+    }
+);
+
 
 export const initializeBasket = createAsyncThunk<Basket, void, { rejectValue: string }>(
     'basket/initializeBasket',
@@ -26,7 +43,7 @@ export const initializeBasket = createAsyncThunk<Basket, void, { rejectValue: st
                 localStorage.setItem('basketId', newBasketId);
                 basketId = newBasketId;
             }
-            const basket = await agent.Basket.getById(basketId);
+            const basket = await agent.Basket.getById(basketId!);
             return basket;
         } catch (error) {
             console.error('Error initializing basket:', error);
@@ -51,7 +68,7 @@ export const addBasketItemAsync = createAsyncThunk<Basket, { basketId: string, p
 
 export const removeBasketItemAsync = createAsyncThunk<void, { basketItemId: string, quantity: number }>(
     'basket/removeBasketItemAsync',
-    async ({ basketItemId, quantity }) => {
+    async ({ basketItemId }) => {
         try {
             await agent.Basket.removeItem(basketItemId);
         } catch (error) {
@@ -78,6 +95,7 @@ const basketSlice = createSlice({
         });
         builder.addCase(initializeBasket.rejected, (state, action) => {
             console.error(action.payload);
+            console.error(state);
         });
         builder.addCase(addBasketItemAsync.pending, (state, action) => {
             state.addItemStatus = 'pendingAddItem' + action.meta.arg.productId;
@@ -123,6 +141,17 @@ const basketSlice = createSlice({
             } else {
                 state.removeAllItemsStatus = 'idle';
             }
+        });
+        builder.addCase(fetchBasketById.pending, (state) => {
+            state.status = 'loading';
+        });
+        builder.addCase(fetchBasketById.fulfilled, (state, action) => {
+            state.status = 'succeeded';
+            state.basket = action.payload;
+        });
+        builder.addCase(fetchBasketById.rejected, (state, action) => {
+            state.status = 'failed';
+            state.error = action.error.message || 'Failed to fetch basket';
         });
     }
 });

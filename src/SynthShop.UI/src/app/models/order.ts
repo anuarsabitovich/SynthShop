@@ -12,7 +12,7 @@ export interface Order {
     userId: string;
     isDeleted: boolean;
     totalAmount: number;
-    status: string;
+    status: number;
     createdAt: Date;
     updateAt?: Date;
     orderItems: OrderItem[];

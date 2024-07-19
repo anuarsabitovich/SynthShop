@@ -1,4 +1,3 @@
-import React from "react";
 import { Avatar, Card, CardActions, CardContent, CardMedia, Typography, CardHeader, Button } from "@mui/material";
 import { Product } from "../../app/models/product";
 import { Link } from "react-router-dom";
@@ -46,7 +45,7 @@ export default function ProductCard({ product }: Props) {
                 {product.stockQuantity > 0 ? (
                     <LoadingButton
                         loading={addItemStatus.includes('pendingAddItem' + product.productID)}
-                        onClick={() => dispatch(addBasketItemAsync({ basketId: basket.basketId, productId: product.productID }))}
+                        onClick={() => dispatch(addBasketItemAsync({ basketId: basket!.basketId, productId: product.productID }))}
                         size="small">Add to cart
                     </LoadingButton>
                 ) : (

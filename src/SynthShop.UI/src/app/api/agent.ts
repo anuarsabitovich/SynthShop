@@ -35,8 +35,8 @@ const handleError = async (error: AxiosError) => {
         return Promise.reject(error);
     }
 
-    const { status, config, data } = error.response;
-
+    const { status, config, data } = error.response as { status: any, config: any, data: any };
+         
     if (status === 401) {
         
         try {
@@ -68,8 +68,9 @@ const handleError = async (error: AxiosError) => {
                 toast.error(modelStateErrors.flat().join(', ') || 'Bad Request');
             } else if (Array.isArray(data)) {
                 const errorMessages = data.map((err: any) => err.description).join(', ');
-                toast.error(errorMessages || 'Bad Request');
+                toast.error(errorMessages);
             } else {
+
                 toast.error(data.title || 'Bad Request');
             }
             break;
@@ -124,15 +125,22 @@ const Catalog = {
 
 const Basket = {
     create: () => requests.post('basket', {}).then(response => response),
-    delete: (basketId: string) => requests.delete(`basket/${basketId}`),
+    //delete: (basketId: string) => requests.delete(`basket/${basketId}`),
+    delete: (basketId: string) => requests.delete(`basket/basket/${basketId}`), // Updated endpoint
     getById: (id: string) => requests.get(`basket/${id}`),
     addItem: async (basketId: string, productId: string, quantity: number = 1) => {
         await requests.post(`basket/${basketId}/items`, { productId, quantity });
         return requests.get(`basket/${basketId}`);
     },
-    deleteItem: (itemId: string) => requests.delete(`basket/${itemId}`),
+    deleteItem: (itemId: string) => requests.delete(`basket/items/${itemId}`),
     updateItem: (basketId: string, itemId: string, quantity: number) => requests.put(`basket/${basketId}/items/${itemId}`, { quantity }),
-    removeItem: (itemId: string) => requests.delete(`basket/items/${itemId}/remove`)
+    removeItem: (itemId: string) => requests.delete(`basket/items/${itemId}/remove`),
+    updateCustomer: (basketId: string, customerId: string) => requests.put(`basket/${basketId}/customer`, { customerId: customerId }).then(responseBody),    getLastBasketByCustomerId: async (customerId: string) => {
+        console.log(`Fetching last basket for customer ID: ${customerId}`);
+        const response = await requests.get(`basket/last-basket/${customerId}`);
+        console.log(`Response from API: ${JSON.stringify(response)}`);
+        return response;
+    },
 };
 
 const Orders = {

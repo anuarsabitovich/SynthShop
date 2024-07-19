@@ -1,29 +1,29 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchOrders } from './orderSlice';
-import { RootState } from '../../app/store/configureStore';
+import { AppDispatch, RootState } from '../../app/store/configureStore';
 import { Container, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { getOrderStatusString } from '../../app/utils/orderStatus';
 
 const OrderListPage = () => {
-    const dispatch = useDispatch();
-    const { orders, status, error } = useSelector((state: RootState) => state.orders);
+    const dispatch = useDispatch<AppDispatch>();
+    const { orders, statusState, error } = useSelector((state: RootState) => state.orders);
 
     useEffect(() => {
-        if (status === 'idle') {
+        if (statusState === 'idle') {
             dispatch(fetchOrders());
         }
-    }, [ dispatch]);
+    }, [dispatch]);
 
     return (
         <Container>
             <Typography variant="h4" gutterBottom>
                 My Orders
             </Typography>
-            {status === 'loading' && <Typography>Loading...</Typography>}
-            {status === 'failed' && <Typography color="error">{error}</Typography>}
-            {status === 'succeeded' && orders && (
+            {statusState === 'loading' && <Typography>Loading...</Typography>}
+            {statusState === 'failed' && <Typography color="error">{error}</Typography>}
+            {statusState === 'succeeded' && orders && (
                 <TableContainer component={Paper}>
                     <Table>
                         <TableHead>

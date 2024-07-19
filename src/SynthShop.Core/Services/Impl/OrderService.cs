@@ -80,7 +80,7 @@ public class OrderService : IOrderService
                 CreatedAt = DateTime.UtcNow
             };
             var result = await _orderRepository.CreateOrderAsync(order);
-            await _unitOfWork.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync(); 
 
             var sendTo = _userProvider.GetCurrentUserEmail();
             var message = $"Hi {_userProvider.GetFullName()} your order with id: {order.OrderID} has been created";

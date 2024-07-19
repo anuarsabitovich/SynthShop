@@ -10,6 +10,11 @@ import { refreshToken } from "../auth/authSlice";
 import { jwtDecode } from 'jwt-decode';
 import { ToastContainer } from "react-toastify";
 
+interface DecodedToken {
+    exp: number;
+}
+
+
 export default function BasketPage() {
     const { basket, addItemStatus, removeSingleItemStatus, removeAllItemsStatus } = useAppSelector(state => state.basket);
     const { user } = useAppSelector(state => state.auth);
@@ -22,9 +27,15 @@ export default function BasketPage() {
             return;
         }
     
-        const token = localStorage.getItem('token');
-        const tokenExpiration = new Date(jwtDecode(token).exp * 1000);
-    
+        const token = localStorage.getItem('token')
+        if (!token) {
+            navigate('/login');
+            return;
+        }
+        
+        const decoded: DecodedToken = jwtDecode<DecodedToken>(token);
+        const tokenExpiration = new Date(decoded.exp * 1000);
+
         if (tokenExpiration <= new Date()) {
             try {
                 await dispatch(refreshToken()).unwrap();
@@ -34,7 +45,7 @@ export default function BasketPage() {
             }
         }
     
-        const resultAction = await dispatch(createOrder({ basketId: basket.basketId }));
+        const resultAction = await dispatch(createOrder({ basketId: basket!.basketId }));
         if (createOrder.fulfilled.match(resultAction)) {
             dispatch(clearBasket());
             localStorage.removeItem('basketId');

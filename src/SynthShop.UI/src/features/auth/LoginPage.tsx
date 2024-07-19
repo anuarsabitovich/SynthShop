@@ -1,4 +1,3 @@
-import React from 'react';
 import { Container, Paper, Typography, TextField, Button } from '@mui/material';
 import { useForm, Controller } from 'react-hook-form';
 import { useAppDispatch, useAppSelector } from '../../app/store/configureStore';
@@ -16,7 +15,7 @@ const LoginPage = () => {
     const { control, handleSubmit } = useForm<LoginFormInputs>();
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
-    const { status, error } = useAppSelector(state => state.auth);
+    const { status } = useAppSelector(state => state.auth);
 
     const onSubmit = async (data: LoginFormInputs) => {
         const resultAction = await dispatch(loginUser(data));

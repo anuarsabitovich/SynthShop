@@ -17,7 +17,7 @@ export default function ProductDetails() {
     const dispatch = useAppDispatch();
     const { id } = useParams<Params>();
     const product = useAppSelector(state => productSelectors.selectById(state, id!));
-    const [error, setError] = useState<string | null>(null);
+    const [error] = useState<string | null>(null);
     const item = basket?.items.find(i => i.productId === product?.productID);
     const { status: productStatus } = useAppSelector(state => state.catalog);
 

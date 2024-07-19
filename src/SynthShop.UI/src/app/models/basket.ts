@@ -2,6 +2,7 @@ import { Product } from "./product"
 
 export interface Basket {
     basketId: string
+    CustomerId: string | null
     items: BasketItem[]
   }
   

@@ -2,9 +2,7 @@ import { Container, CssBaseline, ThemeProvider, createTheme } from "@mui/materia
 import Header from "./Header";
 import { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
-import agent from "../api/agent";
 import LoadingComponent from "./LoadingComponent";
 import { useAppDispatch } from "../store/configureStore";
 import { initializeBasket, setBasket } from "../../features/basket/basketSlice";

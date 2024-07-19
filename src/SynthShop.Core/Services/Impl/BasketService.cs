@@ -141,4 +141,21 @@ public class BasketService : IBasketService
 
         await _unitOfWork.SaveChangesAsync();
     }
+
+    public async Task<Basket?> UpdateBasketAsync(Guid basketId, Guid? customerId)
+    {
+        var basket = await _basketRepository.UpdateBasketAsync(basketId, customerId);
+        if (basket == null)
+        {
+            _logger.Warning("Basket with ID {BasketId} not found", basketId);
+            return null;
+        }
+
+        await _unitOfWork.SaveChangesAsync();
+        return basket;
+    }
+    public async Task<Basket?> GetLastBasketByCustomerIdAsync(Guid customerId)
+    {
+        return await _basketRepository.GetLastBasketByCustomerIdAsync(customerId);
+    }
 }

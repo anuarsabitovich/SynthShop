@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Box, Button, TextField, Typography } from '@mui/material';
 import { registerUser } from './authSlice';
-import { RootState } from '../../app/store/configureStore';
+import { AppDispatch, RootState } from '../../app/store/configureStore';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 
 const RegisterPage = () => {
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
     const { status } = useSelector((state: RootState) => state.auth);
     const [emailError, setEmailError] = useState<string | null>(null);

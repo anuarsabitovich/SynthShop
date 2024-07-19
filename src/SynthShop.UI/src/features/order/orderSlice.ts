@@ -5,14 +5,14 @@ import { Order } from '../../app/models/order';
 interface OrderState {
     orders: Order[];
     order: Order | null;
-    status: 'idle' | 'loading' | 'succeeded' | 'failed';
+    statusState: 'idle' | 'loading' | 'succeeded' | 'failed';
     error: string | null;
 }
 
 const initialState: OrderState = {
     orders: [],
     order: null,
-    status: 'idle',
+    statusState: 'idle',
     error: null,
 };
 
@@ -45,6 +45,7 @@ export const createOrder = createAsyncThunk<Order, { basketId: string }, { rejec
     async (order, thunkAPI) => {
         try {
             const response = await agent.Orders.create(order);
+            await agent.Basket.delete(order.basketId); 
             localStorage.removeItem('basketId');
             return response;
         } catch (error: any) {
@@ -84,43 +85,43 @@ const orderSlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addCase(fetchOrders.pending, (state) => {
-                state.status = 'loading';
+                state.statusState = 'loading';
             })
             .addCase(fetchOrders.fulfilled, (state, action) => {
-                state.status = 'succeeded';
+                state.statusState = 'succeeded';
                 state.orders = action.payload;
             })
             .addCase(fetchOrders.rejected, (state, action) => {
-                state.status = 'failed';
+                state.statusState = 'failed';
                 state.error = action.payload || 'Failed to fetch orders';
             })
             .addCase(fetchOrderDetails.pending, (state) => {
-                state.status = 'loading';
+                state.statusState = 'loading';
             })
             .addCase(fetchOrderDetails.fulfilled, (state, action) => {
-                state.status = 'succeeded';
+                state.statusState = 'succeeded';
                 state.order = action.payload;
             })
             .addCase(fetchOrderDetails.rejected, (state, action) => {
-                state.status = 'failed';
+                state.statusState = 'failed';
                 state.error = action.payload || 'Failed to fetch order details';
             })
             .addCase(createOrder.pending, (state) => {
-                state.status = 'loading';
+                state.statusState = 'loading';
             })
             .addCase(createOrder.fulfilled, (state, action) => {
-                state.status = 'succeeded';
+                state.statusState = 'succeeded';
                 state.orders.push(action.payload);
             })
             .addCase(createOrder.rejected, (state, action) => {
-                state.status = 'failed';
+                state.statusState = 'failed';
                 state.error = action.payload || 'Failed to create order';
             })
             .addCase(cancelOrder.pending, (state) => {
-                state.status = 'loading';
+                state.statusState = 'loading';
             })
             .addCase(cancelOrder.fulfilled, (state, action) => {
-                state.status = 'succeeded';
+                state.statusState = 'succeeded';
                 const index = state.orders.findIndex(order => order.orderID === action.payload.orderID);
                 if (index >= 0) {
                     state.orders[index] = action.payload;
@@ -128,14 +129,14 @@ const orderSlice = createSlice({
                 state.order = action.payload;
             })
             .addCase(cancelOrder.rejected, (state, action) => {
-                state.status = 'failed';
+                state.statusState = 'failed';
                 state.error = action.payload || 'Failed to cancel order';
             })
             .addCase(completeOrder.pending, (state) => {
-                state.status = 'loading';
+                state.statusState = 'loading';
             })
             .addCase(completeOrder.fulfilled, (state, action) => {
-                state.status = 'succeeded';
+                state.statusState = 'succeeded';
                 const index = state.orders.findIndex(order => order.orderID === action.payload.orderID);
                 if (index >= 0) {
                     state.orders[index] = action.payload;
@@ -143,7 +144,7 @@ const orderSlice = createSlice({
                 state.order = action.payload;
             })
             .addCase(completeOrder.rejected, (state, action) => {
-                state.status = 'failed';
+                state.statusState = 'failed';
                 state.error = action.payload || 'Failed to complete order';
             })
     },

@@ -3,8 +3,9 @@ import agent from '../../app/api/agent';
 import { User } from '../../app/models/user';
 import { DecodedToken } from '../../app/models/decodedToken';
 import { AuthResponse } from '../../app/models/authResponse';
-import jwt_decode, { jwtDecode } from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import { generateCorrelationId } from '../../app/utils/correlationIdGenerator';
+import { fetchBasketById } from '../basket/basketSlice';
 
 
 interface AuthState {
@@ -19,7 +20,6 @@ const initialState: AuthState = {
     token: localStorage.getItem('token') || null,
     status: 'idle',
     error: null,
-    
 };
 
 
@@ -38,13 +38,28 @@ export const loginUser = createAsyncThunk<AuthResponse, { email: string; passwor
                 firstName: "",
                 lastName: "", 
                 address: "", 
-                createdAt: new Date(decodedToken.exp * 1000).toISOString(), 
-                updateAt: new Date(decodedToken.exp * 1000).toISOString() 
+                createdAt: new Date(decodedToken.exp! * 1000).toISOString(), 
+                updateAt: new Date(decodedToken.exp! * 1000).toISOString() 
             };
             localStorage.setItem('token', response.token)
             localStorage.setItem('refreshToken', response.refreshToken)
             localStorage.setItem('user', encodeURIComponent(JSON.stringify(user)))
             localStorage.setItem('correlationId', generateCorrelationId())
+            try {
+                const lastBasket = await agent.Basket.getLastBasketByCustomerId(user.id);
+                console.log("Retrieved last basket:", lastBasket);
+                if (lastBasket && lastBasket.basketId) {
+                    localStorage.removeItem('basketId');
+                    localStorage.setItem('basketId', lastBasket.basketId);
+                    thunkAPI.dispatch(fetchBasketById(lastBasket.basketId));
+                }
+            } catch (error) {
+                const localBasketId = localStorage.getItem('basketId');
+                if (localBasketId) {
+                    await agent.Basket.updateCustomer(localBasketId, user.id);
+                }
+            }
+            
             return { ...response, user };
         } catch (error: any) {
             return thunkAPI.rejectWithValue(error.response.data.message || 'Login failed');
@@ -52,24 +67,27 @@ export const loginUser = createAsyncThunk<AuthResponse, { email: string; passwor
     }
 );
 
-export const registerUser = createAsyncThunk<void, { email: string; password: string; firstName: string; lastName: string; address: string }, { rejectValue: string }>(
+export const registerUser = createAsyncThunk<{ user: any; token: string }, { email: string; password: string; firstName: string; lastName: string; address: string }, { rejectValue: string }>(
     'auth/registerUser',
     async (registrationData, thunkAPI) => {
         try {
-            const response = await agent.Auth.register(
+            // Register the user
+            await agent.Auth.register(
                 registrationData.email,
                 registrationData.firstName,
                 registrationData.lastName,
                 registrationData.address,
                 registrationData.password
             );
+
             const loginResponse = await thunkAPI.dispatch(loginUser({ email: registrationData.email, password: registrationData.password })).unwrap();
-            return loginResponse;
+
+            return loginResponse as { user: any; token: string };
         } catch (error: any) {
             if (error.response && error.response.data) {
                 return thunkAPI.rejectWithValue(error.response.data);
             } else {
-                return thunkAPI.rejectWithValue({ message: error.message });
+                return thunkAPI.rejectWithValue(error.message);
             }
         }
     }
@@ -95,8 +113,8 @@ export const refreshToken = createAsyncThunk<AuthResponse, void, { rejectValue: 
                 firstName: "",
                 lastName: "", 
                 address: "", 
-                createdAt: new Date(decodedToken.exp * 1000).toISOString(), 
-                updateAt: new Date(decodedToken.exp * 1000).toISOString() 
+                createdAt: new Date(decodedToken.exp! * 1000).toISOString(), 
+                updateAt: new Date(decodedToken.exp! * 1000).toISOString() 
             };
 
             localStorage.setItem('token', response.token);

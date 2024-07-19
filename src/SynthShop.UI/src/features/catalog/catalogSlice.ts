@@ -1,4 +1,4 @@
-import { createAsyncThunk, createEntityAdapter, createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createEntityAdapter, createSlice, EntityAdapter, EntityId } from "@reduxjs/toolkit";
 import agent from "../../app/api/agent";
 import { Product } from "../../app/models/product";
 import { RootState } from '../../app/store/configureStore';
@@ -7,9 +7,13 @@ const validateProducts = (products: Product[]) => {
     return products.filter(product => product.productID);
 };
 
-const productsAdapter = createEntityAdapter<Product>({
-    selectId: (product) => product.productID 
+const selectId = (product: Product): EntityId => product.productID;
+
+const productsAdapter: EntityAdapter<Product, EntityId> = createEntityAdapter<Product, EntityId>({
+    selectId
 });
+
+
 
 export interface CatalogState {
     productsLoaded: boolean;
@@ -126,7 +130,7 @@ export const catalogSlice = createSlice({
             productsAdapter.upsertOne(state, action.payload);
             state.status = 'idle';
         });
-        builder.addCase(fetchProductAsync.rejected, (state, action) => {
+        builder.addCase(fetchProductAsync.rejected, (state) => {
             state.status = 'idle';
         });
     }

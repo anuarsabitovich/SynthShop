@@ -34,8 +34,8 @@ public class BasketController : ControllerBase
         return Ok(basketId);
     }
 
-    [HttpDelete]
-    public async Task<IActionResult> Delete(Guid basketId)
+    [HttpDelete("basket/{basketId:Guid}")]
+    public async Task<IActionResult> DeleteBasket([FromRoute] Guid basketId)
     {
         _logger.Information("Deleting basket with ID {BasketId}", basketId);
         await _basketService.DeleteBasketAsync(basketId);
@@ -109,5 +109,34 @@ public class BasketController : ControllerBase
         _logger.Information("Item in basket {BasketId} was updated", id);
         return Ok("Item in the basket was updated");
     }
-    
+
+    [HttpPut("{id:Guid}/customer")]
+    public async Task<IActionResult> UpdateBasketCustomer([FromRoute] Guid id, [FromBody] CustomerIdDto customerIdDto)
+    {
+        _logger.Information("Updating customer ID for basket {BasketId}", id);
+        var basket = await _basketService.UpdateBasketAsync(id, customerIdDto.CustomerId);
+        if (basket == null)
+        {
+            _logger.Warning("Basket with ID {BasketId} not found", id);
+            return NotFound();
+        }
+        _logger.Information("Customer ID for basket {BasketId} was updated to {CustomerId}", id, customerIdDto.CustomerId);
+        return Ok("Customer ID was updated");
+    }
+
+    [HttpGet("last-basket/{customerId:Guid}")]
+    public async Task<IActionResult> GetLastBasketByCustomerId([FromRoute] Guid customerId)
+    {
+        _logger.Information("Fetching last basket by customer ID {CustomerId}", customerId);
+        var basket = await _basketService.GetLastBasketByCustomerIdAsync(customerId);
+        if (basket == null)
+        {
+            _logger.Warning("No baskets found for customer ID {CustomerId}", customerId);
+            return NotFound();
+        }
+
+        _logger.Information("Last basket retrieved for customer ID {CustomerId} with id {BasketId}", customerId, basket.BasketId);
+        return Ok(_mapper.Map<BasketDTO>(basket));
+    }
+
 }
