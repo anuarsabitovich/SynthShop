@@ -91,7 +91,7 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddCoreServices(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
-
+builder.Services.AddHealthChecks().AddDbContextCheck<MainDbContext>();
 builder.Services.AddControllers()
     .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<CategoryValidator>());
 
@@ -126,7 +126,7 @@ app.UseCors(opt =>
 app.UseHeaderPropagation();
 
 app.MapControllers();
-
+app.MapHealthChecks("/health");
 using var serviceScope = app.Services.CreateScope();
 var seeder = serviceScope.ServiceProvider.GetRequiredService<Runner>();
 seeder.SeedAsync().GetAwaiter().GetResult();
