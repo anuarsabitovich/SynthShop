@@ -1,10 +1,11 @@
-import { Container, Paper, Typography, TextField, Button } from '@mui/material';
+import { Container, Paper, Typography, TextField, Button, Box } from '@mui/material';
 import { useForm, Controller } from 'react-hook-form';
 import { useAppDispatch, useAppSelector } from '../../app/store/configureStore';
 import { loginUser } from './authSlice';
 import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useState } from 'react';
 
 interface LoginFormInputs {
     email: string;
@@ -16,13 +17,15 @@ const LoginPage = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const { status } = useAppSelector(state => state.auth);
+    const [error, setError] = useState<string | null>(null);
 
     const onSubmit = async (data: LoginFormInputs) => {
+        setError(null); // Clear previous errors
         const resultAction = await dispatch(loginUser(data));
         if (loginUser.fulfilled.match(resultAction)) {
             navigate('/catalog');
         } else {
-            toast.error('Password or email is incorrect!');
+            setError(resultAction.payload as string || 'Password or email is incorrect!');
         }
     };
 
@@ -48,7 +51,11 @@ const LoginPage = () => {
                     {status === 'loading' ? 'Logging in...' : 'Login'}
                 </Button>
             </form>
-            <ToastContainer position="bottom-right" hideProgressBar />
+            {error && (
+                <Box mt={2}>
+                    <Typography color="error">{error}</Typography>
+                </Box>
+            )}
         </Container>
     );
 };

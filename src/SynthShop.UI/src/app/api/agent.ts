@@ -125,7 +125,6 @@ const Catalog = {
 
 const Basket = {
     create: () => requests.post('basket', {}).then(response => response),
-    //delete: (basketId: string) => requests.delete(`basket/${basketId}`),
     delete: (basketId: string) => requests.delete(`basket/basket/${basketId}`), // Updated endpoint
     getById: (id: string) => requests.get(`basket/${id}`),
     addItem: async (basketId: string, productId: string, quantity: number = 1) => {
