@@ -3,7 +3,6 @@ import { useForm, Controller } from 'react-hook-form';
 import { useAppDispatch, useAppSelector } from '../../app/store/configureStore';
 import { loginUser } from './authSlice';
 import { useNavigate } from 'react-router-dom';
-import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useState } from 'react';
 
