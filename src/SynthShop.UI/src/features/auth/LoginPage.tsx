@@ -19,7 +19,7 @@ const LoginPage = () => {
     const [error, setError] = useState<string | null>(null);
 
     const onSubmit = async (data: LoginFormInputs) => {
-        setError(null); // Clear previous errors
+        setError(null); 
         const resultAction = await dispatch(loginUser(data));
         if (loginUser.fulfilled.match(resultAction)) {
             navigate('/catalog');

@@ -1,7 +1,10 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SynthShop.Core.Services.Interfaces;
+using SynthShop.Domain.Constants;
 using SynthShop.DTO;
+using SynthShop.Extensions;
 using SynthShop.Validations;
 using ILogger = Serilog.ILogger;
 
@@ -16,14 +19,16 @@ public class BasketController : ControllerBase
     private readonly AddBasketItemValidator _addBasketItemValidator;
     private readonly ILogger _logger;
     private readonly UpdateBasketItemValidator _updateBasketItemValidator;
+    private readonly IUserProvider _userProvider;
 
     public BasketController(IBasketService basketService, IMapper mapper, AddBasketItemValidator addBasketItemValidator,
-        ILogger logger, UpdateBasketItemValidator updateBasketItemValidator)
+        ILogger logger, UpdateBasketItemValidator updateBasketItemValidator, IUserProvider userProvider)
     {
         _basketService = basketService;
         _mapper = mapper;
         _addBasketItemValidator = addBasketItemValidator;
         _updateBasketItemValidator = updateBasketItemValidator;
+        _userProvider = userProvider;
         _logger = logger.ForContext<BasketController>();
     }
 
@@ -110,25 +115,31 @@ public class BasketController : ControllerBase
         return Ok("Item in the basket was updated");
     }
 
+    [Roles(RoleConstants.Admin, RoleConstants.User)]
     [HttpPut("{id:Guid}/customer")]
-    public async Task<IActionResult> UpdateBasketCustomer([FromRoute] Guid id, [FromBody] CustomerIdDto customerIdDto)
+    public async Task<IActionResult> UpdateBasketCustomer([FromRoute] Guid id)
     {
+        var customerId = _userProvider.GetCurrentUserId();
+
         _logger.Information("Updating customer ID for basket {BasketId}", id);
-        var basket = await _basketService.UpdateBasketAsync(id, customerIdDto.CustomerId);
+        var basket = await _basketService.UpdateBasketAsync(id, customerId);
         if (basket == null)
         {
             _logger.Warning("Basket with ID {BasketId} not found", id);
             return NotFound();
         }
-        _logger.Information("Customer ID for basket {BasketId} was updated to {CustomerId}", id, customerIdDto.CustomerId);
+        _logger.Information("Customer ID for basket {BasketId} was updated to {CustomerId}", id, customerId);
         return Ok("Customer ID was updated");
     }
 
-    [HttpGet("last-basket/{customerId:Guid}")]
-    public async Task<IActionResult> GetLastBasketByCustomerId([FromRoute] Guid customerId)
+    [Roles(RoleConstants.Admin, RoleConstants.User)]
+    [HttpGet]
+    [Route("last-basket")]
+    public async Task<IActionResult> GetLastBasketForUser()
     {
+        var customerId = _userProvider.GetCurrentUserId();
         _logger.Information("Fetching last basket by customer ID {CustomerId}", customerId);
-        var basket = await _basketService.GetLastBasketByCustomerIdAsync(customerId);
+        var basket = await _basketService.GetLastBasketByCustomerIdAsync(customerId!.Value);
         if (basket == null)
         {
             _logger.Warning("No baskets found for customer ID {CustomerId}", customerId);

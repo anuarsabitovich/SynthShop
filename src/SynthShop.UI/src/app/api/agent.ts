@@ -29,7 +29,6 @@ const handleError = async (error: AxiosError) => {
     console.error("API request error:", error);
 
     if (!error.response) {
-        // Handle network error
         console.error('Network error:', error);
         toast.error('Network error. Please check your connection or server status.');
         return Promise.reject(error);
@@ -134,10 +133,9 @@ const Basket = {
     deleteItem: (itemId: string) => requests.delete(`basket/items/${itemId}`),
     updateItem: (basketId: string, itemId: string, quantity: number) => requests.put(`basket/${basketId}/items/${itemId}`, { quantity }),
     removeItem: (itemId: string) => requests.delete(`basket/items/${itemId}/remove`),
-    updateCustomer: (basketId: string, customerId: string) => requests.put(`basket/${basketId}/customer`, { customerId: customerId }).then(responseBody),    getLastBasketByCustomerId: async (customerId: string) => {
-        console.log(`Fetching last basket for customer ID: ${customerId}`);
-        const response = await requests.get(`basket/last-basket/${customerId}`);
-        console.log(`Response from API: ${JSON.stringify(response)}`);
+    updateCustomer: (basketId: string) => requests.put(`basket/${basketId}/customer`, {}).then(responseBody),    
+    getLastBasket: async () => {
+        const response = await requests.get(`basket/last-basket`);
         return response;
     },
 };

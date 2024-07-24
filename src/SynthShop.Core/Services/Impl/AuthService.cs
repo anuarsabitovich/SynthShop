@@ -53,7 +53,7 @@ public class AuthService : IAuthService
 
         var message = $"Hi {user.FirstName} {user.LastName} you've been successfully registered at SynthShop";
         var subject = "Welcome to SynthShop";
-        _emailProducer.SendMessage(new SendEmailMessage(user.Email, message, subject));
+        _emailProducer.SendMessage(new SendEmailMessage(subject, message, user.Email));
 
         return result;
     }

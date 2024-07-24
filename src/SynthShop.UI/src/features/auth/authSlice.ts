@@ -46,7 +46,7 @@ export const loginUser = createAsyncThunk<AuthResponse, { email: string; passwor
             localStorage.setItem('user', encodeURIComponent(JSON.stringify(user)))
             localStorage.setItem('correlationId', generateCorrelationId())
             try {
-                const lastBasket = await agent.Basket.getLastBasketByCustomerId(user.id);
+                const lastBasket = await agent.Basket.getLastBasket();
                 console.log("Retrieved last basket:", lastBasket);
                 if (lastBasket && lastBasket.basketId) {
                     localStorage.removeItem('basketId');
@@ -56,7 +56,7 @@ export const loginUser = createAsyncThunk<AuthResponse, { email: string; passwor
             } catch (error) {
                 const localBasketId = localStorage.getItem('basketId');
                 if (localBasketId) {
-                    await agent.Basket.updateCustomer(localBasketId, user.id);
+                    await agent.Basket.updateCustomer(localBasketId);
                 }
             }
             
@@ -107,14 +107,7 @@ export const refreshToken = createAsyncThunk<AuthResponse, void, { rejectValue: 
             const decodedToken: DecodedToken = jwtDecode(response.token);
 
             const user: User = {
-                id: decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"],
                 email: decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"],
-                role: decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"],
-                firstName: "",
-                lastName: "", 
-                address: "", 
-                createdAt: new Date(decodedToken.exp! * 1000).toISOString(), 
-                updateAt: new Date(decodedToken.exp! * 1000).toISOString() 
             };
 
             localStorage.setItem('token', response.token);
